@@ -1,0 +1,126 @@
+<div class="row align-items-center">
+    <div class="border-0 mb-4">
+        <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
+            <h3 class="fw-bold mb-0">Gestion des Équipes</h3>
+            <div class="col-auto d-flex w-sm-100">
+                <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#teamModal" (click)="resetForm()"
+                style="background-color: #000 !important; color: #fff !important; padding: 12px 24px !important; font-size: 16px !important; border-radius: 8px !important; border: 2px solid red !important;">
+                    <i class="icofont-plus-circle me-2 fs-6"></i>Nouvelle Équipe
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-12" *ngFor="let team of teams">
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold"><i class="icofont-users-alt-2 me-2 text-primary"></i>{{team.name}}</h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#assignModal" (click)="openAssignModal(team)">
+                        <i class="icofont-plus"></i> Assigner Utilisateur
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#teamModal" (click)="openEditTeam(team)">
+                        <i class="icofont-edit"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">{{team.description || 'Aucune description'}}</p>
+                <div *ngIf="team.users && team.users.length > 0; else noMembers">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Membre</th>
+                                <th>Email</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let user of team.users">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3" style="width:32px;height:32px;font-size:12px;">
+                                            {{user.firstName.charAt(0)}}{{user.lastName.charAt(0)}}
+                                        </div>
+                                        <span class="fw-bold">{{user.firstName}} {{user.lastName}}</span>
+                                    </div>
+                                </td>
+                                <td>{{user.email}}</td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-outline-danger" (click)="removeUser(team.id, user.id)">
+                                        <i class="icofont-ui-delete"></i> Retirer
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <ng-template #noMembers>
+                    <p class="text-warning small mb-0"><i class="icofont-warning-alt"></i> Aucun membre dans cette équipe.</p>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="teams.length === 0" class="col-12 text-center py-5">
+        <p class="text-muted">Aucune équipe trouvée.</p>
+    </div>
+</div>
+
+<!-- Modal: Team -->
+<div class="modal fade" id="teamModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">{{ editingTeam ? 'Modifier' : 'Créer' }} une Équipe</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nom de l'équipe *</label>
+                    <input type="text" class="form-control" [(ngModel)]="newTeam.name">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Description</label>
+                    <textarea class="form-control" rows="3" [(ngModel)]="newTeam.description"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-dark" (click)="editingTeam ? updateTeam() : createTeam()" data-bs-dismiss="modal" style="background-color: #000 !important; color: #fff !important; padding: 10px 20px !important;">
+                    <i class="icofont-save me-1"></i>Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Assign User -->
+<div class="modal fade" id="assignModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Assigner un Membre</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted">Sélectionnez un utilisateur (Manager ou Employé) pour l'ajouter à l'équipe <b>{{selectedTeamForAssign?.name}}</b>.</p>
+                <div class="mb-3">
+                    <select class="form-select" [(ngModel)]="selectedUserId">
+                        <option [ngValue]="null">-- Choisir un utilisateur --</option>
+                        <option *ngFor="let u of users" [value]="u.id">
+                            {{u.firstName}} {{u.lastName}} &lt;{{u.email}}&gt;
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" (click)="assignUser()" data-bs-dismiss="modal" [disabled]="!selectedUserId">
+                    <i class="icofont-plus"></i> Ajouter
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

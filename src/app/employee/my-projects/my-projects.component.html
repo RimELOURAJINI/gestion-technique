@@ -1,0 +1,56 @@
+<div class="row align-items-center">
+    <div class="border-0 mb-4">
+        <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
+            <h3 class="fw-bold mb-0">Mes Projets</h3>
+            <div class="col-auto d-flex w-sm-100">
+                <ul class="nav nav-tabs tab-body-header rounded ms-3 pr-1 g-2" role="tablist">
+                    <li class="nav-item"><a class="nav-link" [class.active]="activeTab === 'ongoing'" (click)="setTab('ongoing')" href="javascript:void(0);">En cours</a></li>
+                    <li class="nav-item"><a class="nav-link" [class.active]="activeTab === 'history'" (click)="setTab('history')" href="javascript:void(0);">Historique</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-3 row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3">
+    <div class="col" *ngFor="let project of (activeTab === 'ongoing' ? ongoingProjects : historicalProjects)">
+        <div class="card overflow-hidden border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h6 class="mb-0 fw-bold">{{project.name}}</h6>
+                    <span class="badge" [ngClass]="{
+                        'bg-warning': project.status === 'IN_PROGRESS',
+                        'bg-success': project.status === 'COMPLETED',
+                        'bg-secondary': !project.status || (project.status !== 'IN_PROGRESS' && project.status !== 'COMPLETED')
+                    }">{{project.status || 'En attente'}}</span>
+                </div>
+                <p class="text-muted small mb-3">{{project.description}}</p>
+                
+                <div class="project-info mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="text-muted">Progrès</small>
+                        <small class="fw-bold">{{ project.progress || 0 }}%</small>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="project.progress || 0"></div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between mt-3 pt-3 border-top">
+                    <div class="d-flex align-items-center">
+                        <i class="icofont-calendar text-primary me-2"></i>
+                        <span class="small text-muted">Échéance: {{ project.deadline | date:'shortDate' }}</span>
+                    </div>
+                    <a routerLink="/employee/tasks" class="btn btn-outline-primary btn-sm">Voir Tâches</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="(activeTab === 'ongoing' ? ongoingProjects : historicalProjects).length === 0" class="text-center py-5">
+    <div class="mb-3">
+        <i class="icofont-search-folder fs-1 text-muted"></i>
+    </div>
+    <h5 class="text-muted">Aucun projet trouvé dans cette catégorie</h5>
+</div>

@@ -1,0 +1,35 @@
+:host {
+    display: block;
+    height: 100vh;
+}
+
+/* Fix visibility of sidebar text on light background */
+.sidebar .menu-list .m-link {
+    color: #444 !important;
+}
+
+.sidebar .menu-list .m-link:hover, 
+.sidebar .menu-list .m-link.active {
+    color: #4e5bf2 !important; /* Theme blue/indigo */
+}
+
+.sidebar .brand-icon .logo-text {
+    color: #333 !important;
+}
+
+.sidebar .ms-link {
+    color: #666 !important;
+}
+
+.sidebar .ms-link:hover,
+.sidebar .ms-link.active {
+    color: #4e5bf2 !important;
+}
+
+.sidebar .icofont-dotted-down {
+    color: #444 !important;
+}
+
+.sidebar .logo-icon svg {
+    color: #4e5bf2 !important;
+}

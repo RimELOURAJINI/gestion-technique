@@ -1,0 +1,15 @@
+.no-thumbnail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.avatar.lg {
+    width: 48px;
+    height: 48px;
+}
+.card {
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-3px);
+}

@@ -1,0 +1,206 @@
+<!-- Page Header -->
+<div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
+    <h3 class="fw-bold mb-0">
+        <i class="icofont-exclamation-circle me-2 text-danger"></i>Réclamations & Tickets
+    </h3>
+    <button type="button" class="btn btn-danger px-3"
+        data-bs-toggle="modal" data-bs-target="#sendReclamModal">
+        <i class="icofont-exclamation-circle me-2"></i>Envoyer Réclamation à l'Admin
+    </button>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-4">
+        <div class="card border-0 shadow-sm text-center py-3">
+            <div class="h3 fw-bold text-warning mb-0">{{pendingReclamations.length}}</div>
+            <div class="small text-muted">En Attente</div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="card border-0 shadow-sm text-center py-3">
+            <div class="h3 fw-bold text-success mb-0">{{resolvedReclamations.length}}</div>
+            <div class="small text-muted">Traitées</div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="card border-0 shadow-sm text-center py-3">
+            <div class="h3 fw-bold text-primary mb-0">{{reclamations.length}}</div>
+            <div class="small text-muted">Total</div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <a class="nav-link" [class.active]="activeTab === 'received'"
+            (click)="activeTab = 'received'" href="javascript:void(0)">
+            <i class="icofont-inbox me-1"></i>Réclamations Reçues
+            <span class="badge bg-warning text-dark ms-1">{{pendingReclamations.length}}</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" [class.active]="activeTab === 'send'"
+            (click)="activeTab = 'send'" href="javascript:void(0)">
+            <i class="icofont-paper-plane me-1"></i>Envoyer à l'Admin
+        </a>
+    </li>
+</ul>
+
+<!-- Loading -->
+<div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary"></div>
+</div>
+
+<!-- Tab: Received Reclamations (from employees) -->
+<div *ngIf="!isLoading && activeTab === 'received'">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>De</th>
+                            <th>Projet / Tâche</th>
+                            <th>Message</th>
+                            <th>Date</th>
+                            <th>Statut</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let rec of reclamations">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2"
+                                        style="width:32px;height:32px;font-size:12px">
+                                        {{rec.sender?.firstName?.charAt(0)}}{{rec.sender?.lastName?.charAt(0)}}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold small">{{rec.sender?.firstName}} {{rec.sender?.lastName}}</div>
+                                        <small class="text-muted">{{rec.sender?.email}}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="fw-bold small">{{rec.project?.name}}</div>
+                                <small class="text-muted">{{rec.task?.title}}</small>
+                            </td>
+                            <td>
+                                <span class="d-inline-block text-truncate" style="max-width:200px" [title]="rec.message">
+                                    {{rec.message}}
+                                </span>
+                            </td>
+                            <td><small class="text-muted">{{rec.createdAt | date:'dd/MM/yyyy'}}</small></td>
+                            <td>
+                                <span class="badge" [ngClass]="getStatusClass(rec.status)">
+                                    {{rec.status || 'PENDING'}}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div *ngIf="!rec.status || rec.status.toUpperCase() === 'PENDING'"
+                                    class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-success"
+                                        (click)="acceptReclamation(rec.id)" title="Accepter">
+                                        <i class="icofont-check"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger"
+                                        (click)="rejectReclamation(rec.id)" title="Rejeter">
+                                        <i class="icofont-close-line"></i>
+                                    </button>
+                                </div>
+                                <span *ngIf="rec.status && rec.status.toUpperCase() !== 'PENDING'" class="text-muted small">
+                                    Traité
+                                </span>
+                            </td>
+                        </tr>
+                        <tr *ngIf="reclamations.length === 0">
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="icofont-inbox fs-3 d-block mb-2"></i>
+                                Aucune réclamation employee reçue.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tab: Send Reclamation to Admin -->
+<div *ngIf="activeTab === 'send'">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-transparent py-3">
+            <h6 class="fw-bold mb-0">
+                <i class="icofont-paper-plane me-2 text-danger"></i>
+                Signaler un Problème Bloquant à l'Administrateur
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Projet Concerné *</label>
+                    <select class="form-select" [(ngModel)]="selectedProjectId">
+                        <option [ngValue]="undefined">-- Sélectionner un projet --</option>
+                        <option *ngFor="let p of projects" [value]="p.id">{{p.name}}</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Titre / Sujet</label>
+                    <input type="text" class="form-control" [(ngModel)]="newReclamation.title"
+                        placeholder="Ex: Délai impossible, ressource manquante...">
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-bold">Description du Problème *</label>
+                    <textarea class="form-control" rows="5" [(ngModel)]="newReclamation.message"
+                        placeholder="Décrivez le problème bloquant, les ressources manquantes, ou tout besoin de clarification sur le cahier de charge...">
+                    </textarea>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-danger px-4"
+                        (click)="sendReclamationToAdmin()"
+                        [disabled]="!selectedProjectId || !newReclamation.message">
+                        <i class="icofont-paper-plane me-2"></i>Envoyer à l'Administrateur
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Quick Send Reclamation -->
+<div class="modal fade" id="sendReclamModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold">
+                    <i class="icofont-warning-alt me-2"></i>Signaler un Problème
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Projet Concerné *</label>
+                    <select class="form-select" [(ngModel)]="selectedProjectId">
+                        <option [ngValue]="undefined">-- Choisir un projet --</option>
+                        <option *ngFor="let p of projects" [value]="p.id">{{p.name}}</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Description du problème *</label>
+                    <textarea class="form-control" rows="4" [(ngModel)]="newReclamation.message"
+                        placeholder="Décrivez le problème bloquant..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                    (click)="sendReclamationToAdmin()"
+                    [disabled]="!selectedProjectId || !newReclamation.message">
+                    <i class="icofont-paper-plane me-1"></i>Envoyer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

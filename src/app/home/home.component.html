@@ -1,0 +1,57 @@
+<div class="home-container">
+  <!-- En-tête avec navigation -->
+  <header class="header">
+    <div class="header-content">
+      <h1 class="app-title">Mon Application</h1>
+      <div class="user-info">
+        <span class="user-name">{{ user?.firstName }} {{ user?.lastName }}</span>
+        <button class="btn-logout" (click)="logout()">
+          <span class="logout-icon">🚪</span>
+          Déconnexion
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenu principal -->
+  <main class="main-content">
+    <div class="welcome-card">
+      <div class="welcome-header">
+        <h2>Bienvenue, {{ user?.firstName }} !</h2>
+        <p class="welcome-message">Nous sommes ravis de vous revoir.</p>
+      </div>
+
+      <div class="user-details">
+        <h3>Vos informations</h3>
+        <div class="detail-item">
+          <span class="detail-label">Email :</span>
+          <span class="detail-value">{{ user?.email }}</span>
+        </div>
+        <div class="detail-item" *ngIf="user?.firstName">
+          <span class="detail-label">Nom complet :</span>
+          <span class="detail-value">{{ user?.firstName }} {{ user?.lastName }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">ID utilisateur :</span>
+          <span class="detail-value">{{ user?.id }}</span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>Connexion réussie !</h3>
+        <p>Vous êtes maintenant connecté à votre application. Vous pouvez accéder à toutes les fonctionnalités réservées aux utilisateurs authentifiés.</p>
+      </div>
+
+      <!-- Informations de débogage (à supprimer en production) -->
+      <details class="debug-info">
+        <summary>Informations techniques</summary>
+        <pre class="debug-pre">{{ user | json }}</pre>
+      </details>
+    </div>
+  </main>
+
+  <!-- Pied de page -->
+  <footer class="footer">
+    <p>&copy; 2026 Mon Application. Tous droits réservés.</p>
+  </footer>
+</div>

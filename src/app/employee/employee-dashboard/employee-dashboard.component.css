@@ -1,0 +1,56 @@
+.sidebar-user-info {
+  margin-top: auto;
+}
+
+.avatar-circle-sm {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.brand-icon {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  color: #483d8b; /* Primary color instead of white */
+}
+
+.brand-icon .logo-text {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-left: 10px;
+  color: #333; /* Dark color for text */
+}
+
+.menu-list .divider {
+  list-style: none;
+}
+
+.menu-list .m-link {
+  color: #333 !important; /* Ensure visibility */
+  opacity: 1 !important;
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  text-decoration: none;
+}
+
+.menu-list .m-link i {
+  color: #333 !important;
+  margin-right: 10px;
+}
+
+.menu-list .m-link span {
+  color: #333 !important;
+}
+
+.menu-list .m-link:hover, .menu-list .m-link.active {
+  color: var(--primary-color, #483d8b) !important;
+}
+
+.menu-list .m-link:hover i, .menu-list .m-link.active i,
+.menu-list .m-link:hover span, .menu-list .m-link.active span {
+  color: inherit !important;
+}

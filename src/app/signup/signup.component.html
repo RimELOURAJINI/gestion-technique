@@ -1,0 +1,59 @@
+<div class="signup-container">
+  <div class="signup-card">
+    <h1 class="title">Inscription</h1>
+
+    <!-- Success Message -->
+    <div class="success-alert" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-alert" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Signup Form -->
+    <form #signupForm="ngForm" (ngSubmit)="onSubmit()" *ngIf="!successMessage">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">Prénom</label>
+          <input type="text" id="firstName" name="firstName" [(ngModel)]="userData.firstName" required 
+            class="form-control" placeholder="Prénom" [disabled]="loading">
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Nom</label>
+          <input type="text" id="lastName" name="lastName" [(ngModel)]="userData.lastName" required 
+            class="form-control" placeholder="Nom" [disabled]="loading">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" [(ngModel)]="userData.email" required email 
+          class="form-control" placeholder="exemple@email.com" [disabled]="loading">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" name="password" [(ngModel)]="userData.password" required minlength="6"
+          class="form-control" placeholder="Entrez un mot de passe" [disabled]="loading">
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirmer le mot de passe</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" [(ngModel)]="userData.confirmPassword" required
+          class="form-control" placeholder="Confirmez le mot de passe" [disabled]="loading">
+      </div>
+
+      <button type="submit" class="btn-signup" [disabled]="loading || !signupForm.valid">
+        <span *ngIf="!loading">S'inscrire</span>
+        <span *ngIf="loading" class="spinner"></span>
+      </button>
+
+      <div class="login-link">
+        Déjà un compte ? <a routerLink="/login">Connectez-vous</a>
+      </div>
+    </form>
+  </div>
+</div>

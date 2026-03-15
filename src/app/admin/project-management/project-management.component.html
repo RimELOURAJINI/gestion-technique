@@ -1,0 +1,181 @@
+<!-- Page Header with Action Button -->
+<div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom" style="min-height: 80px; position: flex;">
+    <h3 class="fw-bold mb-0">Gestion des Projets</h3>
+    <button type="button" class="btn btn-dark"
+        data-bs-toggle="modal" data-bs-target="#projectModal" (click)="resetForm()"
+        style="background-color: #000 !important; color: #fff !important; padding: 12px 24px !important; font-size: 16px !important; border-radius: 8px !important; z-index: 9999 !important; border: 2px solid red !important;">
+        <i class="icofont-plus-circle me-2"></i>NOUVEAU PROJET
+    </button>
+</div>
+
+<!-- Loading -->
+<div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+</div>
+
+<div *ngIf="!isLoading" class="row g-3">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-hover align-middle mb-0" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Projet</th>
+                            <th>Description</th>
+                            <th>Manager</th>
+                            <th>Date Limite</th>
+                            <th>Statut</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let project of projects">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width:38px;height:38px;">
+                                        <i class="icofont-rocket"></i>
+                                    </div>
+                                    <h6 class="mb-0 fw-bold">{{project.name}}</h6>
+                                </div>
+                            </td>
+                            <td class="text-muted small">{{project.description | slice:0:60}}{{project.description && project.description.length > 60 ? '...' : ''}}</td>
+                            <td>
+                                <div *ngIf="project.manager" class="d-flex align-items-center">
+                                    <div class="avatar rounded-circle bg-warning text-white d-flex align-items-center justify-content-center me-2" style="width:30px;height:30px;font-size:12px;">
+                                        {{project.manager.firstName.charAt(0)}}
+                                    </div>
+                                    <span>{{project.manager.firstName}} {{project.manager.lastName}}</span>
+                                </div>
+                                <div *ngIf="!project.manager">
+                                    <span class="badge bg-secondary me-1">Non assigné</span>
+                                    <button class="btn btn-sm btn-outline-primary"
+                                        data-bs-toggle="modal" data-bs-target="#assignModal"
+                                        (click)="openAssignModal(project.id)">
+                                        <i class="icofont-user"></i> Assigner
+                                    </button>
+                                </div>
+                            </td>
+                            <td>{{project.expectedEndDate | date:'dd/MM/yyyy'}}</td>
+                            <td><span class="badge" [ngClass]="getStatusBadge(project.status)">{{project.status}}</span></td>
+                            <td class="text-end">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-outline-secondary"
+                                        data-bs-toggle="modal" data-bs-target="#assignModal"
+                                        (click)="openAssignModal(project.id)" title="Affecter Manager">
+                                        <i class="icofont-user-suited text-primary"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary"
+                                        data-bs-toggle="modal" data-bs-target="#projectModal"
+                                        (click)="editProject(project)" title="Modifier">
+                                        <i class="icofont-edit text-success"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary"
+                                        (click)="deleteProject(project.id)" title="Supprimer">
+                                        <i class="icofont-ui-delete text-danger"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr *ngIf="projects.length === 0">
+                            <td colspan="6" class="text-center py-4 text-muted">Aucun projet trouvé. Créez votre premier projet !</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Create / Edit Project -->
+<div class="modal fade" id="projectModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">
+                    <i class="icofont-rocket me-2"></i>
+                    {{ editingProject ? 'Modifier le Projet' : 'Nouveau Projet' }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nom du Projet *</label>
+                    <input type="text" class="form-control" [(ngModel)]="newProject.name"
+                        placeholder="Ex: Refonte du système de facturation">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Description (Cahier de Charge)</label>
+                    <textarea class="form-control" rows="5" [(ngModel)]="newProject.description"
+                        placeholder="Décrivez les objectifs, livrables et contraintes du projet..."></textarea>
+                </div>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label fw-bold">Statut</label>
+                        <select class="form-select" [(ngModel)]="newProject.status">
+                            <option value="ACTIVE">Actif</option>
+                            <option value="ON_HOLD">En Attente</option>
+                            <option value="COMPLETED">Terminé</option>
+                            <option value="CANCELLED">Annulé</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label fw-bold">Budget</label>
+                        <input type="number" class="form-control" [(ngModel)]="newProject.budget" placeholder="Budget du projet">
+                    </div>
+                </div>
+                <div class="row g-3 mt-1">
+                    <div class="col-sm-6">
+                        <label class="form-label fw-bold">Date de Début</label>
+                        <input type="date" class="form-control" [(ngModel)]="newProject.startDate">
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label fw-bold">Date Limite Prévue</label>
+                        <input type="date" class="form-control" [(ngModel)]="newProject.expectedEndDate">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetForm()">Annuler</button>
+                <button type="button" class="btn btn-dark" (click)="saveProject()" data-bs-dismiss="modal" style="background-color: #000 !important; color: #fff !important; padding: 10px 20px !important;">
+                    <i class="icofont-save me-1"></i>{{ editingProject ? 'Mettre à jour' : 'Créer le Projet' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Assign Manager (Cahier de Charge) -->
+<div class="modal fade" id="assignModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold">
+                    <i class="icofont-users me-2"></i>Affecter un Team Manager
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-3">Ce manager sera responsable du suivi et de la gestion du projet.</p>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Sélectionner le Team Manager</label>
+                    <select class="form-select" [(ngModel)]="selectedManagerId">
+                        <option [ngValue]="null">-- Choisissez un manager --</option>
+                        <option *ngFor="let mgr of managers" [value]="mgr.id">
+                            {{mgr.firstName}} {{mgr.lastName}} &lt;{{mgr.email}}&gt;
+                        </option>
+                    </select>
+                    <small *ngIf="managers.length === 0" class="text-warning">
+                        Aucun Team Manager trouvé. Créez d'abord un utilisateur avec le rôle ROLE_TEAM_LEADER.
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" (click)="assignManager()" data-bs-dismiss="modal"
+                    [disabled]="!selectedManagerId">
+                    <i class="icofont-check me-1"></i>Affecter
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

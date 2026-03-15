@@ -1,0 +1,95 @@
+<div class="row align-items-center">
+    <div class="border-0 mb-4">
+        <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
+            <h3 class="fw-bold mb-0">Mes Réclamations</h3>
+            <button class="btn btn-primary btn-set-task w-sm-100" (click)="toggleCreateForm()">
+                <i class="icofont-plus-circle me-2 fs-6"></i>{{ showCreateForm ? 'Annuler' : 'Nouvelle Réclamation' }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-3" *ngIf="showCreateForm">
+    <div class="col-md-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header py-3 bg-transparent border-bottom-0">
+                <h6 class="m-0 fw-bold">Détails de la réclamation</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Sujet</label>
+                        <input type="text" class="form-control" [(ngModel)]="newTicket.subject" placeholder="Ex: Matériel défectueux, Problème d'accès...">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Priorité</label>
+                        <select class="form-select" [(ngModel)]="newTicket.priority">
+                            <option value="LOW">Basse</option>
+                            <option value="MEDIUM">Moyenne</option>
+                            <option value="HIGH">Haute</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" rows="4" [(ngModel)]="newTicket.description" placeholder="Décrivez votre problème en détail..."></textarea>
+                    </div>
+                    <div class="col-md-12 text-end">
+                        <button class="btn btn-primary" (click)="submitTicket()" [disabled]="!newTicket.subject || !newTicket.description">Envoyer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Sujet</th>
+                                <th>Priorité</th>
+                                <th>Statut</th>
+                                <th>Date</th>
+                                <th class="text-end pe-4">Détails</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let ticket of tickets">
+                                <td class="ps-4">
+                                    <span class="fw-bold">{{ticket.subject}}</span>
+                                </td>
+                                <td>
+                                    <span class="badge" [ngClass]="{
+                                        'bg-danger': ticket.priority === 'HIGH',
+                                        'bg-warning': ticket.priority === 'MEDIUM',
+                                        'bg-info': ticket.priority === 'LOW'
+                                    }">{{ticket.priority}}</span>
+                                </td>
+                                <td>
+                                    <span class="badge" [ngClass]="{
+                                        'bg-success': ticket.status === 'CLOSED',
+                                        'bg-primary': ticket.status === 'OPEN',
+                                        'bg-warning': ticket.status === 'IN_PROGRESS'
+                                    }">{{ticket.status}}</span>
+                                </td>
+                                <td>{{ticket.createdAt | date:'shortDate'}}</td>
+                                <td class="text-end pe-4">
+                                    <button class="btn btn-outline-secondary btn-sm" title="Voir plus">
+                                        <i class="icofont-info-circle"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="tickets.length === 0">
+                                <td colspan="5" class="text-center py-4 text-muted">Vous n'avez envoyé aucune réclamation</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

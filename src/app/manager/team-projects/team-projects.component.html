@@ -1,0 +1,99 @@
+<!-- Page Header -->
+<div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
+    <h3 class="fw-bold mb-0">
+        <i class="icofont-briefcase me-2 text-primary"></i>Mes Projets d'Équipe
+    </h3>
+    <span class="badge bg-primary fs-6 px-3">{{projects.length}} Projets</span>
+</div>
+
+<!-- Loading -->
+<div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary"></div>
+</div>
+
+<!-- Empty -->
+<div *ngIf="!isLoading && projects.length === 0" class="text-center py-5">
+    <i class="icofont-briefcase fs-1 text-muted d-block mb-3"></i>
+    <p class="text-muted">Aucun projet trouvé pour votre équipe.</p>
+    <small class="text-muted">L'administrateur doit vous affecter un projet.</small>
+</div>
+
+<!-- Project Cards Grid -->
+<div *ngIf="!isLoading && projects.length > 0" class="row g-4">
+    <div *ngFor="let project of projects" class="col-xxl-4 col-xl-4 col-lg-6 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <!-- Card top accent bar -->
+            <div class="card-header border-0 pb-0 pt-3 px-4"
+                [ngStyle]="{'border-left': '4px solid', 'border-color': '#6366f1'}">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div class="flex-grow-1">
+                        <h5 class="fw-bold mb-1">{{project.name}}</h5>
+                        <span class="badge" [ngClass]="getStatusClass(project.status)">
+                            {{project.status || 'ACTIVE'}}
+                        </span>
+                    </div>
+                    <div class="avatar rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center"
+                        style="width:45px;height:45px;">
+                        <i class="icofont-rocket text-primary fs-5"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body px-4 py-3">
+                <!-- Description (cahier de charge) -->
+                <div *ngIf="project.description" class="mb-3 p-2 bg-light rounded">
+                    <small class="text-muted fw-bold d-block mb-1">📋 Cahier de Charge</small>
+                    <p class="small text-muted mb-0" style="line-height:1.4">
+                        {{project.description | slice:0:100}}{{(project.description.length || 0) > 100 ? '...' : ''}}
+                    </p>
+                </div>
+
+                <!-- Dates -->
+                <div class="row g-2 mb-3">
+                    <div class="col-6 text-center p-2 bg-light rounded">
+                        <small class="text-muted d-block">Début</small>
+                        <strong class="small">{{project.startDate | date:'dd/MM/yy'}}</strong>
+                    </div>
+                    <div class="mb-2">
+                        <span class="text-muted small">Fin Prévue:</span>
+                        <strong class="small">{{project.expectedEndDate | date:'dd/MM/yy'}}</strong>
+                    </div>
+                </div>
+
+                <!-- Team Members -->
+                <div *ngIf="project.team?.users?.length" class="mb-3">
+                    <small class="text-muted fw-bold d-block mb-2">👥 Équipe</small>
+                    <div class="d-flex flex-wrap gap-1">
+                        <span *ngFor="let member of project.team?.users | slice:0:6"
+                            class="badge bg-light text-dark border rounded-pill small">
+                            {{member.firstName}} {{member.lastName}}
+                        </span>
+                        <span *ngIf="(project.team?.users?.length || 0) > 6"
+                            class="badge bg-secondary rounded-pill small">
+                            +{{(project.team?.users?.length || 0) - 6}}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between small text-muted mb-1">
+                        <span>Progression</span>
+                        <span>{{project.status === 'COMPLETED' ? '100' : '50'}}%</span>
+                    </div>
+                    <div class="progress" style="height:6px">
+                        <div class="progress-bar" role="progressbar"
+                            [style.width]="project.status === 'COMPLETED' ? '100%' : '50%'"
+                            [ngClass]="getStatusClass(project.status)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer border-0 px-4 pb-3">
+                <a class="btn btn-primary btn-sm w-100"
+                    [routerLink]="['/manager/tasks']" [queryParams]="{projectId: project.id}">
+                    <i class="icofont-tasks me-2"></i>Gérer les Tâches
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

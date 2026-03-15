@@ -25,17 +25,22 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "src/assets/template/css/my-task.style.min.css"
             ],
-            "scripts": []
+            "scripts": [
+              "src/assets/template/bundles/libscripts.bundle.js",
+              "src/assets/template/bundles/apexcharts.bundle.js",
+              "src/assets/template/js/template.js"
+            ]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",

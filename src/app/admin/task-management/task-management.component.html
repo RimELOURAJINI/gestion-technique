@@ -1,0 +1,128 @@
+<!-- Page Header with Action Button -->
+<div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom" style="min-height: 80px; position: flex;">
+    <h3 class="fw-bold mb-0">Tâches Système</h3>
+    <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#taskModal" (click)="resetTaskForm()"
+        style="background-color: #000 !important; color: #fff !important; padding: 12px 24px !important; font-size: 16px !important; border-radius: 8px !important; z-index: 9999 !important; border: 2px solid red !important;">
+        <i class="icofont-plus-circle me-2"></i>NOUVELLE TÂCHE
+    </button>
+</div>
+
+<!-- Loading -->
+<div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+</div>
+
+<!-- Managers Table (for assignment overview) -->
+<div *ngIf="!isLoading" class="row g-3">
+    <div class="col-md-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-transparent py-3">
+                <h6 class="mb-0 fw-bold"><i class="icofont-users me-2 text-primary"></i>Team Managers — Attribution des Tâches</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Manager</th>
+                                <th>Email</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let mgr of managers">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width:38px;height:38px;font-size:14px;font-weight:bold;">
+                                            {{mgr.firstName.charAt(0)}}{{mgr.lastName.charAt(0)}}
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-0">{{mgr.firstName}} {{mgr.lastName}}</h6>
+                                            <small class="text-muted">Team Manager</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-muted">{{mgr.email}}</td>
+                                <td class="text-end">
+                                    <button type="button" class="btn btn-outline-primary btn-sm"
+                                        (click)="selectedManagerId = mgr.id"
+                                        data-bs-toggle="modal" data-bs-target="#taskModal">
+                                        <i class="icofont-plus me-1"></i>Assigner une Tâche
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="managers.length === 0">
+                                <td colspan="3" class="text-center py-4 text-muted">
+                                    <i class="icofont-warning-alt fs-4 d-block mb-2"></i>
+                                    Aucun Team Manager trouvé. Créez d'abord un utilisateur avec le rôle ROLE_TEAM_LEADER.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Create / Assign Task -->
+<div class="modal fade" id="taskModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">
+                    <i class="icofont-tasks me-2"></i>Assigner une Tâche Système
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Titre de la Tâche *</label>
+                        <input type="text" class="form-control" [(ngModel)]="newTask.title"
+                            placeholder="Ex: Mise à jour du module de reporting">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Description / Cahier de Charge</label>
+                        <textarea class="form-control" rows="4" [(ngModel)]="newTask.description"
+                            placeholder="Décrivez les attentes, critères d'acceptation..."></textarea>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label fw-bold">Priorité</label>
+                        <select class="form-select" [(ngModel)]="newTask.priority">
+                            <option value="LOW">Basse</option>
+                            <option value="MEDIUM">Moyenne</option>
+                            <option value="HIGH">Haute</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label fw-bold">Date Limite</label>
+                        <input type="date" class="form-control" [(ngModel)]="newTask.deadline">
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label fw-bold">Assigner au Team Manager *</label>
+                        <select class="form-select" [(ngModel)]="selectedManagerId">
+                            <option [ngValue]="null">-- Sélectionnez un manager --</option>
+                            <option *ngFor="let mgr of managers" [value]="mgr.id">
+                                {{mgr.firstName}} {{mgr.lastName}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label fw-bold">Projet Associé (optionnel)</label>
+                        <select class="form-select" [(ngModel)]="selectedProjectId">
+                            <option [ngValue]="null">-- Aucun --</option>
+                            <option *ngFor="let p of projects" [value]="p.id">{{p.name}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetTaskForm()">Annuler</button>
+                <button type="button" class="btn btn-dark" (click)="createTask()" data-bs-dismiss="modal" style="background-color: #000 !important; color: #fff !important; padding: 10px 20px !important;">
+                    <i class="icofont-check me-1"></i>Assigner la Tâche
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

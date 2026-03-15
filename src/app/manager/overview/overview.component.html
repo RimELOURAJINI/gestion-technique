@@ -1,0 +1,107 @@
+<div class="row g-3 mb-3 row-deck">
+    <div class="col-md-12 col-lg-3 col-xl-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="avatar lg rounded-circle no-thumbnail bg-primary bg-opacity-10"><i class="icofont-briefcase text-primary fs-4"></i></div>
+                    <div class="flex-fill ms-3">
+                        <div class="text-muted mb-0 small uppercase fw-bold">Mes Projets</div>
+                        <div class="h5 mb-0 fw-bold">{{stats.projects}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-lg-3 col-xl-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="avatar lg rounded-circle no-thumbnail bg-warning bg-opacity-10"><i class="icofont-tasks text-warning fs-4"></i></div>
+                    <div class="flex-fill ms-3">
+                        <div class="text-muted mb-0 small uppercase fw-bold">Tâches Actives</div>
+                        <div class="h5 mb-0 fw-bold">{{stats.activeTasks}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-lg-3 col-xl-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="avatar lg rounded-circle no-thumbnail bg-success bg-opacity-10"><i class="icofont-check-circled text-success fs-4"></i></div>
+                    <div class="flex-fill ms-3">
+                        <div class="text-muted mb-0 small uppercase fw-bold">Terminées</div>
+                        <div class="h5 mb-0 fw-bold">{{stats.completedTasks}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-lg-3 col-xl-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="avatar lg rounded-circle no-thumbnail bg-info bg-opacity-10"><i class="icofont-users-alt-2 text-info fs-4"></i></div>
+                    <div class="flex-fill ms-3">
+                        <div class="text-muted mb-0 small uppercase fw-bold">Mon Équipe</div>
+                        <div class="h5 mb-0 fw-bold">{{stats.teamMembers}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-12 col-lg-7">
+        <div class="card shadow-sm border-0">
+            <div class="card-header py-3 bg-transparent border-bottom-0">
+                <h6 class="m-0 fw-bold">Progrès des Projets</h6>
+            </div>
+            <div class="card-body">
+                <div *ngFor="let p of myProjects" class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="fw-bold">{{p.name}}</span>
+                        <small class="text-muted">{{p.status}}</small>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-primary" role="progressbar" [style.width]="p.status === 'COMPLETED' ? '100%' : '60%'"></div>
+                    </div>
+                </div>
+                <div *ngIf="myProjects.length === 0" class="text-center py-4">
+                    <p class="text-muted italic">Aucun projet assigné.</p>
+                </div>
+                <div class="text-center mt-3">
+                    <a routerLink="/manager/projects" class="btn btn-sm btn-outline-primary px-4 rounded-pill">Détails des Projets</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-lg-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-header py-3 bg-transparent border-bottom-0">
+                <h6 class="m-0 fw-bold">Dernières Tâches</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li *ngFor="let t of recentTasks" class="list-group-item px-0 border-0 mb-2">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar rounded py-1 px-2 border text-center me-3" style="min-width: 50px;">
+                                <small class="d-block text-uppercase fw-bold">{{t.priority}}</small>
+                            </div>
+                            <div class="flex-fill">
+                                <h6 class="mb-0 fw-bold small text-truncate" style="max-width: 200px;">{{t.title}}</h6>
+                                <small class="text-muted">{{t.status}}</small>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div *ngIf="recentTasks.length === 0" class="text-center py-4 text-muted small">Aucune tâche.</div>
+                <div class="text-center mt-2">
+                    <a routerLink="/manager/tasks" class="btn btn-sm btn-outline-secondary px-4 rounded-pill">Gérer les Tâches</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

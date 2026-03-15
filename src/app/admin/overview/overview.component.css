@@ -1,0 +1,22 @@
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.75rem;
+}
+
+.avatar.lg {
+    width: 48px;
+    height: 48px;
+}
+
+.no-thumbnail {
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bg-lightyellow { background-color: #fff9e6 !important; color: #ffc107 !important; }
+.bg-lightblue { background-color: #e6f7ff !important; color: #1890ff !important; }
+.bg-lightgreen { background-color: #f6ffed !important; color: #52c41a !important; }
+.bg-lightred { background-color: #fff1f0 !important; color: #f5222d !important; }

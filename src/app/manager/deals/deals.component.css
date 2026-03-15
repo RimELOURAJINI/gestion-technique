@@ -1,0 +1,103 @@
+.dropdown-menu .dropdown-item i {
+    width: 18px
+}
+
+.stage-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle
+}
+
+.stage-wrapper {
+    display: flex;
+    align-items: center
+}
+
+.stage-wrapper .stage-inline {
+    min-width: 120px;
+    padding-left: 10px
+}
+
+.stage-wrapper .stage-inline:focus {
+    box-shadow: none;
+    border-color: rgba(0, 0, 0, 0.08)
+}
+
+.stage-cell {
+    width: 120px;
+    min-width: 100px;
+    max-width: 220px
+}
+
+.stage-inline {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: inline-block
+}
+
+.stage-inline {
+    background: #f8f9fb;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: .35rem;
+    padding: .25rem .5rem;
+    appearance: none;
+    -webkit-appearance: none
+}
+
+.stage-inline option {
+    white-space: normal
+}
+
+@media (max-width:767.98px) {
+    .stage-cell {
+        width: auto
+    }
+
+    .stage-inline {
+        width: 100%
+    }
+}
+
+.contact-email {
+    display: block;
+    font-weight: 600
+}
+
+.contact-phone {
+    display: block;
+    color: #6c757d;
+    font-size: .9rem
+}
+
+.view-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #f1f3f5;
+    display: inline-block
+}
+
+.view-dl dt {
+    width: 40%;
+    float: left;
+    font-weight: 600
+}
+
+.view-dl dd {
+    margin-left: 42%;
+    margin-bottom: .75rem
+}
+
+.table-responsive {
+    overflow: visible
+}
+
+.dropdown-menu {
+    z-index: 3000
+}
