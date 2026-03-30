@@ -145,12 +145,12 @@ export class AuthService {
     return this.hasRole('ROLE_ADMIN');
   }
 
-  isTeamManager(): boolean {
-    return this.hasRole('ROLE_TEAM_LEADER') || this.hasRole('ROLE_MANAGER') || this.hasRole('ROLE_TEAM_MANAGER');
+  isTeamLeader(): boolean {
+    return this.hasRole('ROLE_TEAM_LEADER');
   }
 
   isEmployee(): boolean {
-    return this.hasRole('ROLE_Employee') || this.hasRole('ROLE_EMPLOYEE');
+    return this.hasRole('ROLE_EMPLOYEE') || this.hasRole('ROLE_Employee');
   }
 
   /**
@@ -158,12 +158,20 @@ export class AuthService {
    */
   isAuthorized(expectedRole: string): boolean {
     if (expectedRole === 'ROLE_ADMIN') return this.isAdmin();
-    if (expectedRole === 'ROLE_TEAM_LEADER' || expectedRole === 'ROLE_MANAGER') return this.isTeamManager();
-    if (expectedRole === 'ROLE_Employee' || expectedRole === 'ROLE_EMPLOYEE') return this.isEmployee();
+    if (expectedRole === 'ROLE_TEAM_LEADER') return this.isTeamLeader();
+    if (expectedRole === 'ROLE_EMPLOYEE' || expectedRole === 'ROLE_Employee') return this.isEmployee();
     return this.hasRole(expectedRole);
   }
 
   getUserId(): number | null {
     return this.currentUserValue?.id || null;
+  }
+
+  getUserName(): string | null {
+    const user = this.currentUserValue;
+    if (user && (user.firstName || user.lastName)) {
+      return `${user.firstName || ''} ${user.lastName || ''}`.trim();
+    }
+    return null;
   }
 }

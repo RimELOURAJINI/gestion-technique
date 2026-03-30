@@ -1,0 +1,50 @@
+<div class="content container-fluid">
+  <div class="page-header mb-4">
+    <h3 class="page-title">Paramètres</h3>
+    <ul class="breadcrumb"><li class="breadcrumb-item"><a href="javascript:void(0)">Espace Employé</a></li><li class="breadcrumb-item active">Paramètres</li></ul>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm text-center p-4 mb-4">
+        <div class="avatar avatar-xl rounded-circle bg-info text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width:80px;height:80px;font-size:32px;">
+          {{ user?.firstName?.charAt(0) || 'E' }}
+        </div>
+        <h5 class="fw-bold mb-1">{{ user?.firstName }} {{ user?.lastName }}</h5>
+        <p class="text-muted mb-0">{{ user?.email }}</p>
+      </div>
+    </div>
+    <div class="col-md-8">
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-transparent py-3"><h6 class="mb-0 fw-bold"><i class="ti ti-user me-2"></i>Informations du profil</h6></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label text-muted small">Prénom</label>
+              <div class="form-control bg-light">{{ user?.firstName || '—' }}</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-muted small">Nom</label>
+              <div class="form-control bg-light">{{ user?.lastName || '—' }}</div>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label text-muted small">Email</label>
+              <div class="form-control bg-light">{{ user?.email || '—' }}</div>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label text-muted small">Rôle</label>
+              <div class="form-control bg-light">{{ user?.roles?.[0] || 'Employé' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-transparent py-3"><h6 class="mb-0 fw-bold text-danger"><i class="ti ti-logout me-2"></i>Session</h6></div>
+        <div class="card-body">
+          <p class="text-muted small mb-3">Déconnectez-vous de votre session actuelle.</p>
+          <button class="btn btn-danger" (click)="logout()"><i class="ti ti-logout me-2"></i>Déconnexion</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

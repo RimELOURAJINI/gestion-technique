@@ -1,56 +1,102 @@
-<div class="row align-items-center">
-    <div class="border-0 mb-4">
-        <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-            <h3 class="fw-bold mb-0">Mes Projets</h3>
-            <div class="col-auto d-flex w-sm-100">
-                <ul class="nav nav-tabs tab-body-header rounded ms-3 pr-1 g-2" role="tablist">
-                    <li class="nav-item"><a class="nav-link" [class.active]="activeTab === 'ongoing'" (click)="setTab('ongoing')" href="javascript:void(0);">En cours</a></li>
-                    <li class="nav-item"><a class="nav-link" [class.active]="activeTab === 'history'" (click)="setTab('history')" href="javascript:void(0);">Historique</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
+<!-- Page Content -->
+<div class="content container-fluid">
+
+	<!-- Page Header -->
+	<div class="page-header">
+		<div class="row align-items-center">
+			<div class="col-md-4">
+				<h3 class="page-title">Mes Projets</h3>
+				<ul class="breadcrumb">
+					<li class="breadcrumb-item"><a href="javascript:void(0)">Espace Employé</a></li>
+					<li class="breadcrumb-item active">Projets</li>
+				</ul>
+			</div>
+			<div class="col-md-8 text-end">
+				<div class="head-icons">
+					<a href="javascript:void(0);" (click)="ngOnInit()" data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh"><i class="ti ti-refresh-dot"></i></a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Page Header -->
+
+	<!-- Tabs -->
+	<div class="card main-card mb-4">
+		<div class="card-body p-3">
+			<ul class="nav nav-tabs nav-tabs-solid mb-0">
+				<li class="nav-item">
+					<a class="nav-link" [class.active]="activeTab === 'ongoing'" (click)="setTab('ongoing')" href="javascript:void(0);">
+						<i class="ti ti-loader me-1"></i>En cours
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" [class.active]="activeTab === 'history'" (click)="setTab('history')" href="javascript:void(0);">
+						<i class="ti ti-history me-1"></i>Historique
+					</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<!-- Projects Grid -->
+	<div class="row g-3">
+		<div class="col-xl-4 col-md-6 col-sm-12" *ngFor="let project of (activeTab === 'ongoing' ? ongoingProjects : historicalProjects)">
+			<div class="card project-card flex-fill clickable-card" (click)="openProjectDetail(project)">
+				<div class="card-body">
+					<div class="d-flex align-items-start justify-content-between mb-3">
+						<div class="d-flex align-items-center">
+							<div class="avatar avatar-md bg-primary-light border border-primary-low me-2 d-flex align-items-center justify-content-center">
+								<i class="ti ti-briefcase text-primary fs-18"></i>
+							</div>
+							<div>
+								<h6 class="mb-0 text-dark fw-bold text-truncate" style="max-width: 150px;" [title]="project.name">{{project.name}}</h6>
+								<span class="fs-12 text-muted">ID: #PRJ-{{project.id}}</span>
+							</div>
+						</div>
+						<span class="badge badge-pill" [ngClass]="{
+							'bg-pending': project.status === 'IN_PROGRESS',
+							'bg-success': project.status === 'COMPLETED',
+							'bg-secondary': !project.status || (project.status !== 'IN_PROGRESS' && project.status !== 'COMPLETED')
+						}">{{project.status || 'En attente'}}</span>
+					</div>
+					
+					<p class="text-muted small text-truncate-2 mb-3" style="height: 40px;">{{project.description}}</p>
+					
+					<div class="project-progress mb-3">
+						<div class="d-flex justify-content-between align-items-center mb-1">
+							<span class="fs-12 text-muted">Progression</span>
+							<span class="fs-12 fw-bold text-dark">{{ project.progress || 0 }}%</span>
+						</div>
+						<div class="progress progress-xs">
+							<div class="progress-bar bg-primary" role="progressbar" [style.width.%]="project.progress || 0"></div>
+						</div>
+					</div>
+
+					<div class="d-flex align-items-center justify-content-between pt-3 border-top mt-auto">
+						<div class="d-flex align-items-center text-muted fs-12">
+							<i class="ti ti-calendar-event me-1"></i> 
+							<span>Limite: {{ project.deadline | date:'dd MMM' }}</span>
+						</div>
+						<a [routerLink]="['/employee/tasks']" [queryParams]="{projectId: project.id}" class="btn btn-sm btn-soft-primary d-flex align-items-center" (click)="$event.stopPropagation()">
+							<i class="ti ti-list-check me-1"></i> Voir Tâches
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Empty State -->
+		<div *ngIf="(activeTab === 'ongoing' ? ongoingProjects : historicalProjects).length === 0" class="col-12 text-center py-5">
+			<div class="card border-0 shadow-none bg-transparent">
+				<div class="card-body">
+					<i class="ti ti-folder-off fs-40 text-muted mb-3"></i>
+					<h5 class="text-muted">Aucun projet trouvé</h5>
+					<p class="text-muted small">Vous n'avez pas de projets dans cette catégorie.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
 </div>
-
-<div class="row g-3 mb-3 row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3">
-    <div class="col" *ngFor="let project of (activeTab === 'ongoing' ? ongoingProjects : historicalProjects)">
-        <div class="card overflow-hidden border-0 shadow-sm">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <h6 class="mb-0 fw-bold">{{project.name}}</h6>
-                    <span class="badge" [ngClass]="{
-                        'bg-warning': project.status === 'IN_PROGRESS',
-                        'bg-success': project.status === 'COMPLETED',
-                        'bg-secondary': !project.status || (project.status !== 'IN_PROGRESS' && project.status !== 'COMPLETED')
-                    }">{{project.status || 'En attente'}}</span>
-                </div>
-                <p class="text-muted small mb-3">{{project.description}}</p>
-                
-                <div class="project-info mb-3">
-                    <div class="d-flex justify-content-between mb-1">
-                        <small class="text-muted">Progrès</small>
-                        <small class="fw-bold">{{ project.progress || 0 }}%</small>
-                    </div>
-                    <div class="progress" style="height: 6px;">
-                        <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="project.progress || 0"></div>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center justify-content-between mt-3 pt-3 border-top">
-                    <div class="d-flex align-items-center">
-                        <i class="icofont-calendar text-primary me-2"></i>
-                        <span class="small text-muted">Échéance: {{ project.deadline | date:'shortDate' }}</span>
-                    </div>
-                    <a routerLink="/employee/tasks" class="btn btn-outline-primary btn-sm">Voir Tâches</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div *ngIf="(activeTab === 'ongoing' ? ongoingProjects : historicalProjects).length === 0" class="text-center py-5">
-    <div class="mb-3">
-        <i class="icofont-search-folder fs-1 text-muted"></i>
-    </div>
-    <h5 class="text-muted">Aucun projet trouvé dans cette catégorie</h5>
-</div>
+<!-- /Page Content -->
+

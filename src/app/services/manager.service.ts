@@ -6,7 +6,7 @@ import { Project, Task, Ticket, Reclamation, User } from '../models/models';
 @Injectable({
   providedIn: 'root'
 })
-export class ManagerService {
+export class TeamLeaderService {
   private baseUrl = 'http://localhost:8080/api';
 
   constructor(private http: HttpClient) { }
@@ -63,8 +63,8 @@ export class ManagerService {
     return this.http.get<Reclamation[]>(`${this.baseUrl}/reclamations/all`);
   }
 
-  updateReclamationStatus(id: number, status: string): Observable<Reclamation> {
-    return this.http.patch<Reclamation>(`${this.baseUrl}/reclamations/${id}/status`, status);
+  updateReclamationStatus(id: number, status: string, response: string = ''): Observable<Reclamation> {
+    return this.http.patch<Reclamation>(`${this.baseUrl}/reclamations/${id}/status?status=${status}&response=${response}`, {});
   }
 
   getReclamationsByProjectId(projectId: number): Observable<Reclamation[]> {
@@ -72,7 +72,7 @@ export class ManagerService {
   }
 
   getEmployees(): Observable<User[]> {
-    return this.http.get<User[]>(`${this.baseUrl}/users/role/ROLE_Employee`);
+    return this.http.get<User[]>(`${this.baseUrl}/users/role/ROLE_EMPLOYEE`);
   }
 
   getTasksByUserId(userId: number): Observable<Task[]> {

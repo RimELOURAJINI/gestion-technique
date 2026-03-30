@@ -1,0 +1,213 @@
+<div class="task-detail-container" *ngIf="!loading && task">
+  <!-- Header -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <div (click)="goBack()" class="btn btn-icon btn-light rounded-circle back-btn shadow-sm">
+        <i class="ti ti-arrow-left fs-20"></i>
+      </div>
+      <div>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-1">
+            <li class="breadcrumb-item"><a routerLink="/employee/tasks" class="text-primary small">Mes Tâches</a></li>
+            <li class="breadcrumb-item active small" aria-current="page">Détails</li>
+          </ol>
+        </nav>
+        <h3 class="fw-bold mb-0 text-dark">{{ task.title }}</h3>
+        <p class="text-muted mb-0 d-flex align-items-center gap-2">
+          <i class="ti ti-folders text-primary"></i>
+          Projet: <span class="fw-bold text-dark">{{ task.project?.name || 'Sans Projet' }}</span>
+        </p>
+      </div>
+    </div>
+    <div class="d-flex gap-2">
+      <button *ngIf="task.status !== 'IN_PROGRESS' && task.status !== 'COMPLETED' && task.status !== 'DONE'" 
+              class="btn btn-success d-flex align-items-center rounded-pill px-4 shadow-sm" (click)="startTask()">
+        <i class="ti ti-play me-2"></i>Démarrer la tâche
+      </button>
+      <button *ngIf="task.status === 'IN_PROGRESS'" 
+              class="btn btn-danger d-flex align-items-center rounded-pill px-4 shadow-sm" (click)="endTask()">
+        <i class="ti ti-circle-check me-2"></i>Marquer comme Terminée
+      </button>
+      <button class="btn btn-warning text-dark fw-bold d-flex align-items-center rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#ticketModal">
+        <i class="ti ti-alert-triangle me-2"></i>Signaler un blocage
+      </button>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Left Column: Details & Subtasks -->
+    <div class="col-lg-8">
+      <div class="card mb-4 border-0">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <i class="ti ti-align-left text-primary fs-20"></i>
+            <h5 class="fw-bold mb-0">Description</h5>
+          </div>
+          <p class="text-muted mb-0 fs-15 leading-relaxed" style="white-space: pre-line;">
+            {{ task.description || 'Aucune description détaillée n\'a été fournie pour cette tâche.' }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Subtasks Section -->
+      <div class="card border-0 mb-4">
+        <div class="card-header bg-white py-3 border-bottom-0 p-4">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0"><i class="ti ti-list-check me-2 text-primary"></i>Liste des sous-tâches</h5>
+            <div class="text-end">
+              <span class="text-muted small fw-medium mb-1 d-block">Progression: {{ getSubtaskProgress() }}%</span>
+              <div class="progress progress-thin" style="width: 150px;">
+                <div class="progress-bar bg-primary" [style.width.%]="getSubtaskProgress()"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-4 pt-0">
+          <div class="subtask-list mb-4 mt-3">
+            <div *ngFor="let sub of task.subtasks; let i = index" 
+                 class="d-flex align-items-center gap-3 p-3 rounded-3 mb-2 subtask-row"
+                 [class.completed]="sub.done">
+              <div class="form-check m-0">
+                <input type="checkbox" class="form-check-input custom-checkbox" [checked]="sub.done" (change)="toggleSubtask(sub)">
+              </div>
+              <span class="flex-grow-1 fs-15 subtask-title fw-medium">{{ sub.title }}</span>
+              <button class="btn btn-link text-danger p-0" (click)="removeSubtask(i)">
+                <i class="ti ti-trash fs-18"></i>
+              </button>
+            </div>
+            
+            <div *ngIf="!task.subtasks?.length" class="text-center py-5 bg-light rounded-4 border border-dashed">
+              <i class="ti ti-subtask fs-40 text-muted mb-3 d-block op-5"></i>
+              <p class="text-muted mb-0 fw-medium">Divisez votre travail en créant des sous-tâches.</p>
+            </div>
+          </div>
+
+          <!-- Add Subtask -->
+          <div class="input-group shadow-sm rounded-3 overflow-hidden">
+            <input type="text" class="form-control p-3 border-0 bg-light" placeholder="Que faut-il faire ensuite ?" 
+                   [(ngModel)]="newSubtaskTitle" (keyup.enter)="addSubtask()">
+            <button class="btn btn-primary px-4 fw-bold" (click)="addSubtask()" [disabled]="!newSubtaskTitle.trim()">
+              <i class="ti ti-plus me-1"></i>Ajouter
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Meta & Tickets -->
+    <div class="col-lg-4">
+      <div class="card mb-4 border-0">
+        <div class="card-body p-4">
+          <div class="mb-4">
+            <label class="text-muted small text-uppercase fw-bold mb-2 d-block tracking-wider">État d'avancement</label>
+            <span class="status-badge shadow-sm" [ngClass]="getStatusClass(task.status)">
+              <i class="ti ti-circle-filled me-1 fs-10"></i> {{ getStatusLabel(task.status) }}
+            </span>
+          </div>
+          <div class="mb-4">
+            <label class="text-muted small text-uppercase fw-bold mb-2 d-block tracking-wider">Priorité</label>
+            <span class="status-badge shadow-sm" [ngClass]="getPriorityClass(task.priority)">
+              <i class="ti ti-bolt me-1 fs-12"></i> {{ task.priority }}
+            </span>
+          </div>
+          <hr class="my-4 op-1">
+          <div class="mb-0">
+            <label class="text-muted small text-uppercase fw-bold mb-2 d-block tracking-wider">Date d'échéance</label>
+            <div class="d-flex align-items-center p-3 rounded-3 bg-light border border-dashed">
+              <i class="ti ti-calendar-event fs-24 me-3 text-primary"></i>
+              <div>
+                <span class="fw-bold d-block text-dark">{{ task.deadline | date:'EEEE, dd MMMM yyyy' }}</span>
+                <small class="text-muted">Il vous reste {{ task.deadline | date:'short' }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tickets/Reclamations -->
+      <div class="card border-0 shadow-sm overflow-hidden">
+        <div class="card-header bg-white py-3 border-0 p-4">
+          <div class="d-flex align-items-center justify-content-between">
+            <h5 class="fw-bold mb-0 text-dark d-flex align-items-center">
+              <i class="ti ti-messages me-2 text-warning"></i>Signalements
+            </h5>
+            <span class="badge bg-soft-warning text-warning rounded-pill" *ngIf="taskReclamations.length">
+              {{ taskReclamations.length }}
+            </span>
+          </div>
+        </div>
+        <div class="card-body p-4 pt-0">
+          <div class="ticket-list">
+            <div *ngFor="let rec of taskReclamations" class="p-3 rounded-4 mb-3 shadow-sm ticket-card"
+                 [class.resolved]="rec.status === 'ACCEPTED'">
+              <div class="d-flex justify-content-between mb-2 align-items-center">
+                <span class="fw-bold text-dark fs-13 d-flex align-items-center">
+                  <i class="ti ti-hash me-1 text-muted"></i>{{ rec.id }}
+                </span>
+                <span class="badge rounded-pill fw-medium fs-10" [ngClass]="rec.status === 'PENDING' ? 'bg-warning text-dark' : 'bg-success text-white'">
+                  {{ rec.status === 'PENDING' ? 'En attente' : 'Résolu' }}
+                </span>
+              </div>
+              <p class="mb-2 text-secondary fs-13 fw-normal">{{ rec.message }}</p>
+              
+              <div *ngIf="rec.response" class="bg-white p-3 rounded-3 border mt-3 shadow-none">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <div class="avatar avatar-xs bg-soft-primary text-primary rounded-circle">AD</div>
+                  <span class="fw-bold text-primary small">Réponse Admin</span>
+                </div>
+                <p class="small mb-0 text-muted italic italic">"{{ rec.response }}"</p>
+              </div>
+              
+              <div class="mt-3 text-end">
+                <small class="text-muted fs-11 ms-auto">Signalé le {{ rec.createdAt | date:'dd/MM/yyyy HH:mm' }}</small>
+              </div>
+            </div>
+
+            <div *ngIf="!taskReclamations.length" class="text-center py-5 op-3">
+              <i class="ti ti-message-off fs-40 mb-3 d-block text-muted"></i>
+              <p class="text-muted small fw-medium mb-0">Aucun signalement actif.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div class="d-flex flex-column align-items-center justify-content-center py-5 my-5" *ngIf="loading">
+  <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+    <span class="visually-hidden">Chargement...</span>
+  </div>
+  <p class="text-muted fw-medium">Récupération des détails de la tâche...</p>
+</div>
+
+<!-- Blocking Ticket Modal -->
+<div class="modal fade" id="ticketModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-warning py-3">
+        <h5 class="modal-title fw-bold text-dark d-flex align-items-center">
+          <i class="ti ti-alert-triangle me-2"></i>Signaler un problème
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="alert bg-soft-warning border-0 text-dark mb-4 small">
+          <i class="ti ti-info-circle me-1"></i> Votre message sera envoyé directement à l'administrateur du projet.
+        </div>
+        <label class="form-label fw-bold small text-muted text-uppercase mb-2">Description du blocage</label>
+        <textarea class="form-control bg-light p-3 border-0 rounded-4" rows="4" 
+                  [(ngModel)]="ticketMessage" 
+                  placeholder="Décrivez précisément ce qui vous empêche d'avancer..."></textarea>
+      </div>
+      <div class="modal-footer border-0 p-4 pt-0">
+        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-warning text-dark fw-bold rounded-pill px-4 shadow-sm" 
+                (click)="sendTicket()" data-bs-dismiss="modal" [disabled]="!ticketMessage">
+          <i class="ti ti-send me-1"></i>Envoyer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

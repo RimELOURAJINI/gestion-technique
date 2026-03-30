@@ -98,12 +98,24 @@ export class AdminService {
     return this.http.get<User[]>(`${this.baseUrl}/users/role/${role}`);
   }
 
+  getAllUsers(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/users/all`);
+  }
+
+  updateUserRoles(userId: number, roleIds: number[]): Observable<any> {
+    return this.http.put(`${this.baseUrl}/users/${userId}/roles`, roleIds);
+  }
+
+  getAllRoles(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/roles/all`);
+  }
+
   // ========== RECLAMATIONS ==========
   getReclamations(): Observable<Reclamation[]> {
     return this.http.get<Reclamation[]>(`${this.baseUrl}/reclamations/all`);
   }
 
-  updateReclamationStatus(id: number, status: string): Observable<Reclamation> {
-    return this.http.patch<Reclamation>(`${this.baseUrl}/reclamations/${id}/status`, status);
+  updateReclamationStatus(id: number, status: string, response: string = ''): Observable<Reclamation> {
+    return this.http.patch<Reclamation>(`${this.baseUrl}/reclamations/${id}/status?status=${status}&response=${response}`, {});
   }
 }

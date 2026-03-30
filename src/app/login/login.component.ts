@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
   redirectByRole(): void {
     if (this.authService.isAdmin()) {
       this.router.navigate(['/admin']);
-    } else if (this.authService.isTeamManager()) {
+    } else if (this.authService.isTeamLeader()) {
       this.router.navigate(['/manager']);
     } else if (this.authService.isEmployee()) {
       this.router.navigate(['/employee']);

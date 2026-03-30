@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminService } from '../../services/admin.service';
 import { Project, Team, User, Reclamation } from '../../models/models';
 import { RouterLink } from '@angular/router';
+
+declare var initDashboardCharts: any;
 
 @Component({
   selector: 'app-admin-overview',
@@ -11,7 +13,7 @@ import { RouterLink } from '@angular/router';
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.css'
 })
-export class AdminOverviewComponent implements OnInit {
+export class AdminOverviewComponent implements OnInit, AfterViewInit {
   stats = {
     projects: 0,
     teams: 0,
@@ -21,12 +23,23 @@ export class AdminOverviewComponent implements OnInit {
   recentProjects: Project[] = [];
   recentReclamations: Reclamation[] = [];
   isLoading = true;
+  today: Date = new Date();
 
   constructor(private adminService: AdminService) {}
 
   ngOnInit() {
     this.loadStats();
   }
+
+  ngAfterViewInit() {
+    // Small delay to ensure DOM is fully rendered before chart init
+    setTimeout(() => {
+      if (typeof initDashboardCharts === 'function') {
+        initDashboardCharts();
+      }
+    }, 500);
+  }
+
 
   loadStats() {
     this.isLoading = true;
@@ -50,7 +63,7 @@ export class AdminOverviewComponent implements OnInit {
 
     // Load Reclamations
     this.adminService.getReclamations().subscribe((reclamations) => {
-      this.stats.reclamations = reclamations.filter(r => r.status === 'Pending').length;
+      this.stats.reclamations = reclamations.filter(r => r.status === 'PENDING').length;
       this.recentReclamations = reclamations.slice(-5).reverse();
       this.isLoading = false;
     });

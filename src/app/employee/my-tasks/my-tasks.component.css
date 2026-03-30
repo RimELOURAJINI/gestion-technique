@@ -1,0 +1,137 @@
+.subtask-row {
+    transition: all 0.2s ease;
+    border-color: #eee !important;
+}
+
+.subtask-row:hover {
+    background-color: #f8f9fa;
+    border-color: #dee2e6 !important;
+}
+
+.subtask-row:hover .subtask-delete {
+    opacity: 1 !important;
+}
+
+.subtask-check {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.subtask-title {
+    transition: color 0.2s ease;
+}
+
+.completed .subtask-title {
+    color: #adb5bd;
+}
+
+.subtask-delete {
+    transition: opacity 0.2s ease;
+}
+
+.add-subtask-box {
+    border: 1px dashed #dee2e6;
+}
+
+.add-subtask-box:focus-within {
+    border-style: solid;
+    border-color: #4361ee;
+    background-color: #fff !important;
+}
+
+/* Kanban Layout */
+.kanban-wrapper {
+    overflow-x: auto;
+    padding-bottom: 20px;
+    margin-top: 10px;
+}
+
+.kanban-container {
+    display: flex;
+    gap: 1.5rem;
+    min-width: 1000px;
+}
+
+.kanban-column {
+    flex: 1;
+    min-width: 250px;
+    background: #f4f7f9;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    max-height: 70vh;
+}
+
+.kanban-header {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.kanban-header.status-todo { background: #6c757d; }
+.kanban-header.status-in_progress { background: #4361ee; }
+.kanban-header.status-review { background: #f72585; }
+.kanban-header.status-done { background: #4cc9f0; }
+
+.kanban-cards-list {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding: 2px;
+}
+
+/* Kanban Card */
+.kanban-card {
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid transparent !important;
+}
+
+.kanban-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+    border-color: #4361ee !important;
+}
+
+.kanban-card .task-title {
+    font-weight: 700;
+    color: #2b2d42;
+    font-size: 14px;
+}
+
+.ticket-card {
+    transition: transform 0.2s;
+    cursor: default;
+}
+
+.ticket-card:hover {
+    transform: scale(1.02);
+}
+
+.bg-indigo-light { background-color: rgba(67, 97, 238, 0.1); }
+.text-indigo { color: #4361ee; }
+
+.subtask-item {
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: #f8f9fa;
+    transition: all 0.2s;
+}
+
+.subtask-item:hover {
+    background: #fff;
+    border-color: #4361ee;
+}
+
+.subtask-item.active {
+    background: #fff;
+    border-color: #4361ee;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.btn-xs {
+    padding: 2px 5px;
+    font-size: 10px;
+}

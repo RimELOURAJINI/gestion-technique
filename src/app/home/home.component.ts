@@ -110,7 +110,7 @@ export class HomeComponent implements OnInit {
     if (this.authService.isAdmin()) {
       console.log('➔ Redirection vers /admin');
       this.router.navigate(['/admin']);
-    } else if (this.authService.isTeamManager()) {
+    } else if (this.authService.isTeamLeader()) {
       console.log('➔ Redirection vers /manager');
       this.router.navigate(['/manager']);
     } else if (this.authService.isEmployee()) {

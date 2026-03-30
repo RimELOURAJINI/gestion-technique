@@ -1,0 +1,10 @@
+/* User Management Styles */
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.badge {
+    font-size: 0.8rem;
+    padding: 0.4em 0.8em;
+}

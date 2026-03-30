@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Project, Task, Reclamation, Ticket } from '../models/models';
+import { Observable, map } from 'rxjs';
+import { Project, Task, Reclamation, Ticket, SubTask } from '../models/models';
 
 @Injectable({
   providedIn: 'root'
@@ -12,13 +12,36 @@ export class EmployeeService {
   constructor(private http: HttpClient) { }
 
   // Projects
+  // Projects derived from assigned tasks
   getMyProjects(userId: number): Observable<Project[]> {
-    return this.http.get<Project[]>(`${this.baseUrl}/projects/user/${userId}`);
+    return this.getMyTasks(userId).pipe(
+      map(tasks => {
+        const projectsMap = new Map<number, Project>();
+        tasks.forEach(t => {
+          if (t.project && t.project.id) {
+            projectsMap.set(t.project.id, t.project);
+          }
+        });
+        return Array.from(projectsMap.values());
+      })
+    );
   }
 
   // Tasks
   getMyTasks(userId: number): Observable<Task[]> {
     return this.http.get<Task[]>(`${this.baseUrl}/tasks/user/${userId}`);
+  }
+
+  getTaskById(taskId: number): Observable<Task> {
+    return this.http.get<Task>(`${this.baseUrl}/tasks/${taskId}`);
+  }
+
+  getProjectById(projectId: number): Observable<Project> {
+    return this.http.get<Project>(`${this.baseUrl}/projects/${projectId}`);
+  }
+
+  getTasksByProject(projectId: number): Observable<Task[]> {
+    return this.http.get<Task[]>(`${this.baseUrl}/tasks/project/${projectId}`);
   }
 
   startTask(taskId: number): Observable<Task> {
@@ -38,12 +61,46 @@ export class EmployeeService {
     return this.http.put(`${this.baseUrl}/tasks/${taskId}/dates`, { actualStartTime, actualEndTime });
   }
 
-  // Tickets
-  getMyTickets(userId: number): Observable<Ticket[]> {
-    return this.http.get<Ticket[]>(`${this.baseUrl}/tickets/user/${userId}`);
+  createTask(userId: number, task: Task): Observable<Task> {
+    return this.http.post<Task>(`${this.baseUrl}/tasks/user/${userId}`, task);
   }
 
-  createTicket(ticket: Ticket, userId: number): Observable<Ticket> {
-    return this.http.post<Ticket>(`${this.baseUrl}/tickets/user/${userId}`, ticket);
+  updateTask(taskId: number, task: Task): Observable<Task> {
+    return this.http.put<Task>(`${this.baseUrl}/tasks/${taskId}`, task);
+  }
+
+  deleteTask(taskId: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/tasks/${taskId}`);
+  }
+
+  // Reclamations
+  getMyReclamations(userId: number): Observable<Reclamation[]> {
+    return this.http.get<Reclamation[]>(`${this.baseUrl}/reclamations/sender/${userId}`);
+  }
+
+  getReclamationsByTask(taskId: number): Observable<Reclamation[]> {
+    return this.http.get<Reclamation[]>(`${this.baseUrl}/reclamations/task/${taskId}`);
+  }
+
+  createReclamation(reclamation: Reclamation, userId: number, projectId: number): Observable<Reclamation> {
+    return this.http.post<Reclamation>(`${this.baseUrl}/reclamations/user/${userId}/project/${projectId}`, reclamation);
+  }
+
+  // === SubTasks (backend persisted) ===
+  getSubtasks(taskId: number): Observable<SubTask[]> {
+    return this.http.get<SubTask[]>(`${this.baseUrl}/subtasks/task/${taskId}`);
+  }
+
+  createSubtask(taskId: number, subtask: SubTask): Observable<SubTask> {
+    return this.http.post<SubTask>(`${this.baseUrl}/subtasks/task/${taskId}`, subtask);
+  }
+
+  toggleSubtask(subtaskId: number): Observable<SubTask> {
+    return this.http.patch<SubTask>(`${this.baseUrl}/subtasks/${subtaskId}/toggle`, {});
+  }
+
+  deleteSubtask(subtaskId: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/subtasks/${subtaskId}`);
   }
 }
+

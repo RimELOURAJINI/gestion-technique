@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmployeeService } from '../../services/employee.service';
 import { AuthService } from '../../services/auth.service';
-import { Ticket, Project } from '../../models/models';
+import { Reclamation, Project } from '../../models/models';
 
 @Component({
   selector: 'app-tickets',
@@ -13,15 +13,15 @@ import { Ticket, Project } from '../../models/models';
   styleUrl: './tickets.component.css'
 })
 export class TicketsComponent implements OnInit {
-  tickets: Ticket[] = [];
+  reclamations: Reclamation[] = [];
   projects: Project[] = [];
   
-  newTicket: Ticket = {
-    subject: '',
-    description: '',
-    status: 'OPEN',
-    priority: 'MEDIUM'
+  newReclamation: Reclamation = {
+    title: '',
+    message: '',
+    status: 'PENDING'
   };
+  selectedProjectId?: number;
 
   showCreateForm: boolean = false;
 
@@ -38,9 +38,9 @@ export class TicketsComponent implements OnInit {
   loadTickets(): void {
     const userId = this.authService.getUserId();
     if (userId) {
-      this.employeeService.getMyTickets(userId).subscribe(
-        res => this.tickets = res,
-        (err: any) => console.error('Error loading tickets', err)
+      this.employeeService.getMyReclamations(userId).subscribe(
+        res => this.reclamations = res,
+        (err: any) => console.error('Error loading reclamations', err)
       );
     }
   }
@@ -57,16 +57,25 @@ export class TicketsComponent implements OnInit {
 
   submitTicket(): void {
     const userId = this.authService.getUserId();
-    if (userId && this.newTicket.subject && this.newTicket.description) {
-      this.employeeService.createTicket(this.newTicket, userId).subscribe(
+    if (userId && this.selectedProjectId && this.newReclamation.title && this.newReclamation.message) {
+      this.employeeService.createReclamation(this.newReclamation, userId, +this.selectedProjectId).subscribe(
         () => {
-          alert('Ticket envoyé avec succès !');
-          this.newTicket = { subject: '', description: '', status: 'OPEN', priority: 'MEDIUM' };
+          alert('Réclamation envoyée avec succès !');
+          this.newReclamation = { title: '', message: '', status: 'PENDING' };
+          this.selectedProjectId = undefined;
           this.showCreateForm = false;
           this.loadTickets();
         },
-        (err: any) => console.error('Error creating ticket', err)
+        (err: any) => {
+          console.error('Error creating reclamation:', err);
+          if (err.status === 500) {
+            console.error('SERVER ERROR (500): Check for circular references or DB constraints.');
+          }
+          alert('Erreur lors de l\'envoi de la réclamation. ' + (err.error?.message || 'Vérifiez les logs console.'));
+        }
       );
+    } else if (!this.selectedProjectId) {
+      alert('Veuillez sélectionner un projet.');
     }
   }
 

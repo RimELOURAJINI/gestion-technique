@@ -4,10 +4,12 @@ import { EmployeeService } from '../../services/employee.service';
 import { AuthService } from '../../services/auth.service';
 import { Project } from '../../models/models';
 
+import { RouterModule, Router } from '@angular/router';
+
 @Component({
   selector: 'app-my-projects',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './my-projects.component.html',
   styleUrl: './my-projects.component.css'
 })
@@ -19,10 +21,15 @@ export class MyProjectsComponent implements OnInit {
 
   constructor(
     private employeeService: EmployeeService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.loadProjects();
+  }
+
+  loadProjects(): void {
     const userId = this.authService.getUserId();
     if (userId) {
       this.employeeService.getMyProjects(userId).subscribe(
@@ -39,4 +46,12 @@ export class MyProjectsComponent implements OnInit {
   setTab(tab: 'ongoing' | 'history'): void {
     this.activeTab = tab;
   }
+
+  openProjectDetail(project: Project): void {
+    if (project.id) {
+      this.router.navigate(['/employee/projects', project.id]);
+    }
+  }
+
+
 }

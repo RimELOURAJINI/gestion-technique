@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ManagerService } from '../../services/manager.service';
+import { TeamLeaderService } from '../../services/manager.service';
 import { AuthService } from '../../services/auth.service';
 import { Project } from '../../models/models';
 
@@ -15,9 +15,10 @@ import { Project } from '../../models/models';
 export class TeamProjectsComponent implements OnInit {
     projects: Project[] = [];
     isLoading = true;
+    selectedProject: Project | null = null;
 
     constructor(
-        private managerService: ManagerService,
+        private teamLeaderService: TeamLeaderService,
         private authService: AuthService
     ) { }
 
@@ -28,7 +29,7 @@ export class TeamProjectsComponent implements OnInit {
     loadProjects() {
         const userId = this.authService.getUserId();
         if (userId) {
-            this.managerService.getProjectsByUserId(userId).subscribe({
+            this.teamLeaderService.getProjectsByUserId(userId).subscribe({
                 next: (res) => {
                     this.projects = res;
                     this.isLoading = false;
@@ -41,6 +42,18 @@ export class TeamProjectsComponent implements OnInit {
         }
     }
 
+    openProject(project: Project) {
+        this.selectedProject = project;
+    }
+
+    closeProject() {
+        this.selectedProject = null;
+    }
+
+    getProgress(project: Project): number {
+        return project.progress || 0;
+    }
+
     getStatusClass(status: string): string {
         switch (status?.toLowerCase()) {
             case 'completed': return 'bg-success';
@@ -50,4 +63,5 @@ export class TeamProjectsComponent implements OnInit {
         }
     }
 }
+
 

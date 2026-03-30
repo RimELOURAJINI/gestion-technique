@@ -1,18 +1,103 @@
-﻿import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { NotificationService, NotificationDTO } from '../../services/notification.service';
+
+import { interval, Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-admin-dashboard',
     standalone: true,
-    imports: [RouterOutlet, RouterLink, RouterLinkActive],
+    imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
     templateUrl: './admin-dashboard.component.html',
     styleUrl: './admin-dashboard.component.css'
 })
-export class AdminDashboardComponent {
-    constructor(private authService: AuthService) { }
+export class AdminDashboardComponent implements OnInit {
+    adminName: string = '';
+    adminRole: string = 'Administrateur';
+    notifications: NotificationDTO[] = [];
+    unreadCount: number = 0;
+    dashboardMenuOpen: boolean = false;
+    usersMenuOpen: boolean = false;
+    configMenuOpen: boolean = false;
+    private notificationSub?: Subscription;
+
+    constructor(
+        public authService: AuthService,
+        private notificationService: NotificationService,
+        public router: Router
+    ) { }
+
+    ngOnInit(): void {
+        const user = this.authService.currentUserValue;
+        if (user) {
+            const firstName = user.firstName || '';
+            const lastName = user.lastName || '';
+            this.adminName = `${firstName} ${lastName}`.trim() || 'Admin';
+            this.adminRole = user.roles ? user.roles[0] : 'Administrateur';
+            
+            if (user.id) {
+                this.loadNotifications(user.id);
+                // Poll for new notifications every 30 seconds
+                this.notificationSub = interval(30000).subscribe(() => {
+                    const currentId = this.authService.getUserId();
+                    if (currentId) this.loadNotifications(currentId);
+                });
+            }
+
+            // Auto-open menus based on route
+            if (this.router.url.includes('/admin/overview')) this.dashboardMenuOpen = true;
+            if (this.router.url.includes('/admin/users') || this.router.url.includes('/admin/teams')) this.usersMenuOpen = true;
+        }
+    }
+
+    ngOnDestroy(): void {
+        if (this.notificationSub) {
+            this.notificationSub.unsubscribe();
+        }
+    }
+
+    loadNotifications(userId: number) {
+        this.notificationService.getUnreadNotifications(userId).subscribe({
+            next: (data) => {
+                this.notifications = data;
+                this.unreadCount = data.length;
+            },
+            error: (err) => console.error('Erreur chargement notifications', err)
+        });
+    }
+
+    markAsRead(id: number) {
+        this.notificationService.markAsRead(id).subscribe(() => {
+            const userId = this.authService.getUserId();
+            if (userId) this.loadNotifications(userId);
+        });
+    }
+
+    markAllAsRead(): void {
+        const userId = this.authService.getUserId();
+        if (userId) {
+            this.notificationService.markAllAsRead(userId).subscribe(() => {
+                this.loadNotifications(userId);
+            });
+        }
+    }
 
     logout() {
         this.authService.logout();
     }
+
+    toggleDashboardMenu() {
+        this.dashboardMenuOpen = !this.dashboardMenuOpen;
+    }
+
+    toggleUsersMenu() {
+        this.usersMenuOpen = !this.usersMenuOpen;
+    }
+
+    toggleConfigMenu() {
+        this.configMenuOpen = !this.configMenuOpen;
+    }
 }
+

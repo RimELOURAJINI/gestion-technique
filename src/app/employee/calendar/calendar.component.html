@@ -1,0 +1,71 @@
+<div class="content container-fluid">
+  <div class="page-header mb-4">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <h3 class="page-title">Calendrier</h3>
+        <ul class="breadcrumb"><li class="breadcrumb-item"><a href="javascript:void(0)">Espace Employé</a></li><li class="breadcrumb-item active">Calendrier</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-transparent d-flex align-items-center justify-content-between py-3">
+      <button class="btn btn-outline-secondary btn-sm" (click)="prevMonth()"><i class="ti ti-chevron-left"></i></button>
+      <h5 class="mb-0 fw-bold text-capitalize">{{ currentMonthName }}</h5>
+      <button class="btn btn-outline-secondary btn-sm" (click)="nextMonth()"><i class="ti ti-chevron-right"></i></button>
+    </div>
+    <div class="card-body p-0">
+      <div class="calendar-grid">
+        <div class="cal-header-row">
+          <div *ngFor="let d of dayNames" class="cal-day-name text-muted text-center fw-semibold small py-2">{{d}}</div>
+        </div>
+        <div class="cal-days-grid">
+          <div *ngFor="let day of calendarDays"
+               class="cal-cell border"
+               [class.bg-light]="!day.isCurrentMonth"
+               [class.today-cell]="day.isToday"
+               [class.selected-cell]="selectedDay?.date?.toDateString() === day.date.toDateString()"
+               (click)="selectDay(day)">
+            <span class="cal-date-num" [class.text-muted]="!day.isCurrentMonth" [class.text-white]="day.isToday">
+              {{ day.date.getDate() }}
+            </span>
+            <div class="cal-task-chips">
+              <span *ngFor="let t of day.tasks" class="badge bg-primary mb-1 d-block text-truncate" style="max-width:100%;font-size:9px;">
+                {{ t.title }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Selected Day Tasks -->
+  <div *ngIf="selectedDay && selectedDay.tasks.length > 0" class="card mt-4 shadow-sm border-0">
+    <div class="card-header bg-transparent py-3">
+      <h6 class="mb-0 fw-bold"><i class="ti ti-calendar-event me-2"></i>Tâches le {{ selectedDay.date | date:'d MMMM yyyy' }}</h6>
+    </div>
+    <div class="card-body">
+      <div *ngFor="let t of selectedDay.tasks" class="d-flex align-items-center gap-3 mb-3 p-3 border rounded-3">
+        <span class="badge rounded-pill" [ngClass]="getPriorityClass(t.priority || '')">{{t.priority || 'N/A'}}</span>
+        <div>
+          <h6 class="mb-0 fw-medium">{{t.title}}</h6>
+          <small class="text-muted">{{t.status}}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.calendar-grid { overflow-x: auto; }
+.cal-header-row { display: grid; grid-template-columns: repeat(7,1fr); background: #f8f9fa; }
+.cal-days-grid { display: grid; grid-template-columns: repeat(7,1fr); }
+.cal-cell { min-height: 90px; padding: 6px; cursor: pointer; position: relative; transition: background 0.15s; }
+.cal-cell:hover { background: #f0f4ff !important; }
+.today-cell { background: #4361ee !important; border-radius: 0; }
+.selected-cell { outline: 2px solid #4361ee; }
+.cal-date-num { font-size: 13px; font-weight: 600; display: block; margin-bottom: 2px; }
+.cal-day-name { border-right: 1px solid #eee; }
+.cal-task-chips { overflow: hidden; }
+</style>

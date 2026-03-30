@@ -1,0 +1,78 @@
+<div class="content container-fluid">
+  <div class="page-header mb-4">
+    <h3 class="page-title">Feuilles de Temps</h3>
+    <ul class="breadcrumb"><li class="breadcrumb-item"><a href="javascript:void(0)">Espace Employé</a></li><li class="breadcrumb-item active">Feuilles de Temps</li></ul>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="row row-gap-3 mb-4">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm text-center">
+        <div class="card-body">
+          <i class="ti ti-clock-hour-4 fs-36 text-primary mb-2 d-block"></i>
+          <h3 class="fw-bold mb-0">{{ totalHours }}h</h3>
+          <p class="text-muted mb-0 small">Total cette semaine</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm text-center">
+        <div class="card-body">
+          <i class="ti ti-list-check fs-36 text-success mb-2 d-block"></i>
+          <h3 class="fw-bold mb-0">{{ timeEntries.length }}</h3>
+          <p class="text-muted mb-0 small">Entrées enregistrées</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm text-center">
+        <div class="card-body">
+          <i class="ti ti-target fs-36 text-warning mb-2 d-block"></i>
+          <h3 class="fw-bold mb-0">40h</h3>
+          <p class="text-muted mb-0 small">Objectif hebdomadaire</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weekly Timesheet -->
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-transparent py-3">
+      <h5 class="mb-0 fw-bold"><i class="ti ti-calendar-week me-2"></i>Semaine en cours</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="thead-light">
+            <tr>
+              <th class="ps-4">Jour</th>
+              <th>Date</th>
+              <th>Tâches travaillées</th>
+              <th class="text-end pe-4">Heures</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let day of weekDays">
+              <td class="ps-4 fw-semibold">{{ day.label }}</td>
+              <td class="text-muted">{{ day.date | date:'dd/MM' }}</td>
+              <td>
+                <span *ngFor="let e of getEntriesForDay(day.date)" class="badge bg-soft-primary text-primary me-1 mb-1">{{ e.taskTitle }}</span>
+                <span *ngIf="getEntriesForDay(day.date).length === 0" class="text-muted small">—</span>
+              </td>
+              <td class="text-end pe-4">
+                <span [class.fw-bold]="getHoursForDay(day.date) > 0" [class.text-primary]="getHoursForDay(day.date) > 0">
+                  {{ getHoursForDay(day.date) || '—' }}{{ getHoursForDay(day.date) > 0 ? 'h' : '' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="timeEntries.length === 0" class="text-center py-5 mt-3">
+    <i class="ti ti-clock-off fs-48 text-muted mb-3 d-block"></i>
+    <p class="text-muted">Aucune entrée de temps. Commencez et terminez des tâches pour voir vos heures ici.</p>
+  </div>
+</div>

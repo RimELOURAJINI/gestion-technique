@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { ManagerService } from '../../services/manager.service';
+import { TeamLeaderService } from '../../services/manager.service';
 import { AuthService } from '../../services/auth.service';
 import { Reclamation, Project } from '../../models/models';
 
@@ -28,14 +28,14 @@ export class TicketsComponent implements OnInit {
     replyMessage = '';
 
     constructor(
-        private managerService: ManagerService,
+        private teamLeaderService: TeamLeaderService,
         private authService: AuthService
     ) { }
 
     ngOnInit() {
         const userId = this.authService.getUserId();
         if (userId) {
-            this.managerService.getProjectsByUserId(userId).subscribe(res => {
+            this.teamLeaderService.getProjectsByUserId(userId).subscribe(res => {
                 this.projects = res;
                 this.loadAllReclamations();
             });
@@ -49,7 +49,7 @@ export class TicketsComponent implements OnInit {
         let loaded = 0;
         this.projects.forEach(p => {
             if (p.id) {
-                this.managerService.getReclamationsByProjectId(p.id).subscribe(res => {
+                this.teamLeaderService.getReclamationsByProjectId(p.id).subscribe(res => {
                     this.reclamations = [...this.reclamations, ...res];
                     loaded++;
                     if (loaded === this.projects.length) this.isLoading = false;
@@ -61,7 +61,7 @@ export class TicketsComponent implements OnInit {
     sendReclamationToAdmin() {
         const userId = this.authService.getUserId();
         if (userId && this.selectedProjectId && this.newReclamation.message) {
-            this.managerService.sendReclamation(userId, +this.selectedProjectId, this.newReclamation).subscribe({
+            this.teamLeaderService.sendReclamation(userId, +this.selectedProjectId, this.newReclamation).subscribe({
                 next: () => {
                     alert('Réclamation envoyée à l\'administrateur.');
                     this.newReclamation = { message: '', title: '' };
@@ -79,7 +79,8 @@ export class TicketsComponent implements OnInit {
 
     acceptReclamation(id?: number) {
         if (!id) return;
-        this.managerService.updateReclamationStatus(id, 'ACCEPTED').subscribe({
+        const response = prompt("Expliquez pourquoi vous acceptez cette réclamation (optionnel) :");
+        this.teamLeaderService.updateReclamationStatus(id, 'ACCEPTED', response || '').subscribe({
             next: () => this.loadAllReclamations(),
             error: (err) => console.error(err)
         });
@@ -87,7 +88,9 @@ export class TicketsComponent implements OnInit {
 
     rejectReclamation(id?: number) {
         if (!id) return;
-        this.managerService.updateReclamationStatus(id, 'REJECTED').subscribe({
+        const response = prompt("Expliquez pourquoi vous rejetez cette réclamation :");
+        if (response === null) return; // Annulé
+        this.teamLeaderService.updateReclamationStatus(id, 'REJECTED', response || '').subscribe({
             next: () => this.loadAllReclamations(),
             error: (err) => console.error(err)
         });
@@ -97,16 +100,21 @@ export class TicketsComponent implements OnInit {
         switch (status?.toUpperCase()) {
             case 'ACCEPTED': return 'bg-success';
             case 'REJECTED': return 'bg-danger';
+            case 'REVIEWED': return 'bg-info';
             case 'PENDING': return 'bg-warning';
             default: return 'bg-secondary';
         }
     }
 
     get pendingReclamations() {
-        return this.reclamations.filter(r => !r.status || r.status.toUpperCase() === 'PENDING');
+        return this.reclamations.filter(r => (!r.status || r.status.toUpperCase() === 'PENDING') && r.sender?.id !== this.authService.getUserId());
     }
 
     get resolvedReclamations() {
-        return this.reclamations.filter(r => r.status && r.status.toUpperCase() !== 'PENDING');
+        return this.reclamations.filter(r => (r.status && r.status.toUpperCase() !== 'PENDING') && r.sender?.id !== this.authService.getUserId());
+    }
+
+    get mySentReclamations() {
+        return this.reclamations.filter(r => r.sender?.id === this.authService.getUserId());
     }
 }

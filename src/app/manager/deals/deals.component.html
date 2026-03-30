@@ -1,62 +1,102 @@
-<div class="row align-items-center">
-    <div class="border-0 mb-4">
-        <div
-            class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-            <h3 class="fw-bold mb-0">Gestion des Deals</h3>
-            <div class="col-auto d-flex w-sm-100">
-                <button type="button" class="btn btn-primary btn-set-task w-sm-100"><i
-                        class="icofont-plus-circle me-2 fs-6"></i>Nouveau Deal</button>
-            </div>
-        </div>
-    </div>
-</div> <!-- Row end  -->
+<!-- Page Content -->
+<div class="content container-fluid">
 
-<div class="row g-3 mb-3">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th>Nom du Deal</th>
-                                <th>Client / Lead</th>
-                                <th>Contact</th>
-                                <th>Valeur</th>
-                                <th>Étape</th>
-                                <th>Prochain Suivi</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let d of deals">
-                                <td><strong>{{d.name}}</strong></td>
-                                <td>{{d.leadName}}</td>
-                                <td>
-                                    <span class="text-muted small">{{d.contact}}</span>
-                                </td>
-                                <td><span class="fw-bold">{{d.value | currency:'EUR':'symbol':'1.0-0'}}</span></td>
-                                <td>
-                                    <span class="badge" [ngClass]="{
-                                        'bg-warning': d.stage === 'En cours' || d.stage === 'Négociation',
-                                        'bg-success': d.stage === 'Terminé',
-                                        'bg-info': d.stage === 'Proposition'
-                                    }">{{d.stage}}</span>
-                                </td>
-                                <td>{{d.nextFollowUp | date:'dd MMM yyyy'}}</td>
-                                <td class="text-end">
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-outline-secondary"><i
-                                                class="icofont-edit text-success"></i></button>
-                                        <button type="button" class="btn btn-outline-secondary"><i
-                                                class="icofont-ui-delete text-danger"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+	<!-- Page Header -->
+	<div class="page-header">
+		<div class="row align-items-center">
+			<div class="col-md-4">
+				<h3 class="page-title">Deals</h3>
+				<ul class="breadcrumb">
+					<li class="breadcrumb-item"><a href="javascript:void(0)">Dashboard</a></li>
+					<li class="breadcrumb-item active">Deals</li>
+				</ul>
+			</div>
+			<div class="col-md-8 text-end">
+				<div class="head-icons">
+					<a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh"><i class="ti ti-refresh-dot"></i></a>
+					<a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="top" title="Collapse" id="collapse-header"><i class="ti ti-chevrons-up"></i></a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Page Header -->
+
+	<div class="card main-card">
+		<div class="card-body">
+
+			<!-- Filter -->
+			<div class="filter-section">
+				<div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+					<div class="search-set">
+						<div class="search-input">
+							<a href="javascript:void(0);" class="btn btn-searchset"><i class="ti ti-search"></i></a>
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="Search Deals">
+							</div>
+						</div>
+					</div>
+					<div class="search-path d-flex align-items-center gap-2">
+						<a href="javascript:void(0);" class="btn btn-primary"><i class="ti ti-plus me-1"></i>Add New Deal</a>
+					</div>
+				</div>
+			</div>
+			<!-- /Filter -->
+
+			<!-- Deals List -->
+			<div class="table-responsive custom-table">
+				<table class="table table-hover align-middle">
+					<thead class="thead-light">
+						<tr>
+							<th>Deal Name</th>
+							<th>Client / Lead</th>
+							<th>Value</th>
+							<th>Stage</th>
+							<th>Next Follow Up</th>
+							<th class="text-end">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let d of deals">
+							<td>
+								<h2 class="table-avatar d-flex align-items-center">
+									<a href="javascript:void(0);" class="avatar avatar-sm border me-2">
+										<i class="ti ti-medal text-warning"></i>
+									</a>
+									<a href="javascript:void(0);">{{d.name}}</a>
+								</h2>
+							</td>
+							<td>
+								<div class="d-flex flex-column">
+									<span class="text-dark fw-medium">{{d.leadName}}</span>
+									<span class="fs-12 text-muted">{{d.contact}}</span>
+								</div>
+							</td>
+							<td><span class="text-dark fw-bold">{{d.value | currency:'EUR':'symbol':'1.0-0'}}</span></td>
+							<td>
+								<span class="badge badge-pill" [ngClass]="{
+									'bg-pending': d.stage === 'En cours' || d.stage === 'Négociation',
+									'bg-success': d.stage === 'Terminé',
+									'bg-info': d.stage === 'Proposition'
+								}">{{d.stage}}</span>
+							</td>
+							<td>{{d.nextFollowUp | date:'dd MMM yyyy'}}</td>
+							<td class="text-end">
+								<div class="dropdown dropdown-action">
+									<a href="javascript:void(0);" class="btn-action-icon" data-bs-toggle="dropdown" aria-expanded="false"><i class="ti ti-dots-vertical"></i></a>
+									<div class="dropdown-menu dropdown-menu-end">
+										<a class="dropdown-item" href="javascript:void(0);"><i class="ti ti-edit me-1"></i>Edit</a>
+										<a class="dropdown-item" href="javascript:void(0);"><i class="ti ti-trash me-1"></i>Delete</a>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<!-- /Deals List -->
+
+		</div>
+	</div>
+
 </div>
+<!-- /Page Content -->

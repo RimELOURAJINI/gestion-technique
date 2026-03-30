@@ -1,99 +1,223 @@
-<div id="mytask-layout" class="theme-indigo">
-    
-    <!-- sidebar -->
-    <div class="sidebar px-4 py-4 py-md-5 me-0">
-        <div class="d-flex flex-column h-100">
-            <a routerLink="/admin" class="mb-0 brand-icon">
-                <span class="logo-icon">
-                    <svg width="35" height="35" fill="currentColor" class="bi bi-clipboard-check" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
-                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 0 0 0 2 2h10a2 0 0 0 2-2V3.5a2 0 0 0-2-2h-1v1h1a1 0 0 1 1 1V14a1 0 0 1-1 1H3a1 0 0 1-1-1V3.5a1 0 0 1 1-1h1v-1z"/>
-                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-                    </svg>
-                </span>
-                <span class="logo-text">My-Task Admin</span>
-            </a>
-            <!-- Menu: main ul -->
+<div class="main-wrapper">
 
-            <ul class="menu-list flex-grow-1 mt-3">
-                <li><a class="m-link" routerLink="/admin/overview" routerLinkActive="active"><i class="icofont-home"></i> <span>Tableau de Bord</span></a></li>
-                <li><a class="m-link" routerLink="/admin/teams" routerLinkActive="active"><i class="icofont-users"></i> <span>Membres & Equipes</span></a></li>
-                <li><a class="m-link" routerLink="/admin/projects" routerLinkActive="active"><i class="icofont-briefcase"></i> <span>Tous les Projets</span></a></li>
-                <li><a class="m-link" routerLink="/admin/tasks" routerLinkActive="active"><i class="icofont-tasks"></i> <span>Tâches Système</span></a></li>
-                <li><a class="m-link" routerLink="/admin/reclamations" routerLinkActive="active"><i class="icofont-exclamation-circle text-danger"></i> <span>Réclamations</span></a></li>
+    <!-- Topbar Start -->
+    <header class="navbar-header">
+        <div class="page-container topbar-menu">
+            <div class="d-flex align-items-center gap-2">
+
+                <!-- Logo -->
+                <a routerLink="/admin" class="logo">
+                    <span class="logo-light">
+                        <span class="logo-lg"><img src="assets/assets/img/logo.svg" alt="logo"></span>
+                        <span class="logo-sm"><img src="assets/assets/img/logo-small.svg" alt="small logo"></span>
+                    </span>
+                    <span class="logo-dark">
+                        <span class="logo-lg"><img src="assets/assets/img/logo-white.svg" alt="dark logo"></span>
+                    </span>
+                </a>
+
+                <!-- Sidebar Mobile Button -->
+                <a id="mobile_btn" class="mobile-btn" href="#sidebar">
+                    <i class="ti ti-menu-deep fs-24"></i>
+                </a>
+
+                <button class="sidenav-toggle-btn btn border-0 p-0" id="toggle_btn2"> 
+                    <i class="ti ti-arrow-bar-to-right"></i>
+                </button> 
                 
-                <li class="divider mt-4 py-2 border-top"></li>
-                <li><a class="m-link text-warning" href="javascript:void(0)" (click)="logout()"><i class="icofont-logout"></i> <span>Déconnexion</span></a></li>
-            </ul>
+                <!-- Search (Template Feature) -->
+                <div class="me-auto d-flex align-items-center header-search d-lg-flex d-none">
+                    <div class="input-icon position-relative me-2">
+                       <input type="text" class="form-control" placeholder="Rechercher...">
+                       <span class="input-icon-addon d-inline-flex p-0 header-search-icon"><i class="ti ti-command"></i></span>
+                    </div>
+                </div>
+                
+            </div>
 
-            <!-- Menu: menu colapse btn -->
-            <button type="button" class="btn btn-link sidebar-mini-btn text-light">
-                <span class="ms-2"><i class="icofont-bubble-right"></i></span>
-            </button>
-        </div>
-    </div>
+            <div class="d-flex align-items-center">
+            
+                <!-- Maximize -->
+                <div class="header-item">
+                    <div class="dropdown me-2">
+                        <a href="javascript:void(0);" class="btn topbar-link btnFullscreen"><i class="ti ti-maximize"></i></a>
+                    </div> 
+                </div> 
 
-    <!-- main body area -->
-    <div class="main px-lg-4 px-md-4">
+                <!-- Dark Mode -->
+                <div class="header-item d-none d-sm-flex me-2">
+                    <button class="topbar-link btn" id="light-dark-mode" type="button">
+                        <i class="ti ti-moon fs-16"></i>
+                    </button>
+                </div>
 
-        <!-- Body: Header -->
-        <div class="header">
-            <nav class="navbar py-4">
-                <div class="container-xxl">
-                    
-                    <!-- header rightbar icon -->
-                    <div class="h-right d-flex align-items-center mr-5 mr-lg-0 order-1">
-                        
-                        <div class="dropdown user-profile ml-2 ml-sm-3 d-flex align-items-center zindex-popover">
-                            <div class="u-info me-2 text-end">
-                                <p class="mb-0 line-height-sm"><span class="font-weight-bold">Admin</span></p>
-                                <small>Administrateur Système</small>
+                <!-- Notifications -->
+                <div class="header-item">
+                    <div class="dropdown me-2">
+                        <button class="topbar-link btn dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown" type="button">
+                            <i class="ti ti-bell-check fs-18"></i>
+                            <span class="badge rounded-pill bg-danger" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+                        </button>
+
+                        <div class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg">
+                            <div class="p-2 border-bottom d-flex align-items-center justify-content-between">
+                                <h6 class="m-0 fs-16 fw-semibold">Notifications</h6>
+                                <a *ngIf="notifications.length > 0" href="javascript:void(0);" (click)="markAllAsRead()" class="fs-12 text-primary">Tout marquer lu</a>
                             </div>
-                            <a class="nav-link dropdown-toggle pulse p-0" href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static">
-                                <img class="avatar lg rounded-circle img-thumbnail" src="assets/images/profile_av.png" alt="profile">
-                            </a>
-                            <div class="dropdown-menu rounded-lg shadow border-0 dropdown-animation dropdown-menu-end p-0 m-0">
-                                <div class="card border-0 w280">
-                                    <div class="card-body pb-0">
-                                        <div class="d-flex py-1">
-                                            <img class="avatar rounded-circle" src="assets/images/profile_av.png" alt="profile">
-                                            <div class="flex-fill ms-3">
-                                                <p class="mb-0"><span class="font-weight-bold">Admin</span></p>
-                                                <small class="">admin&#64;system.com</small>
-                                            </div>
+                            <div class="notification-body" data-simplebar style="max-height: 250px;">
+                                <div *ngIf="notifications.length === 0" class="p-3 text-center text-muted">Aucune nouvelle notification</div>
+                                <div *ngFor="let notif of notifications" class="p-3 border-bottom notification-item" (click)="markAsRead(notif.id)">
+                                    <div class="d-flex align-items-start">
+                                        <div class="avatar avatar-xs bg-soft-primary text-primary rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                            <i class="ti ti-info-circle fs-14"></i>
                                         </div>
-                                        <div><hr class="dropdown-divider border-dark"></div>
-                                    </div>
-                                    <div class="list-group m-2 ">
-                                        <a routerLink="/admin/tasks" class="list-group-item list-group-item-action border-0 "><i class="icofont-tasks fs-5 me-3"></i>Mes Tâches</a>
-                                        <a routerLink="/admin/teams" class="list-group-item list-group-item-action border-0 "><i class="icofont-ui-user-group fs-6 me-3"></i>Membres</a>
-                                        <a href="javascript:void(0)" (click)="logout()" class="list-group-item list-group-item-action border-0 "><i class="icofont-logout fs-6 me-3"></i>Déconnexion</a>
+                                        <div class="flex-grow-1">
+                                            <p class="mb-0 fs-13 text-dark">{{ notif.message }}</p>
+                                            <small class="text-muted fs-11">{{ notif.createdAt | date:'shortTime' }}</small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Dropdown -->
+                <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center">
+                    <a href="javascript:void(0);" class="topbar-link dropdown-toggle drop-arrow-none position-relative" data-bs-toggle="dropdown" data-bs-offset="0,22">
+                        <img src="assets/assets/img/profiles/avatar-01.jpg" width="38" class="rounded-1 d-flex" alt="user-image">
+                        <span class="online text-success"><i class="ti ti-circle-filled d-flex bg-white rounded-circle border border-1 border-white"></i></span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-md p-2">
+                    
+                        <div class="d-flex align-items-center bg-light rounded-3 p-2 mb-2">
+                            <img src="assets/assets/img/profiles/avatar-01.jpg" class="rounded-circle" width="42" height="42" alt="Img">
+                            <div class="ms-2">
+                                <p class="fw-medium text-dark mb-0">{{ adminName }}</p>
+                                <span class="d-block fs-13">{{ adminRole }}</span>
+                            </div>
                         </div>
 
+                        <a routerLink="/admin/overview" class="dropdown-item">
+                            <i class="ti ti-user-circle me-1 align-middle"></i>
+                            <span class="align-middle">Profil</span>
+                        </a>
+
+                        <div class="pt-2 mt-2 border-top">
+                            <a href="javascript:void(0)" (click)="logout()" class="dropdown-item text-danger">
+                                <i class="ti ti-logout me-1 fs-17 align-middle"></i>
+                                <span class="align-middle">Déconnexion</span>
+                            </a>
+                        </div>
                     </div>
-    
-                    <!-- menu toggler -->
-                    <button class="navbar-toggler p-0 border-0 menu-toggle order-3" type="button" data-bs-toggle="collapse" data-bs-target="#mainHeader">
-                        <span class="fa fa-bars"></span>
-                    </button>
-    
-                    <!-- main menu Search - Removed per request -->
-                    <div class="order-0 col-lg-4 col-md-4 col-sm-12 col-12 mb-3 mb-md-0 d-none">
-                    </div>
-    
                 </div>
-            </nav>
+                    
+            </div>
+        </div>
+    </header>
+    <!-- Topbar End -->
+        
+    <!-- Sidenav Menu Start -->
+    <div class="sidebar" id="sidebar">
+        
+        <!-- Sidebar Logo -->
+        <div class="sidebar-logo">
+            <div>
+                <a routerLink="/admin" class="logo logo-normal">
+                    <img src="assets/assets/img/logo.svg" alt="Logo">
+                </a>
+                <a routerLink="/admin" class="logo-small">
+                    <img src="assets/assets/img/logo-small.svg" alt="Logo">
+                </a>
+            </div>
+            <button class="sidenav-toggle-btn btn border-0 p-0 active" id="toggle_btn"> 
+                <i class="ti ti-arrow-bar-to-left"></i>
+            </button>
+            <button class="sidebar-close">
+                <i class="ti ti-x align-middle"></i>
+            </button>                
         </div>
 
-        <!-- Body: Body -->
-        <div class="body d-flex py-3">
-            <div class="container-xxl">
-                <router-outlet></router-outlet>
-            </div>
-        </div> 
+        <!-- Sidenav Menu -->
+        <div class="sidebar-inner" data-simplebar>                
+            <div id="sidebar-menu" class="sidebar-menu text-uppercase fs-11 fw-bold">
+                <ul>
+                    <li class="menu-title"><span>Menu Principal</span></li>
+                    <li>
+                        <ul>
+                            <li class="submenu">
+                                <a href="javascript:void(0);" (click)="toggleDashboardMenu()" [ngClass]="{'active': router.url.includes('/admin/overview'), 'subdrop': dashboardMenuOpen}">
+                                    <i class="ti ti-dashboard"></i><span>Dashboard</span><span class="menu-arrow"></span>
+                                </a>
+                                <ul [style.display]="dashboardMenuOpen ? 'block' : 'none'">
+                                    <li><a routerLink="/admin/overview" routerLinkActive="active">Vue d'ensemble</a></li>
+                                    <li><a href="javascript:void(0);">Statistiques Ventes</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
 
+                    <li class="menu-title"><span>Projets & Travail</span></li>
+                    <li>
+                        <ul>
+                            <li><a routerLink="/admin/projects" routerLinkActive="active"><i class="ti ti-atom-2"></i><span>Gestion Projets</span></a></li>
+                            <li><a routerLink="/admin/tasks" routerLinkActive="active"><i class="ti ti-list-check"></i><span>Tâches Système</span></a></li>
+                        </ul>
+                    </li>
+
+                    <li class="menu-title"><span>Administration</span></li>
+                    <li>
+                        <ul>
+                            <li class="submenu">
+                                <a href="javascript:void(0);" (click)="toggleUsersMenu()" [ngClass]="{'active': router.url.includes('/admin/users') || router.url.includes('/admin/teams'), 'subdrop': usersMenuOpen}">
+                                    <i class="ti ti-users"></i><span>Utilisateurs</span><span class="menu-arrow"></span>
+                                </a>
+                                <ul [style.display]="usersMenuOpen ? 'block' : 'none'">
+                                    <li><a routerLink="/admin/users" routerLinkActive="active">Tous les Utilisateurs</a></li>
+                                    <li><a routerLink="/admin/teams" routerLinkActive="active">Equipes & Membres</a></li>
+                                    <li><a href="javascript:void(0);">Rôles & Permissions</a></li>
+                                </ul>
+                            </li>
+                            <li><a routerLink="/admin/reclamations" routerLinkActive="active"><i class="ti ti-ticket"></i><span>Réclamations</span></a></li>
+                        </ul>
+                    </li>
+
+                    <li class="menu-title"><span>Paramètres</span></li>
+                    <li>
+                        <ul>
+                            <li class="submenu">
+                                <a href="javascript:void(0);" (click)="toggleConfigMenu()" [class.subdrop]="configMenuOpen">
+                                    <i class="ti ti-settings-cog"></i><span>Configuration</span><span class="menu-arrow"></span>
+                                </a>
+                                <ul [style.display]="configMenuOpen ? 'block' : 'none'">
+                                    <li><a href="javascript:void(0);">Paramètres Généraux</a></li>
+                                    <li><a href="javascript:void(0);">Logs Système</a></li>
+                                    <li><a href="javascript:void(0);">Sauvegardes</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="javascript:void(0)" (click)="logout()" class="text-danger"><i class="ti ti-logout"></i><span>Déconnexion</span></a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Sidenav Menu End -->
+
+    <!-- Page Wrapper -->
+    <div class="page-wrapper">
+        <div class="content pb-0">
+            <router-outlet></router-outlet>
+        </div>
+        
+        <footer class="footer d-block d-md-flex justify-content-between text-md-start text-center mt-4 border-top pt-3">
+           <p class="mb-md-0 mb-1 fs-12 text-muted">Copyright &copy; 2024 CRMS - Gestion de Projet</p>
+           <div class="d-flex align-items-center gap-2 footer-links justify-content-center justify-content-md-end fs-12">
+              <a href="javascript:void(0);" class="text-muted">Support</a>
+              <a href="javascript:void(0);" class="text-muted">Confidentialité</a>
+           </div>
+        </footer>
     </div>
 </div>
+

@@ -1,9 +1,15 @@
+export interface Role {
+  id: number;
+  name: string;
+  description?: string;
+}
+
 export interface User {
   id: number;
   firstName: string;
   lastName: string;
   email: string;
-  roles?: string[];
+  roles: Role[];
 }
 
 export interface Team {
@@ -27,6 +33,13 @@ export interface Project {
   manager?: User;
 }
 
+export interface SubTask {
+  id?: number;
+  title: string;
+  done: boolean;
+  parentTaskId?: number;
+}
+
 export interface Task {
   id?: number;
   title: string;
@@ -38,6 +51,9 @@ export interface Task {
   actualEndTime?: Date;
   project?: Project;
   users?: User[];
+  createdBy?: User;
+  subtasks?: SubTask[]; // frontend-only local subtasks
+  reclamations?: Reclamation[]; // Added for detail views
 }
 
 export interface Ticket {
@@ -54,9 +70,11 @@ export interface Reclamation {
   id?: number;
   title?: string;
   message: string;
-  status?: string;
+  status?: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'REVIEWED';
   sender?: User;
   project?: Project;
   task?: Task;
+  response?: string;
   createdAt?: Date;
 }
+

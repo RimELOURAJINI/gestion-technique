@@ -18,8 +18,15 @@ import { MyTasksComponent } from './employee/my-tasks/my-tasks.component';
 import { MyProjectsComponent } from './employee/my-projects/my-projects.component';
 import { AdminReclamationsComponent } from './admin/reclamations/reclamations.component';
 import { AdminOverviewComponent } from './admin/overview/overview.component';
+import { UserManagementComponent } from './admin/user-management/user-management.component';
 import { ManagerOverviewComponent } from './manager/overview/overview.component';
 import { TicketsComponent as EmployeeTicketsComponent } from './employee/tickets/tickets.component';
+import { CalendarComponent } from './employee/calendar/calendar.component';
+import { TimesheetsComponent } from './employee/timesheets/timesheets.component';
+import { EmployeeSettingsComponent } from './employee/settings/settings.component';
+import { EmployeePerformanceComponent } from './employee/performance/performance.component';
+import { TaskDetailComponent } from './employee/task-detail/task-detail.component';
+import { ProjectDetailComponent } from './employee/project-detail/project-detail.component';
 
 import { SignupComponent } from './signup/signup.component';
 
@@ -37,6 +44,7 @@ export const routes: Routes = [
       { path: 'projects', component: ProjectManagementComponent },
       { path: 'tasks', component: TaskManagementComponent },
       { path: 'reclamations', component: AdminReclamationsComponent },
+      { path: 'users', component: UserManagementComponent },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }
     ]
   },
@@ -64,6 +72,12 @@ export const routes: Routes = [
       { path: 'tasks', component: MyTasksComponent },
       { path: 'projects', component: MyProjectsComponent },
       { path: 'tickets', component: EmployeeTicketsComponent },
+      { path: 'calendar', component: CalendarComponent },
+      { path: 'timesheets', component: TimesheetsComponent },
+      { path: 'settings', component: EmployeeSettingsComponent },
+      { path: 'performance', component: EmployeePerformanceComponent },
+      { path: 'tasks/:id', component: TaskDetailComponent },
+      { path: 'projects/:id', component: ProjectDetailComponent },
       { path: '', redirectTo: 'home', pathMatch: 'full' }
     ]
   },

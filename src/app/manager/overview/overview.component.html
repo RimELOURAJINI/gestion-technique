@@ -1,107 +1,172 @@
-<div class="row g-3 mb-3 row-deck">
-    <div class="col-md-12 col-lg-3 col-xl-3">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="avatar lg rounded-circle no-thumbnail bg-primary bg-opacity-10"><i class="icofont-briefcase text-primary fs-4"></i></div>
-                    <div class="flex-fill ms-3">
-                        <div class="text-muted mb-0 small uppercase fw-bold">Mes Projets</div>
-                        <div class="h5 mb-0 fw-bold">{{stats.projects}}</div>
+<!-- Page Header -->
+<div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
+    <div>
+        <h4 class="mb-1">Tableau de Bord Manager</h4>
+        <p class="text-muted fs-13">Suivi des performances de l'équipe et avancement des projets.</p>
+    </div>
+    <div class="gap-2 d-flex align-items-center flex-wrap">
+        <div id="reportrange" class="reportrange-picker d-flex align-items-center shadow">
+            <i class="ti ti-calendar-due text-dark fs-14 me-1"></i>
+            <span class="reportrange-picker-field">{{ today | date:'dd MMM yyyy' }}</span>
+        </div>
+        <a href="javascript:void(0);" class="btn btn-icon btn-outline-light shadow" data-bs-toggle="tooltip" title="Refresh"><i class="ti ti-refresh"></i></a>
+    </div>
+</div>
+<!-- /Page Header -->
+
+<!-- Welcome Wrap -->
+<div class="welcome-wrap mb-4">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 bg-dark rounded p-4">
+        <div>
+            <h2 class="mb-1 text-white fs-24">Tableau de Bord, Manager</h2>
+            <p class="text-light fs-14 mb-0">Vous avez {{stats.activeTasks}} tâches actives à superviser.</p>
+        </div>
+        <div class="d-flex align-items-center flex-wrap gap-2">
+            <a routerLink="/manager/projects" class="btn btn-primary btn-sm">Mes Projets</a>
+            <a routerLink="/manager/tasks" class="btn btn-light btn-sm">Gérer les Tâches</a>
+        </div>
+    </div>
+</div>
+<!-- /Welcome Wrap -->
+
+<!-- Stats Cards -->
+<div class="row row-gap-3 mb-4">
+    <!-- Mes Projets -->
+    <div class="col-xl-3 col-sm-6 d-flex">
+        <div class="card flex-fill mb-0 position-relative overflow-hidden">
+            <div class="card-body position-relative z-1">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <p class="fs-14 mb-1 text-muted">Mes Projets</p>
+                        <h2 class="mb-1 fs-20 fw-bold">{{stats.projects}}</h2>
+                        <p class="text-success mb-0 fs-13">Projets assignés</p>
                     </div>
+                    <span class="avatar avatar-md rounded-circle bg-soft-primary border border-primary">
+                        <i class="ti ti-briefcase fs-16 text-primary"></i>
+                    </span>
                 </div>
+            </div>
+            <img src="assets/assets/img/icons/elemnt-01.svg" alt="icon" class="img-fluid position-absolute top-0 start-0">
+        </div>
+    </div>
+
+    <!-- Tâches Actives -->
+    <div class="col-xl-3 col-sm-6 d-flex">
+        <div class="card flex-fill mb-0 position-relative overflow-hidden">
+            <div class="card-body position-relative z-1">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <p class="fs-14 mb-1 text-muted">Tâches Actives</p>
+                        <h2 class="mb-1 fs-20 fw-bold text-info">{{stats.activeTasks}}</h2>
+                        <p class="text-info mb-0 fs-13">En cours d'exécution</p>
+                    </div>
+                    <span class="avatar avatar-md rounded-circle bg-soft-info border border-info">
+                        <i class="ti ti-list-check fs-16 text-info"></i>
+                    </span>
+                </div>
+            </div>
+            <img src="assets/assets/img/icons/elemnt-02.svg" alt="icon" class="img-fluid position-absolute top-0 start-0">
+        </div>
+    </div>
+
+    <!-- Tâches Terminées -->
+    <div class="col-xl-3 col-sm-6 d-flex">
+        <div class="card flex-fill mb-0 position-relative overflow-hidden">
+            <div class="card-body position-relative z-1">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <p class="fs-14 mb-1 text-muted">Tâches Terminées</p>
+                        <h2 class="mb-1 fs-20 fw-bold text-success">{{stats.completedTasks}}</h2>
+                        <p class="text-success mb-0 fs-13">Objectifs atteints</p>
+                    </div>
+                    <span class="avatar avatar-md rounded-circle bg-soft-success border border-success">
+                        <i class="ti ti-circle-check fs-16 text-success"></i>
+                    </span>
+                </div>
+            </div>
+            <img src="assets/assets/img/icons/elemnt-03.svg" alt="icon" class="img-fluid position-absolute top-0 start-0">
+        </div>
+    </div>
+
+    <!-- Mon Équipe -->
+    <div class="col-xl-3 col-sm-6 d-flex">
+        <div class="card flex-fill mb-0 position-relative overflow-hidden">
+            <div class="card-body position-relative z-1">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <p class="fs-14 mb-1 text-muted">Mon Équipe</p>
+                        <h2 class="mb-1 fs-20 fw-bold">{{stats.teamMembers}}</h2>
+                        <p class="text-purple mb-0 fs-13">Collaborateurs actifs</p>
+                    </div>
+                    <span class="avatar avatar-md rounded-circle bg-soft-purple border border-purple">
+                        <i class="ti ti-users-group fs-16 text-purple"></i>
+                    </span>
+                </div>
+            </div>
+            <img src="assets/assets/img/icons/elemnt-04.svg" alt="icon" class="img-fluid position-absolute top-0 start-0">
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Projects Progress -->
+    <div class="col-lg-7 d-flex">
+        <div class="card flex-fill">
+            <div class="card-header d-flex align-items-center justify-content-between py-3">
+                <h5 class="mb-0 fs-16 fw-bold">Performance de l'Équipe</h5>
+                <div class="dropdown">
+                    <a class="dropdown-toggle btn btn-outline-light shadow-sm p-1 px-2 fs-12" data-bs-toggle="dropdown" href="javascript:void(0);">
+                        Derniers 7 Jours
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="sales_chart"></div>
             </div>
         </div>
     </div>
-    <div class="col-md-12 col-lg-3 col-xl-3">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="avatar lg rounded-circle no-thumbnail bg-warning bg-opacity-10"><i class="icofont-tasks text-warning fs-4"></i></div>
-                    <div class="flex-fill ms-3">
-                        <div class="text-muted mb-0 small uppercase fw-bold">Tâches Actives</div>
-                        <div class="h5 mb-0 fw-bold">{{stats.activeTasks}}</div>
+
+    <!-- Recent Tasks -->
+    <div class="col-lg-5 d-flex">
+        <div class="card flex-fill">
+            <div class="card-header d-flex align-items-center justify-content-between py-3">
+                <h5 class="mb-0 fs-16 fw-bold">Dernières Tâches</h5>
+                <a routerLink="/manager/tasks" class="btn btn-sm btn-light">Gérer</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <div *ngFor="let t of recentTasks" class="list-group-item px-3 py-3 border-0 border-bottom">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar avatar-sm avatar-rounded me-3 border" 
+                                    [class.bg-soft-danger]="t.priority === 'HIGH'" 
+                                    [class.bg-soft-warning]="t.priority === 'MEDIUM'"
+                                    [class.bg-soft-info]="t.priority === 'LOW'">
+                                    <i class="ti ti-bolt fs-14" 
+                                        [class.text-danger]="t.priority === 'HIGH'"
+                                        [class.text-warning]="t.priority === 'MEDIUM'"
+                                        [class.text-info]="t.priority === 'LOW'"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fs-13 fw-bold text-truncate" style="max-width: 180px;">{{t.title}}</h6>
+                                    <small class="text-muted fs-11 text-uppercase">{{t.status}}</small>
+                                </div>
+                            </div>
+                            <span class="badge fs-10" 
+                                [class.badge-soft-danger]="t.priority === 'HIGH'" 
+                                [class.badge-soft-warning]="t.priority === 'MEDIUM'"
+                                [class.badge-soft-info]="t.priority === 'LOW'">
+                                {{t.priority}}
+                            </span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-12 col-lg-3 col-xl-3">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="avatar lg rounded-circle no-thumbnail bg-success bg-opacity-10"><i class="icofont-check-circled text-success fs-4"></i></div>
-                    <div class="flex-fill ms-3">
-                        <div class="text-muted mb-0 small uppercase fw-bold">Terminées</div>
-                        <div class="h5 mb-0 fw-bold">{{stats.completedTasks}}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-12 col-lg-3 col-xl-3">
-        <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="avatar lg rounded-circle no-thumbnail bg-info bg-opacity-10"><i class="icofont-users-alt-2 text-info fs-4"></i></div>
-                    <div class="flex-fill ms-3">
-                        <div class="text-muted mb-0 small uppercase fw-bold">Mon Équipe</div>
-                        <div class="h5 mb-0 fw-bold">{{stats.teamMembers}}</div>
-                    </div>
+                <div *ngIf="recentTasks.length === 0" class="text-center py-5">
+                    <i class="ti ti-clipboard-list fs-32 text-muted mb-2"></i>
+                    <p class="text-muted small mb-0">Aucune tâche récente.</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row g-3">
-    <div class="col-md-12 col-lg-7">
-        <div class="card shadow-sm border-0">
-            <div class="card-header py-3 bg-transparent border-bottom-0">
-                <h6 class="m-0 fw-bold">Progrès des Projets</h6>
-            </div>
-            <div class="card-body">
-                <div *ngFor="let p of myProjects" class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="fw-bold">{{p.name}}</span>
-                        <small class="text-muted">{{p.status}}</small>
-                    </div>
-                    <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-primary" role="progressbar" [style.width]="p.status === 'COMPLETED' ? '100%' : '60%'"></div>
-                    </div>
-                </div>
-                <div *ngIf="myProjects.length === 0" class="text-center py-4">
-                    <p class="text-muted italic">Aucun projet assigné.</p>
-                </div>
-                <div class="text-center mt-3">
-                    <a routerLink="/manager/projects" class="btn btn-sm btn-outline-primary px-4 rounded-pill">Détails des Projets</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-12 col-lg-5">
-        <div class="card shadow-sm border-0">
-            <div class="card-header py-3 bg-transparent border-bottom-0">
-                <h6 class="m-0 fw-bold">Dernières Tâches</h6>
-            </div>
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    <li *ngFor="let t of recentTasks" class="list-group-item px-0 border-0 mb-2">
-                        <div class="d-flex align-items-center">
-                            <div class="avatar rounded py-1 px-2 border text-center me-3" style="min-width: 50px;">
-                                <small class="d-block text-uppercase fw-bold">{{t.priority}}</small>
-                            </div>
-                            <div class="flex-fill">
-                                <h6 class="mb-0 fw-bold small text-truncate" style="max-width: 200px;">{{t.title}}</h6>
-                                <small class="text-muted">{{t.status}}</small>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-                <div *ngIf="recentTasks.length === 0" class="text-center py-4 text-muted small">Aucune tâche.</div>
-                <div class="text-center mt-2">
-                    <a routerLink="/manager/tasks" class="btn btn-sm btn-outline-secondary px-4 rounded-pill">Gérer les Tâches</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>

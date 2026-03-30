@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ManagerService } from '../../services/manager.service';
+import { TeamLeaderService } from '../../services/manager.service';
 import { AuthService } from '../../services/auth.service';
 import { Project, Task, User } from '../../models/models';
 import { RouterLink } from '@angular/router';
+
+declare var initDashboardCharts: any;
 
 @Component({
   selector: 'app-manager-overview',
@@ -12,25 +14,36 @@ import { RouterLink } from '@angular/router';
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.css'
 })
-export class ManagerOverviewComponent implements OnInit {
+export class ManagerOverviewComponent implements OnInit, AfterViewInit {
   stats = {
     projects: 0,
     activeTasks: 0,
     completedTasks: 0,
     teamMembers: 0
   };
+  today: Date = new Date();
   myProjects: Project[] = [];
   recentTasks: Task[] = [];
   isLoading = true;
 
   constructor(
-    private managerService: ManagerService,
+    private teamLeaderService: TeamLeaderService,
     private authService: AuthService
   ) {}
 
   ngOnInit() {
     this.loadDashboardData();
   }
+
+  ngAfterViewInit() {
+    // Small delay to ensure DOM is fully rendered before chart init
+    setTimeout(() => {
+      if (typeof initDashboardCharts === 'function') {
+        initDashboardCharts();
+      }
+    }, 500);
+  }
+
 
   loadDashboardData() {
     const userId = this.authService.getUserId();
@@ -39,7 +52,7 @@ export class ManagerOverviewComponent implements OnInit {
     this.isLoading = true;
     
     // Load Projects
-    this.managerService.getProjectsByUserId(userId).subscribe(projects => {
+    this.teamLeaderService.getProjectsByUserId(userId).subscribe(projects => {
       this.myProjects = projects;
       this.stats.projects = projects.length;
       
@@ -52,7 +65,7 @@ export class ManagerOverviewComponent implements OnInit {
       }
 
       projects.forEach(p => {
-        this.managerService.getTasksByProjectId(p.id).subscribe(tasks => {
+        this.teamLeaderService.getTasksByProjectId(p.id).subscribe(tasks => {
           allTasks = [...allTasks, ...tasks];
           projectsProcessed++;
 

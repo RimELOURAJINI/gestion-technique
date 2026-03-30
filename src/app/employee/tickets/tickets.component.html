@@ -1,95 +1,123 @@
-<div class="row align-items-center">
-    <div class="border-0 mb-4">
-        <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-            <h3 class="fw-bold mb-0">Mes Réclamations</h3>
-            <button class="btn btn-primary btn-set-task w-sm-100" (click)="toggleCreateForm()">
-                <i class="icofont-plus-circle me-2 fs-6"></i>{{ showCreateForm ? 'Annuler' : 'Nouvelle Réclamation' }}
-            </button>
-        </div>
-    </div>
-</div>
+<!-- Page Content -->
+<div class="content container-fluid">
 
-<div class="row g-3 mb-3" *ngIf="showCreateForm">
-    <div class="col-md-12">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header py-3 bg-transparent border-bottom-0">
-                <h6 class="m-0 fw-bold">Détails de la réclamation</h6>
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-12">
-                        <label class="form-label">Sujet</label>
-                        <input type="text" class="form-control" [(ngModel)]="newTicket.subject" placeholder="Ex: Matériel défectueux, Problème d'accès...">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Priorité</label>
-                        <select class="form-select" [(ngModel)]="newTicket.priority">
-                            <option value="LOW">Basse</option>
-                            <option value="MEDIUM">Moyenne</option>
-                            <option value="HIGH">Haute</option>
-                        </select>
-                    </div>
-                    <div class="col-md-12">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-control" rows="4" [(ngModel)]="newTicket.description" placeholder="Décrivez votre problème en détail..."></textarea>
-                    </div>
-                    <div class="col-md-12 text-end">
-                        <button class="btn btn-primary" (click)="submitTicket()" [disabled]="!newTicket.subject || !newTicket.description">Envoyer</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+	<!-- Page Header -->
+	<div class="page-header">
+		<div class="row align-items-center">
+			<div class="col-md-4">
+				<h3 class="page-title">Mes Réclamations</h3>
+				<ul class="breadcrumb">
+					<li class="breadcrumb-item"><a href="javascript:void(0)">Espace Employé</a></li>
+					<li class="breadcrumb-item active">Tickets</li>
+				</ul>
+			</div>
+			<div class="col-md-8 text-end">
+				<div class="head-icons">
+					<button class="btn btn-primary d-flex align-items-center ms-auto" (click)="toggleCreateForm()">
+						<i class="ti" [ngClass]="showCreateForm ? 'ti-x' : 'ti-plus'"></i>
+						<span class="ms-1">{{ showCreateForm ? 'Annuler' : 'Nouvelle Réclamation' }}</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- /Page Header -->
 
-<div class="row g-3 mb-3">
-    <div class="col-md-12">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="ps-4">Sujet</th>
-                                <th>Priorité</th>
-                                <th>Statut</th>
-                                <th>Date</th>
-                                <th class="text-end pe-4">Détails</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let ticket of tickets">
-                                <td class="ps-4">
-                                    <span class="fw-bold">{{ticket.subject}}</span>
-                                </td>
-                                <td>
-                                    <span class="badge" [ngClass]="{
-                                        'bg-danger': ticket.priority === 'HIGH',
-                                        'bg-warning': ticket.priority === 'MEDIUM',
-                                        'bg-info': ticket.priority === 'LOW'
-                                    }">{{ticket.priority}}</span>
-                                </td>
-                                <td>
-                                    <span class="badge" [ngClass]="{
-                                        'bg-success': ticket.status === 'CLOSED',
-                                        'bg-primary': ticket.status === 'OPEN',
-                                        'bg-warning': ticket.status === 'IN_PROGRESS'
-                                    }">{{ticket.status}}</span>
-                                </td>
-                                <td>{{ticket.createdAt | date:'shortDate'}}</td>
-                                <td class="text-end pe-4">
-                                    <button class="btn btn-outline-secondary btn-sm" title="Voir plus">
-                                        <i class="icofont-info-circle"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr *ngIf="tickets.length === 0">
-                                <td colspan="5" class="text-center py-4 text-muted">Vous n'avez envoyé aucune réclamation</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+	<!-- Create Form -->
+	<div class="row g-3 mb-4" *ngIf="showCreateForm">
+		<div class="col-md-12">
+			<div class="card bg-light-gradient border-0 shadow-sm">
+				<div class="card-header py-3 bg-transparent border-bottom-0">
+					<h6 class="m-0 fw-bold text-dark"><i class="ti ti-edit me-2"></i>Détails de la demande</h6>
+				</div>
+				<div class="card-body">
+					<div class="row g-3">
+						<div class="col-md-6">
+							<label class="form-label fw-medium">Sujet / Titre *</label>
+							<input type="text" class="form-control border-0 shadow-none" [(ngModel)]="newReclamation.title" placeholder="Ex: Matériel défectueux, Erreur dans le projet...">
+						</div>
+						<div class="col-md-6">
+							<label class="form-label fw-medium">Projet Concerné *</label>
+							<select class="form-select border-0 shadow-none" [(ngModel)]="selectedProjectId">
+								<option [ngValue]="undefined">-- Choisir un projet --</option>
+								<option *ngFor="let p of projects" [ngValue]="p.id">{{p.name}}</option>
+							</select>
+						</div>
+						<div class="col-md-12">
+							<label class="form-label fw-medium">Message / Description *</label>
+							<textarea class="form-control border-0 shadow-none" rows="4" [(ngModel)]="newReclamation.message" placeholder="Décrivez votre problème en détail..."></textarea>
+						</div>
+						<div class="col-md-12 text-end">
+							<button class="btn btn-primary px-4 fw-bold" (click)="submitTicket()" [disabled]="!newReclamation.title || !newReclamation.message || !selectedProjectId">
+								<i class="ti ti-send me-1"></i> Envoyer la demande
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- List / History -->
+	<div class="card main-card">
+		<div class="card-header py-3 bg-transparent border-bottom d-flex align-items-center justify-content-between">
+			<h6 class="m-0 fw-bold"><i class="ti ti-history me-2"></i>Historique de mes envois</h6>
+		</div>
+		<div class="card-body p-0">
+			<div class="table-responsive custom-table">
+				<table class="table table-hover align-middle mb-0">
+					<thead class="thead-light">
+						<tr>
+							<th class="ps-4">Sujet</th>
+							<th>Projet</th>
+							<th>Statut</th>
+							<th>Date</th>
+							<th>Réponse Admin / Manager</th>
+							<th class="text-end pe-4">Détails</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let r of reclamations">
+							<td class="ps-4">
+								<span class="text-dark fw-bold small">{{r.title}}</span>
+							</td>
+							<td>
+								<span class="text-muted fs-13">{{r.project?.name || 'N/A'}}</span>
+							</td>
+							<td>
+								<span class="badge badge-pill" [ngClass]="{
+									'bg-success': r.status === 'ACCEPTED',
+									'bg-danger': r.status === 'REJECTED',
+									'bg-info': r.status === 'REVIEWED',
+									'bg-warning': r.status === 'PENDING' || !r.status
+								}">{{r.status === 'ACCEPTED' ? 'Acceptée' : (r.status === 'REJECTED' ? 'Refusée' : (r.status === 'REVIEWED' ? 'Revue' : 'En attente'))}}</span>
+							</td>
+							<td><span class="text-muted fs-13">{{r.createdAt | date:'dd MMM yyyy'}}</span></td>
+							<td>
+								<div *ngIf="r.response" class="admin-reply-box bg-light-gradient p-2 rounded small">
+									<i class="ti ti-corner-down-right me-1 text-primary"></i> {{r.response}}
+								</div>
+								<span *ngIf="!r.response" class="text-muted fs-12 italic">Aucune réponse pour le moment</span>
+							</td>
+							<td class="text-end pe-4">
+								<a href="javascript:void(0);" class="btn btn-sm btn-soft-secondary rounded-circle" data-bs-toggle="tooltip" title="Voir plus">
+									<i class="ti ti-info-circle"></i>
+								</a>
+							</td>
+						</tr>
+						<tr *ngIf="reclamations.length === 0">
+							<td colspan="6" class="text-center py-5">
+								<div class="empty-state">
+									<i class="ti ti-ticket-off fs-40 text-muted mb-3"></i>
+									<p class="text-muted">Vous n'avez envoyé aucune réclamation.</p>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
 </div>
+<!-- /Page Content -->

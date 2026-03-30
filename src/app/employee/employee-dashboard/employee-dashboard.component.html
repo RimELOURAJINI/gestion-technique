@@ -1,78 +1,211 @@
-<div id="mytask-layout" class="theme-indigo">
-    
-    <!-- sidebar -->
-    <div class="sidebar px-4 py-4 py-md-5 me-0">
-        <div class="d-flex flex-column h-100">
-            <a routerLink="/employee/home" class="mb-0 brand-icon">
-                <span class="logo-icon">
-                    <svg width="35" height="35" fill="currentColor" class="bi bi-clipboard-check" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
-                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 0 0 0 2 2h10a2 0 0 0 2-2V3.5a2 0 0 0-2-2h-1v1h1a1 0 0 1 1 1V14a1 0 0 1-1 1H3a1 0 0 1-1-1V3.5a1 0 0 1 1-1h1v-1z"/>
-                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-                    </svg>
-                </span>
-                <span class="logo-text">My-Task Espace</span>
-            </a>
-            <!-- Menu: main ul -->
-            <ul class="menu-list flex-grow-1 mt-3">
-                <li><a class="m-link" routerLink="/employee/home" routerLinkActive="active"><i class="icofont-home"></i> <span>Dashboard</span></a></li>
-                <li><a class="m-link" routerLink="/employee/projects" routerLinkActive="active"><i class="icofont-briefcase"></i> <span>Mes Projets</span></a></li>
-                <li><a class="m-link" routerLink="/employee/tasks" routerLinkActive="active"><i class="icofont-tasks"></i> <span>Mes Tâches</span></a></li>
-                <li><a class="m-link" routerLink="/employee/tickets" routerLinkActive="active"><i class="icofont-ticket"></i> <span>Mes Réclamations</span></a></li>
+<div class="main-wrapper">
+
+    <!-- Topbar Start -->
+    <header class="navbar-header">
+        <div class="page-container topbar-menu">
+            <div class="d-flex align-items-center gap-2">
+
+                <!-- Logo -->
+                <a routerLink="/employee/home" class="logo">
+                    <span class="logo-light">
+                        <span class="logo-lg"><img src="assets/assets/img/logo.svg" alt="logo"></span>
+                        <span class="logo-sm"><img src="assets/assets/img/logo-small.svg" alt="small logo"></span>
+                    </span>
+                    <span class="logo-dark">
+                        <span class="logo-lg"><img src="assets/assets/img/logo-white.svg" alt="dark logo"></span>
+                    </span>
+                </a>
+
+                <!-- Sidebar Mobile Button -->
+                <a id="mobile_btn" class="mobile-btn" href="#sidebar">
+                    <i class="ti ti-menu-deep fs-24"></i>
+                </a>
+
+                <button class="sidenav-toggle-btn btn border-0 p-0" id="toggle_btn2"> 
+                    <i class="ti ti-arrow-bar-to-right"></i>
+                </button> 
                 
-                <li class="divider mt-4 py-2 border-top"></li>
-                <li><a class="m-link text-warning" href="javascript:void(0)" (click)="logout()"><i class="icofont-logout"></i> <span>Déconnexion</span></a></li>
-            </ul>
+                <!-- Search -->
+                <div class="me-auto d-flex align-items-center header-search d-lg-flex d-none">
+                    <div class="input-icon position-relative me-2">
+                       <input type="text" class="form-control" placeholder="Rechercher tâche / document...">
+                       <span class="input-icon-addon d-inline-flex p-0 header-search-icon"><i class="ti ti-command"></i></span>
+                    </div>
+                </div>
+                
+            </div>
 
-        </div>
-    </div>
+            <div class="d-flex align-items-center">
+            
+                <div class="header-item">
+                    <div class="dropdown me-2">
+                        <a href="javascript:void(0);" class="btn topbar-link btnFullscreen"><i class="ti ti-maximize"></i></a>
+                    </div> 
+                </div> 
 
-    <!-- main body area -->
-    <div class="main px-lg-4 px-md-4">
+                <div class="header-item">
+                    <div class="dropdown me-2">
+                        <button class="topbar-link btn dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown" type="button">
+                            <i class="ti ti-bell-check fs-18"></i>
+                            <span class="badge rounded-pill bg-danger" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+                        </button>
 
-        <!-- Body: Header -->
-        <div class="header">
-            <nav class="navbar py-4">
-                <div class="container-xxl">
-    
-                    <!-- header rightbar icon -->
-                    <div class="h-right d-flex align-items-center mr-5 mr-lg-0 order-1">
-                        <div class="d-flex me-3">
-                            <a class="nav-link text-primary collapsed" href="javascript:void(0)" title="Obtenir de l'aide">
-                                <i class="icofont-info-square fs-5"></i>
-                            </a>
-                        </div>
-                        <div class="dropdown user-profile ml-2 ml-sm-3 d-flex align-items-center">
-                            <div class="u-info me-2 text-end">
-                                <p class="mb-0 line-height-sm"><span class="font-weight-bold">{{ employeeName }}</span></p>
-                                <small>{{ employeeRole }}</small>
+                        <div class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg">
+                            <div class="p-2 border-bottom d-flex align-items-center justify-content-between">
+                                <h6 class="m-0 fs-16 fw-semibold">Mes Notifications</h6>
+                                <a *ngIf="notifications.length > 0" href="javascript:void(0);" (click)="markAllAsRead()" class="fs-12 text-primary">Tout marquer lu</a>
                             </div>
-                            <div class="avatar lg rounded-circle img-thumbnail d-flex align-items-center justify-content-center bg-primary text-white">
+                            <div class="notification-body" data-simplebar style="max-height: 250px;">
+                                <div *ngIf="notifications.length === 0" class="p-3 text-center text-muted">Aucune nouvelle notification</div>
+                                <div *ngFor="let notif of notifications" class="p-3 border-bottom notification-item" (click)="markAsRead(notif.id)">
+                                    <div class="d-flex align-items-start">
+                                        <div class="avatar avatar-xs bg-soft-primary text-primary rounded-circle me-2 d-flex align-items-center justify-content-center">
+                                            <i class="ti ti-info-circle fs-14"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <p class="mb-0 fs-13 text-dark">{{ notif.message }}</p>
+                                            <small class="text-muted fs-11">{{ notif.createdAt | date:'shortTime' }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Dropdown -->
+                <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center">
+                    <a href="javascript:void(0);" class="topbar-link dropdown-toggle drop-arrow-none position-relative" data-bs-toggle="dropdown" data-bs-offset="0,22">
+                        <div class="avatar avatar-rounded avatar-md bg-info text-white d-flex align-items-center justify-content-center">
+                            {{ employeeInitials }}
+                        </div>
+                        <span class="online text-success"><i class="ti ti-circle-filled d-flex bg-white rounded-circle border border-1 border-white"></i></span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-md p-2">
+                    
+                        <div class="d-flex align-items-center bg-light rounded-3 p-2 mb-2">
+                            <div class="avatar avatar-rounded avatar-md bg-info text-white d-flex align-items-center justify-content-center me-2">
                                 {{ employeeInitials }}
                             </div>
+                            <div class="ms-1">
+                                <p class="fw-medium text-dark mb-0">{{ employeeName }}</p>
+                                <span class="d-block fs-13">{{ employeeRole }}</span>
+                            </div>
+                        </div>
+
+                        <a routerLink="/employee/home" class="dropdown-item">
+                            <i class="ti ti-user-circle me-1 align-middle"></i>
+                            <span class="align-middle">Mon Profil</span>
+                        </a>
+
+                        <div class="pt-2 mt-2 border-top">
+                            <a href="javascript:void(0)" (click)="logout()" class="dropdown-item text-danger">
+                                <i class="ti ti-logout me-1 fs-17 align-middle"></i>
+                                <span class="align-middle">Déconnexion</span>
+                            </a>
                         </div>
                     </div>
-    
-                    <!-- menu toggler -->
-                    <button class="navbar-toggler p-0 border-0 menu-toggle order-3" type="button" data-bs-toggle="collapse" data-bs-target="#mainHeader">
-                        <span class="fa fa-bars"></span>
-                    </button>
-    
-                    <!-- Welcome Text -->
-                    <div class="order-0 col-lg-4 col-md-4 col-sm-12 col-12 mb-3 mb-md-0 ">
-                        <h4 class="fw-bold mb-0">Bonjour, {{ employeeName }} !</h4>
-                    </div>
-    
                 </div>
-            </nav>
+                    
+            </div>
+        </div>
+    </header>
+    <!-- Topbar End -->
+        
+    <!-- Sidenav Menu Start -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div>
+                <a routerLink="/employee/home" class="logo logo-normal">
+                    <img src="assets/assets/img/logo.svg" alt="Logo">
+                </a>
+                <a routerLink="/employee/home" class="logo-small">
+                    <img src="assets/assets/img/logo-small.svg" alt="Logo">
+                </a>
+            </div>
+            <button class="sidenav-toggle-btn btn border-0 p-0 active" id="toggle_btn"> 
+                <i class="ti ti-arrow-bar-to-left"></i>
+            </button>
+            <button class="sidebar-close">
+                <i class="ti ti-x align-middle"></i>
+            </button>                
         </div>
 
-        <!-- Body: Body -->
-        <div class="body d-flex py-3">
-            <div class="container-xxl">
-                <router-outlet></router-outlet>
-            </div>
-        </div> 
+        <div class="sidebar-inner" data-simplebar>                
+            <div id="sidebar-menu" class="sidebar-menu text-uppercase fs-11 fw-bold">
+                <ul>
+                    <li class="menu-title"><span>Espace Travail</span></li>
+                    <li>
+                        <ul>
+                            <li class="submenu">
+                                <a href="javascript:void(0);" (click)="toggleDashboardMenu()" [ngClass]="{'active': router.url.includes('/employee/home') || router.url.includes('/employee/performance'), 'subdrop': dashboardMenuOpen}">
+                                    <i class="ti ti-dashboard"></i><span>Dashboards</span><span class="menu-arrow"></span>
+                                </a>
+                                <ul [style.display]="dashboardMenuOpen ? 'block' : 'none'">
+                                    <li><a routerLink="/employee/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Mon Accueil</a></li>
+                                    <li><a routerLink="/employee/performance" routerLinkActive="active">Performance Indiv.</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
 
+                    <li class="menu-title"><span>Mes Missions</span></li>
+                    <li>
+                        <ul>
+                            <li><a routerLink="/employee/projects" routerLinkActive="active"><i class="ti ti-atom-2"></i><span>Mes Projets</span></a></li>
+                            <li class="submenu">
+                                <a href="javascript:void(0);" (click)="toggleTasksMenu()" [ngClass]="{'active': router.url.includes('/employee/tasks'), 'subdrop': tasksMenuOpen}">
+                                    <i class="ti ti-list-check"></i><span>Mes Tâches</span><span class="menu-arrow"></span>
+                                </a>
+                                <ul [style.display]="tasksMenuOpen ? 'block' : 'none'">
+                                    <li><a routerLink="/employee/tasks" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Toutes les tâches</a></li>
+                                    <li><a routerLink="/employee/tasks" [queryParams]="{filter: 'today'}" routerLinkActive="active">To do list d'aujourd'hui</a></li>
+                                    <li><a routerLink="/employee/tasks" [queryParams]="{filter: 'subtasks'}" routerLinkActive="active">Mes Sous-tâches</a></li>
+                                </ul>
+                            </li>
+                            <li><a routerLink="/employee/calendar" routerLinkActive="active"><i class="ti ti-calendar-event"></i><span>Calendrier</span></a></li>
+                        </ul>
+                    </li>
+
+                    <li class="menu-title"><span>Support & RH</span></li>
+                    <li>
+                        <ul>
+                            <li><a routerLink="/employee/tickets" routerLinkActive="active"><i class="ti ti-ticket"></i><span>Mes Réclamations</span></a></li>
+                            <li><a routerLink="/employee/timesheets" routerLinkActive="active"><i class="ti ti-clock-record"></i><span>Feuilles de temps</span></a></li>
+                        </ul>
+                    </li>
+
+                    <li class="menu-title"><span>Compte</span></li>
+                    <li>
+                        <ul>
+                            <li><a routerLink="/employee/settings" routerLinkActive="active"><i class="ti ti-settings-cog"></i><span>Paramètres</span></a></li>
+                            <li><a href="javascript:void(0)" (click)="logout()" class="text-danger"><i class="ti ti-logout"></i><span>Déconnexion</span></a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Sidenav Menu End -->
+
+    <!-- Page Wrapper -->
+    <div class="page-wrapper">
+        <div class="content pb-0">
+            <div class="welcome-header d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h4 class="fw-bold mb-1">Bonjour, {{ employeeName }} !</h4>
+                    <p class="text-muted small mb-0">Ravi de vous revoir. Voici vos activités du jour.</p>
+                </div>
+            </div>
+            <router-outlet></router-outlet>
+        </div>
+        
+        <footer class="footer d-block d-md-flex justify-content-between text-md-start text-center mt-4 border-top pt-3">
+           <p class="mb-md-0 mb-1 fs-12 text-muted">Copyright &copy; 2024 CRMS - Portail Employé</p>
+           <div class="d-flex align-items-center gap-2 footer-links justify-content-center justify-content-md-end fs-12">
+              <a href="javascript:void(0);" class="text-muted">Documentation</a>
+           </div>
+        </footer>
     </div>
 </div>

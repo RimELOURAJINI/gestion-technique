@@ -26,12 +26,28 @@
             ],
             "styles": [
               "src/styles.css",
-              "src/assets/template/css/my-task.style.min.css"
+              "src/assets/assets/css/bootstrap.min.css",
+              "src/assets/assets/plugins/daterangepicker/daterangepicker.css",
+              "src/assets/assets/plugins/datatables/css/dataTables.bootstrap5.min.css",
+              "src/assets/assets/plugins/flatpickr/flatpickr.min.css",
+              "src/assets/assets/plugins/tabler-icons/tabler-icons.min.css",
+              "src/assets/assets/plugins/select2/css/select2.min.css",
+              "src/assets/assets/plugins/simplebar/simplebar.min.css",
+              "src/assets/assets/css/style.css"
             ],
             "scripts": [
-              "src/assets/template/bundles/libscripts.bundle.js",
-              "src/assets/template/bundles/apexcharts.bundle.js",
-              "src/assets/template/js/template.js"
+              "src/assets/assets/js/jquery-3.7.1.min.js",
+              "src/assets/assets/js/bootstrap.bundle.min.js",
+              "src/assets/assets/js/moment.min.js",
+              "src/assets/assets/plugins/daterangepicker/daterangepicker.js",
+              "src/assets/assets/plugins/apexchart/apexcharts.min.js",
+              "src/assets/assets/plugins/peity/jquery.peity.min.js",
+              "src/assets/assets/plugins/simplebar/simplebar.min.js",
+              "src/assets/assets/plugins/select2/js/select2.min.js",
+              "src/assets/assets/plugins/flatpickr/flatpickr.min.js",
+              "src/assets/assets/js/theme-script.js",
+              "src/assets/assets/js/script.js",
+              "src/assets/assets/plugins/apexchart/chart-data.js"
             ]
           },
           "configurations": {

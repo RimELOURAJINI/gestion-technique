@@ -1,133 +1,272 @@
-<div class="row align-items-center">
-    <div class="border-0 mb-4">
-        <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-            <h3 class="fw-bold mb-0">Mes Tâches</h3>
-        </div>
-    </div>
-</div>
+<!-- Page Content -->
+<div class="content container-fluid">
 
-<div class="row g-3 mb-3">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="row align-items-center">
+      <div class="col-md-4">
+        <h3 class="page-title">
+          {{ currentFilter === 'today' ? "To do list d'aujourd'hui" : (currentFilter === 'subtasks' ? 'Mes Sous-tâches' : 'Mes Tâches') }}
+        </h3>
+        <ul class="breadcrumb">
+          <li class="breadcrumb-item"><a href="javascript:void(0)">Espace Employé</a></li>
+          <li class="breadcrumb-item active" *ngIf="!currentFilter">Tâches</li>
+          <li class="breadcrumb-item" *ngIf="currentFilter"><a routerLink="/employee/tasks">Tâches</a></li>
+          <li class="breadcrumb-item active" *ngIf="currentFilter === 'today'">To do list</li>
+          <li class="breadcrumb-item active" *ngIf="currentFilter === 'subtasks'">Sous-tâches</li>
+        </ul>
+      </div>
+      <div class="col-md-8 text-end">
+        <div class="head-icons d-flex justify-content-end align-items-center gap-2">
+          <div class="btn-group btn-group-sm me-2">
+            <button class="btn btn-outline-primary" [class.active]="viewMode === 'table'" (click)="toggleView('table')"><i class="ti ti-table"></i></button>
+            <button class="btn btn-outline-primary" [class.active]="viewMode === 'kanban'" (click)="toggleView('kanban')"><i class="ti ti-layout-kanban"></i></button>
+          </div>
+          <button class="btn btn-primary btn-sm d-flex align-items-center gap-1" (click)="openCreateModal()" data-bs-toggle="modal" data-bs-target="#taskModal">
+            <i class="ti ti-plus fs-16"></i> Ajouter une tâche
+          </button>
+          <a href="javascript:void(0);" (click)="ngOnInit()" data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh"><i class="ti ti-refresh-dot"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Page Header -->
+
+  <div class="row g-3 mb-3">
+    <!-- Task List Column -->
     <div class="col-md-12">
-        <div *ngFor="let projectName of projectNames" class="mb-5">
-            <h5 class="fw-bold mb-3 text-primary"><i class="icofont-stack-overflow me-2"></i>{{ projectName }}</h5>
-            <div class="card border-0 shadow-sm">
-                <div class="card-body p-0">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="ps-4">Tâche</th>
-                                <th>Priorité</th>
-                                <th>Statut</th>
-                                <th>Début (Réel)</th>
-                                <th>Fin (Réelle)</th>
-                                <th class="text-end pe-4">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let task of groupedTasks[projectName]">
-                                <td class="ps-4">
-                                    <span class="fw-bold d-block">{{task.title}}</span>
-                                    <small class="text-muted">Échéance: {{task.deadline | date:'shortDate'}}</small>
-                                </td>
-                                <td>
-                                    <span class="badge" [ngClass]="{
-                                        'bg-danger': task.priority === 'HIGH',
-                                        'bg-warning': task.priority === 'MEDIUM',
-                                        'bg-info': task.priority === 'LOW'
-                                    }">{{task.priority}}</span>
-                                </td>
-                                <td>
-                                    <span class="badge" [ngClass]="{
-                                        'bg-warning': task.status === 'IN_PROGRESS',
-                                        'bg-success': task.status === 'COMPLETED',
-                                        'bg-secondary': task.status === 'TODO'
-                                    }">{{task.status}}</span>
-                                </td>
-                                <td>{{task.actualStartTime | date:'short'}}</td>
-                                <td>{{task.actualEndTime | date:'short'}}</td>
-                                <td class="text-end pe-4">
-                                    <div class="btn-group">
-                                        <!-- Start Button -->
-                                        <button *ngIf="task.status !== 'IN_PROGRESS' && task.status !== 'COMPLETED'" 
-                                                class="btn btn-outline-success btn-sm" 
-                                                (click)="startTask(task.id!)" title="Démarrer">
-                                            <i class="icofont-play-alt-1"></i>
-                                        </button>
-                                        
-                                        <!-- Stop Button -->
-                                        <button *ngIf="task.status === 'IN_PROGRESS'" 
-                                                class="btn btn-outline-danger btn-sm" 
-                                                (click)="endTask(task.id!)" title="Terminer">
-                                            <i class="icofont-stop"></i>
-                                        </button>
-
-                                        <!-- Blocking Ticket Button -->
-                                        <button class="btn btn-outline-warning btn-sm" 
-                                                (click)="openTicketModal(task)" 
-                                                data-bs-toggle="modal" data-bs-target="#ticketModal" title="Signaler un problème">
-                                            <i class="icofont-warning"></i>
-                                        </button>
-
-                                        <!-- Edit Dates Button -->
-                                        <button class="btn btn-outline-info btn-sm" 
-                                                (click)="openDateModal(task)" 
-                                                data-bs-toggle="modal" data-bs-target="#dateModal" title="Modifier les dates">
-                                            <i class="icofont-edit"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+      <!-- Table View -->
+      <div *ngIf="viewMode === 'table'">
+        <!-- Grouped by Project -->
+        <div *ngFor="let projectName of projectNames" class="mb-4">
+          <div class="d-flex align-items-center mb-3">
+            <div class="avatar avatar-sm bg-indigo-light me-2 d-flex align-items-center justify-content-center rounded">
+              <i class="ti ti-stack-2 text-indigo fs-16"></i>
             </div>
+            <h5 class="fw-bold mb-0 text-dark">{{ projectName }}</h5>
+          </div>
+
+          <div class="card main-card">
+            <div class="card-body p-0">
+              <div class="table-responsive custom-table">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="thead-light">
+                    <tr>
+                      <th class="ps-4">Tâche / Échéance</th>
+                      <th>Priorité</th>
+                      <th>Statut</th>
+                      <th>Sous-tâches</th>
+                      <th class="text-end pe-4">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let task of groupedTasks[projectName]"
+                        (click)="openTaskDetail(task)"
+                        style="cursor:pointer;"
+                        [class.table-active]="false">
+                      <td class="ps-4">
+                        <div class="d-flex flex-column">
+                          <span class="text-dark fw-bold mb-1">{{task.title}}</span>
+                          <span class="fs-12 text-muted">
+                            <i class="ti ti-calendar-time me-1"></i>Limite: {{task.deadline | date:'dd MMM yyyy'}}
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <span class="badge badge-pill" [ngClass]="getPriorityClass(task.priority)">{{task.priority}}</span>
+                      </td>
+                      <td>
+                        <span class="badge badge-pill" [ngClass]="getStatusClass(task.status)">{{getStatusLabel(task.status)}}</span>
+                      </td>
+                      <td>
+                        <div *ngIf="task.subtasks && task.subtasks.length > 0">
+                          <div class="progress" style="height:6px;border-radius:5px;width:80px;">
+                            <div class="progress-bar bg-primary" [style.width.%]="task.subtasks ? (task.subtasks | slice:0:(task.subtasks.length)).length : 0"></div>
+                          </div>
+                          <span class="fs-11 text-muted">{{task.subtasks.length}} sous-tâche(s)</span>
+                        </div>
+                        <span *ngIf="!task.subtasks || task.subtasks.length === 0" class="text-muted fs-12">—</span>
+                      </td>
+                      <td class="text-end pe-4" (click)="$event.stopPropagation()">
+                        <div class="d-flex justify-content-end gap-2">
+                          <a *ngIf="task.status !== 'IN_PROGRESS' && task.status !== 'COMPLETED' && task.status !== 'DONE'" 
+                             href="javascript:void(0);" (click)="startTask(task.id!)" 
+                             class="btn btn-sm btn-soft-success" title="Démarrer">
+                            <i class="ti ti-play-circle fs-16"></i>
+                          </a>
+                          <a *ngIf="task.status === 'IN_PROGRESS'" 
+                             href="javascript:void(0);" (click)="endTask(task.id!)" 
+                             class="btn btn-sm btn-soft-danger" title="Terminer">
+                            <i class="ti ti-player-stop fs-16"></i>
+                          </a>
+                          <a href="javascript:void(0);" (click)="openEditModal(task)" 
+                             data-bs-toggle="modal" data-bs-target="#taskModal" 
+                             class="btn btn-sm btn-soft-primary" title="Modifier">
+                            <i class="ti ti-edit fs-16"></i>
+                          </a>
+                          <a href="javascript:void(0);" (click)="confirmDeleteTask(task)" 
+                             class="btn btn-sm btn-soft-danger" title="Supprimer">
+                            <i class="ti ti-trash fs-16"></i>
+                          </a>
+                          <a href="javascript:void(0);" (click)="openTicketModal(task)" 
+                             data-bs-toggle="modal" data-bs-target="#ticketModal" 
+                             class="btn btn-sm btn-soft-warning" title="Signaler un problème">
+                            <i class="ti ti-alert-triangle fs-16"></i>
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
-    </div>
-</div>
+
+        <div *ngIf="projectNames.length === 0" class="text-center py-5">
+          <div class="empty-state">
+            <i class="ti ti-clipboard-off fs-40 text-muted mb-3"></i>
+            <p class="text-muted">Aucune tâche assignée pour le moment.</p>
+          </div>
+        </div>
+      </div> <!-- /Table View -->
+
+      <!-- Kanban View -->
+      <div *ngIf="viewMode === 'kanban'" class="kanban-wrapper h-100">
+        <div class="kanban-container">
+          <div class="kanban-column" *ngFor="let status of kanbanColumns">
+            <div class="kanban-header d-flex align-items-center justify-content-between mb-3" [ngClass]="'status-' + status.toLowerCase()">
+              <h6 class="mb-0 fw-bold text-white">{{ status === 'TODO' ? 'À FAIRE' : status === 'IN_PROGRESS' ? 'EN COURS' : status === 'REVIEW' ? 'À TESTER' : 'TERMINÉ' }}</h6>
+              <span class="badge rounded-pill bg-white text-dark fs-10">{{ getTasksByStatus(status).length }}</span>
+            </div>
+            <div class="kanban-cards-list">
+              <div class="kanban-card card mb-3 border-0 shadow-sm" *ngFor="let task of getTasksByStatus(status)" (click)="openTaskDetail(task)">
+                <div class="card-body p-3">
+                  <div class="d-flex justify-content-between mb-2">
+                    <span class="badge fs-9" [ngClass]="getPriorityClass(task.priority)">{{ task.priority }}</span>
+                    <span class="text-muted fs-10"><i class="ti ti-calendar me-1"></i>{{ task.deadline | date:'dd MMM' }}</span>
+                  </div>
+                  <h6 class="task-title mb-2 fs-14 fw-bold">{{ task.title }}</h6>
+                  <p class="project-name text-muted fs-11 mb-2">{{ task.project?.name || 'Sans projet' }}</p>
+                  <div class="d-flex align-items-center justify-content-between mt-auto">
+                    <span class="fs-10 text-muted me-2"><i class="ti ti-checklist me-1"></i>{{ task.subtasks?.length || 0 }}</span>
+                    <span class="fs-10 text-muted"><i class="ti ti-alert-triangle me-1"></i>{{ task.reclamations?.length || 0 }}</span>
+                  </div>
+                </div>
+              </div> <!-- kanban-card -->
+            </div> <!-- kanban-cards-list -->
+          </div> <!-- kanban-column -->
+        </div> <!-- kanban-container -->
+      </div> <!-- kanban-wrapper -->
+    </div> <!-- /Task List Column (md-12) -->
+  </div> <!-- /row g-3 mb-3 -->
+
+</div> <!-- /content container-fluid -->
 
 <!-- Blocking Ticket Modal -->
 <div class="modal fade" id="ticketModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold">Signaler un problème bloquant</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Expliquez pourquoi la tâche <strong>{{ selectedTaskForTicket?.title }}</strong> est bloquée.</p>
-                <textarea class="form-control" rows="4" [(ngModel)]="ticketMessage" placeholder="Détails du problème..."></textarea>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary" (click)="sendTicket()" data-bs-dismiss="modal" [disabled]="!ticketMessage">Envoyer le ticket</button>
-            </div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title fw-bold text-dark"><i class="ti ti-alert-triangle me-2"></i>Problème Bloquant</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-soft-warning border-0 small mb-4">
+          Expliquez pourquoi la tâche <strong>{{ selectedTaskForTicket?.title }}</strong> est bloquée. L'admin recevra cette notification.
         </div>
+        <div class="mb-3">
+          <label class="form-label fw-medium">Détails du problème</label>
+          <textarea class="form-control" rows="4" [(ngModel)]="ticketMessage" placeholder="Soyez précis..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-warning text-dark fw-bold" (click)="sendTicket()" data-bs-dismiss="modal" [disabled]="!ticketMessage">Envoyer le Signalement</button>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Date Manual Entry Modal -->
 <div class="modal fade" id="dateModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold">Modifier les dates réelles</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Mise à jour pour la tâche <strong>{{ selectedTaskForDates?.title }}</strong></p>
-                <div class="mb-3">
-                    <label class="form-label">Date de début réelle</label>
-                    <input type="datetime-local" class="form-control" [(ngModel)]="manualStartDate">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Date de fin réelle</label>
-                    <input type="datetime-local" class="form-control" [(ngModel)]="manualEndDate">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary" (click)="updateTaskDates()" data-bs-dismiss="modal">Enregistrer</button>
-            </div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title fw-bold"><i class="ti ti-edit me-2"></i>Ajuster les Temps Réels</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-4">
+          <span class="fs-12 text-muted d-block mb-1">Tâche:</span>
+          <h6 class="fw-bold">{{ selectedTaskForDates?.title }}</h6>
         </div>
+        <div class="row g-3">
+          <div class="col-md-12">
+            <label class="form-label fw-medium">Date/Heure de début réelle</label>
+            <input type="datetime-local" class="form-control" [(ngModel)]="manualStartDate">
+          </div>
+          <div class="col-md-12">
+            <label class="form-label fw-medium">Date/Heure de fin réelle</label>
+            <input type="datetime-local" class="form-control" [(ngModel)]="manualEndDate">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary fw-bold" (click)="updateTaskDates()" data-bs-dismiss="modal">Enregistrer</button>
+      </div>
     </div>
+  </div>
+</div>
+
+<!-- Task Create/Edit Modal -->
+<div class="modal fade" id="taskModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title fw-bold"><i class="ti ti-plus me-2"></i>{{ editMode ? 'Modifier la tâche' : 'Nouvelle tâche' }}</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form #taskF="ngForm">
+          <div class="mb-3">
+            <label class="form-label fw-medium">Titre de la tâche</label>
+            <input type="text" class="form-control" [(ngModel)]="taskForm.title" name="title" required placeholder="Ex: Finir le rapport...">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-medium">Description</label>
+            <textarea class="form-control" rows="3" [(ngModel)]="taskForm.description" name="description" placeholder="Détails du travail à faire..."></textarea>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-medium">Priorité</label>
+              <select class="form-select" [(ngModel)]="taskForm.priority" name="priority">
+                <option value="LOW">Basse</option>
+                <option value="MEDIUM">Moyenne</option>
+                <option value="HIGH">Haute</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-medium">Date d'échéance</label>
+              <input type="date" class="form-control" [(ngModel)]="taskForm.deadline" name="deadline">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-medium">Projet associé</label>
+            <select class="form-select" [(ngModel)]="taskForm.projectId" name="projectId">
+              <option [ngValue]="null">Aucun projet</option>
+              <option *ngFor="let p of allProjects" [value]="p.id">{{ p.name }}</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary fw-bold" (click)="saveTask()" data-bs-dismiss="modal" [disabled]="!taskForm.title">
+          {{ editMode ? 'Mettre à jour' : 'Créer la tâche' }}
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

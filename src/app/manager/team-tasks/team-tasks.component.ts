@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute } from '@angular/router';
-import { ManagerService } from '../../services/manager.service';
+import { TeamLeaderService } from '../../services/manager.service';
 import { AuthService } from '../../services/auth.service';
 import { Task, User, Project } from '../../models/models';
 
@@ -33,7 +33,7 @@ export class TeamTasksComponent implements OnInit {
     editingTask: Task | null = null;
 
     constructor(
-        private managerService: ManagerService,
+        private teamLeaderService: TeamLeaderService,
         private authService: AuthService,
         private route: ActivatedRoute
     ) { }
@@ -41,8 +41,8 @@ export class TeamTasksComponent implements OnInit {
     ngOnInit() {
         const userId = this.authService.getUserId();
         if (userId) {
-            this.managerService.getEmployees().subscribe(res => this.employees = res);
-            this.managerService.getProjectsByUserId(userId).subscribe(res => {
+            this.teamLeaderService.getEmployees().subscribe(res => this.employees = res);
+            this.teamLeaderService.getProjectsByUserId(userId).subscribe(res => {
                 this.projects = res;
                 // Auto-select from query param
                 this.route.queryParams.subscribe(params => {
@@ -57,16 +57,17 @@ export class TeamTasksComponent implements OnInit {
     loadTasks() {
         if (!this.selectedProjectId) { this.isLoading = false; return; }
         this.isLoading = true;
-        this.managerService.getTasksByProjectId(this.selectedProjectId).subscribe({
+        this.teamLeaderService.getTasksByProjectId(this.selectedProjectId).subscribe({
             next: (res) => { this.tasks = res; this.organizeTasks(); this.isLoading = false; },
             error: () => this.isLoading = false
         });
     }
 
     organizeTasks() {
-        this.todoTasks = this.tasks.filter(t => t.status === 'TODO');
-        this.inProgressTasks = this.tasks.filter(t => t.status === 'IN_PROGRESS');
-        this.doneTasks = this.tasks.filter(t => t.status === 'DONE' || t.status === 'COMPLETED');
+        // TODO: Map more statuses if needed
+        this.todoTasks = this.tasks.filter(t => t.status === 'TODO' || t.status === 'NEW' || t.status === 'PENDING');
+        this.inProgressTasks = this.tasks.filter(t => t.status === 'IN_PROGRESS' || t.status === 'DOING');
+        this.doneTasks = this.tasks.filter(t => t.status === 'DONE' || t.status === 'COMPLETED' || t.status === 'FINISHED');
     }
 
     createTask() {
@@ -74,8 +75,13 @@ export class TeamTasksComponent implements OnInit {
             alert('Veuillez renseigner le titre et choisir un employé.');
             return;
         }
-        const payload = { ...this.newTask, project: this.selectedProjectId ? { id: this.selectedProjectId } : null };
-        this.managerService.addTaskToUser(+this.selectedUserId, payload).subscribe({
+        const currentUserId = this.authService.getUserId();
+        const payload = { 
+            ...this.newTask, 
+            project: this.selectedProjectId ? { id: this.selectedProjectId } : null,
+            createdBy: currentUserId ? { id: currentUserId } : null
+        };
+        this.teamLeaderService.addTaskToUser(+this.selectedUserId, payload).subscribe({
             next: () => { this.loadTasks(); this.resetForm(); },
             error: (err) => { console.error(err); alert('Erreur lors de la création.'); }
         });
@@ -95,7 +101,7 @@ export class TeamTasksComponent implements OnInit {
 
     updateTask() {
         if (!this.editingTask?.id || !this.newTask.title) return;
-        this.managerService.updateTask(this.editingTask.id, this.newTask).subscribe({
+        this.teamLeaderService.updateTask(this.editingTask.id, this.newTask).subscribe({
             next: () => { this.loadTasks(); this.resetForm(); },
             error: (err) => console.error(err)
         });
@@ -108,11 +114,11 @@ export class TeamTasksComponent implements OnInit {
 
     deleteTask(taskId?: number) {
         if (!taskId || !confirm('Supprimer cette tâche ?')) return;
-        this.managerService.deleteTask(taskId).subscribe(() => this.loadTasks());
+        this.teamLeaderService.deleteTask(taskId).subscribe(() => this.loadTasks());
     }
 
     updateStatus(taskId: number, status: string) {
-        this.managerService.updateTaskStatus(taskId, status).subscribe(() => this.loadTasks());
+        this.teamLeaderService.updateTaskStatus(taskId, status).subscribe(() => this.loadTasks());
     }
 
     resetForm() {
@@ -128,5 +134,9 @@ export class TeamTasksComponent implements OnInit {
             case 'LOW': return 'bg-info';
             default: return 'bg-secondary';
         }
+    }
+
+    projectNameById(id: number): string {
+        return this.projects.find(p => p.id === id)?.name || 'Projet';
     }
 }

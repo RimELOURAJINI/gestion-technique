@@ -36,19 +36,18 @@ export class TeamManagementComponent implements OnInit {
     }
 
     loadUsers() {
-        // Load employees and team leaders to assign them to teams
-        // Backend is now case-insensitive, but we fetch both to be sure
-        this.adminService.getUsersByRole('ROLE_EMPLOYEE').subscribe({
-            next: (res1) => {
-                this.adminService.getUsersByRole('ROLE_TEAM_LEADER').subscribe({
-                    next: (res2) => {
-                        this.users = [...(res1 || []), ...(res2 || [])];
-                        console.log("Loaded users for team assignment:", this.users.length);
-                    },
-                    error: (err) => console.error('Error loading team leaders:', err)
-                });
+        // Load all users and filter out admins for team assignment
+        this.adminService.getAllUsers().subscribe({
+            next: (res: any) => {
+                const allUsers = res.users || res;
+                if (Array.isArray(allUsers)) {
+                    this.users = allUsers.filter(user => 
+                        !user.roles?.some((role: any) => role.name === 'ROLE_ADMIN')
+                    );
+                    console.log("Users loaded for team assignment (excluding admins):", this.users.length);
+                }
             },
-            error: (err) => console.error('Error loading employees:', err)
+            error: (err) => console.error('Error loading users for team assignment:', err)
         });
     }
 
@@ -87,13 +86,21 @@ export class TeamManagementComponent implements OnInit {
     }
 
     assignUser() {
-        if (!this.selectedTeamForAssign || !this.selectedUserId) return;
+        if (!this.selectedTeamForAssign) return;
+        if (!this.selectedUserId) {
+            alert("Veuillez sélectionner un utilisateur d'abord.");
+            return;
+        }
         this.adminService.assignUserToTeam(this.selectedTeamForAssign.id, +this.selectedUserId).subscribe({
             next: () => {
                 this.loadTeams();
-                alert("Utilisateur assigné !");
+                alert("Utilisateur assigné avec succès !");
             },
-            error: (err) => alert("Erreur: " + err.message)
+            error: (err) => {
+                console.error("Assign error details:", err);
+                const msg = err.error?.message || err.error || err.message;
+                alert("Erreur lors de l'assignation: " + msg);
+            }
         });
     }
 

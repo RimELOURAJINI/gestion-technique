@@ -10,20 +10,30 @@
 
 .sidebar .menu-list .m-link:hover, 
 .sidebar .menu-list .m-link.active {
-    color: #4e5bf2 !important; /* Theme blue/indigo */
+    color: #fff !important;
+    background: #4e5bf2 !important;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(78, 91, 242, 0.3);
 }
 
 .sidebar .brand-icon .logo-text {
     color: #333 !important;
+    font-weight: 800;
 }
 
 .sidebar .ms-link {
     color: #666 !important;
+    padding: 8px 15px !important;
+    margin: 2px 0;
+    display: block;
+    border-radius: 6px;
 }
 
 .sidebar .ms-link:hover,
 .sidebar .ms-link.active {
     color: #4e5bf2 !important;
+    background: rgba(78, 91, 242, 0.1) !important;
+    font-weight: bold;
 }
 
 .sidebar .icofont-dotted-down {
