@@ -108,6 +108,40 @@
     </div>
 </div>
 
+<!-- AI Insights -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-dark text-white shadow-lg border-0" style="background: linear-gradient(135deg, #1b2850 0%, #0d162a 100%) !important;">
+            <div class="card-header border-0 d-flex justify-content-between align-items-center bg-transparent pt-4 pb-0">
+                <h5 class="mb-0 fs-18 fw-bold text-white d-flex align-items-center">
+                    <span class="avatar avatar-sm bg-primary rounded-circle me-2 d-flex align-items-center justify-content-center shadow-sm">
+                        <i class="ti ti-robot text-white fs-16"></i>
+                    </span>
+                    AI Insights - Analyse d'Équipe
+                </h5>
+                <button class="btn btn-primary d-flex align-items-center shadow-sm" (click)="refreshAiStats()" [disabled]="isAiLoading">
+                    <i class="ti ti-refresh me-2" [class.fa-spin]="isAiLoading"></i>
+                    {{ isAiLoading ? 'Analyse en cours...' : 'Générer une analyse IA' }}
+                </button>
+            </div>
+            <div class="card-body pt-3">
+                <div *ngIf="isAiLoading && !aiMessage" class="d-flex align-items-center justify-content-center py-4 text-primary">
+                    <div class="spinner-grow spinner-grow-md me-3" role="status"></div>
+                    <span class="fs-15 fw-medium text-white">L'Agent IA étudie la productivité de votre équipe...</span>
+                </div>
+                <!-- Fixed styling here: explicit rgba background and text color -->
+                <div *ngIf="aiMessage" class="ai-content p-3 rounded-3 shadow-inner" style="background-color: rgba(0, 0, 0, 0.25); color: #f8fafc; white-space: pre-wrap; line-height: 1.8; font-size: 15px; border: 1px solid rgba(255,255,255,0.1);">{{ aiMessage }}</div>
+                <div *ngIf="!isAiLoading && !aiMessage" class="text-center py-4">
+                    <div class="avatar avatar-xl bg-soft-primary rounded-circle mb-3 border border-primary border-opacity-25 mx-auto d-flex align-items-center justify-content-center">
+                        <i class="ti ti-brain fs-32 text-primary opacity-50"></i>
+                    </div>
+                    <p class="text-white text-opacity-75 fs-15 mb-0">Demandez à l'Agent IA d'analyser la vélocité et de détecter les blocages.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <!-- Projects Progress -->
     <div class="col-lg-7 d-flex">

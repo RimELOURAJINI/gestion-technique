@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService, NotificationDTO } from '../../services/notification.service';
+import { AiChatbotComponent } from '../../shared/ai-chatbot/ai-chatbot.component';
 
 import { interval, Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-admin-dashboard',
     standalone: true,
-    imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+    imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, AiChatbotComponent],
     templateUrl: './admin-dashboard.component.html',
     styleUrl: './admin-dashboard.component.css'
 })

@@ -252,6 +252,34 @@
               <input type="date" class="form-control" [(ngModel)]="taskForm.deadline" name="deadline">
             </div>
           </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-3">
+              <label class="form-label fw-medium">Type</label>
+              <select class="form-select" [(ngModel)]="taskForm.type" name="type">
+                <option value="FEATURE">Feature</option>
+                <option value="BUG">Bug</option>
+                <option value="MAINTENANCE">Maintenance</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-medium">Complexité</label>
+              <select class="form-select text-primary" [(ngModel)]="taskForm.storyPoints" name="storyPoints">
+                <option [ngValue]="1">1 (Très Faible)</option>
+                <option [ngValue]="2">2 (Faible)</option>
+                <option [ngValue]="3" selected>3 (Moyenne)</option>
+                <option [ngValue]="5">5 (Forte)</option>
+                <option [ngValue]="8">8 (Très Forte)</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-medium">Heures Estimées</label>
+              <input type="number" class="form-control" [(ngModel)]="taskForm.estimatedHours" name="estimatedHours">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-medium">Heures Passées</label>
+              <input type="number" class="form-control" [(ngModel)]="taskForm.actualHours" name="actualHours">
+            </div>
+          </div>
           <div class="mb-3">
             <label class="form-label fw-medium">Projet associé</label>
             <select class="form-select" [(ngModel)]="taskForm.projectId" name="projectId">

@@ -4,6 +4,7 @@ import { TeamLeaderService } from '../../services/manager.service';
 import { AuthService } from '../../services/auth.service';
 import { Project, Task, User } from '../../models/models';
 import { RouterLink } from '@angular/router';
+import { AiService } from '../../services/ai.service';
 
 declare var initDashboardCharts: any;
 
@@ -26,9 +27,17 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
   recentTasks: Task[] = [];
   isLoading = true;
 
+  isAiLoading = false;
+  aiMessage = '';
+
+  // Nouveaux paramètres contextuels (Prévention & Goulots)
+  workloadStr = '';
+  blockedStr = '';
+
   constructor(
     private teamLeaderService: TeamLeaderService,
-    private authService: AuthService
+    private authService: AuthService,
+    private aiService: AiService
   ) {}
 
   ngOnInit() {
@@ -80,11 +89,62 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
               proj.team?.users?.forEach(u => memberIds.add(u.id));
             });
             this.stats.teamMembers = memberIds.size;
+
+            // IA Décisionnelle : Calcul de la surcharge ponctuelle et identification des blocages
+            const workloadMap = new Map<string, number>();
+            const blockedTasks: string[] = [];
+            
+            allTasks.forEach(t => {
+                if (t.status !== 'DONE' && t.status !== 'COMPLETED') {
+                    if (t.isBlocked) {
+                        blockedTasks.push(`'${t.title}' (Raison: ${t.blockerReason || 'inconnue'})`);
+                    }
+                    if (t.users && t.users.length > 0) {
+                        t.users.forEach(u => {
+                            const name = u.firstName;
+                            const current = workloadMap.get(name) || 0;
+                            workloadMap.set(name, current + (t.estimatedHours || 0));
+                        });
+                    }
+                }
+            });
+
+            let wStr = '';
+            workloadMap.forEach((hours, name) => wStr += `${name}: ${hours}h, `);
+            this.workloadStr = wStr ? wStr.slice(0, -2) : 'Aucune charge active.';
+            this.blockedStr = blockedTasks.length > 0 ? blockedTasks.join(', ') : 'Aucune tâche bloquée.';
             
             this.isLoading = false;
           }
         });
       });
+    });
+  }
+
+  refreshAiStats() {
+    const userId = this.authService.getUserId();
+    if (!userId) return;
+    
+    this.isAiLoading = true;
+    this.aiMessage = '';
+    
+    // Injection discrète de la Surcharge et des Goulots
+    const extraContext = `\n[Données Avancées Frontend: Charge de travail en cours par développeur= ${this.workloadStr} | Tâches en situation de Goulot d'étranglement= ${this.blockedStr}]\n`;
+    const prompt = `En tant qu'Assistant Décisionnel IA, analyse la charge de chaque membre et détecte les surcharges cachées ou mauvaises répartitions. Liste les goulots d'étranglement et donne des conseils préventifs directs de réassignation.${extraContext}`;
+
+    this.aiService.getAIStatisticsStream(userId, prompt).subscribe({
+      next: (chunk) => {
+        this.isAiLoading = false;
+        this.aiMessage += chunk;
+      },
+      error: (err) => {
+        this.isAiLoading = false;
+        console.error('AI Error:', err);
+        if(!this.aiMessage) this.aiMessage = "Erreur de connexion à l'Agent IA.";
+      },
+      complete: () => {
+        this.isAiLoading = false;
+      }
     });
   }
 }

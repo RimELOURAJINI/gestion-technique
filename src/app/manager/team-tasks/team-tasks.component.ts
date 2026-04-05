@@ -26,7 +26,7 @@ export class TeamTasksComponent implements OnInit {
     doneTasks: Task[] = [];
 
     // Create Task form
-    newTask: any = { title: '', description: '', status: 'TODO', priority: 'MEDIUM', deadline: '' };
+    newTask: any = { title: '', description: '', status: 'TODO', priority: 'MEDIUM', deadline: '', type: 'FEATURE', estimatedHours: 0, actualHours: 0, qualityScore: 0, isBlocked: false, blockerReason: '' };
     selectedUserId?: number;
 
     // Edit Task
@@ -94,7 +94,13 @@ export class TeamTasksComponent implements OnInit {
             description: task.description || '',
             priority: task.priority,
             status: task.status,
-            deadline: task.deadline ? new Date(task.deadline).toISOString().substring(0, 10) : ''
+            deadline: task.deadline ? new Date(task.deadline).toISOString().substring(0, 10) : '',
+            type: task.type || 'FEATURE',
+            estimatedHours: task.estimatedHours || 0,
+            actualHours: task.actualHours || 0,
+            qualityScore: task.qualityScore || 0,
+            isBlocked: task.isBlocked || false,
+            blockerReason: task.blockerReason || ''
         };
         this.selectedUserId = task.users?.[0]?.id;
     }
@@ -123,7 +129,7 @@ export class TeamTasksComponent implements OnInit {
 
     resetForm() {
         this.editingTask = null;
-        this.newTask = { title: '', description: '', status: 'TODO', priority: 'MEDIUM', deadline: '' };
+        this.newTask = { title: '', description: '', status: 'TODO', priority: 'MEDIUM', deadline: '', type: 'FEATURE', estimatedHours: 0, actualHours: 0, qualityScore: 0, isBlocked: false, blockerReason: '' };
         this.selectedUserId = undefined;
     }
 

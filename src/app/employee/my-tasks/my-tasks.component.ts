@@ -29,7 +29,12 @@ export class MyTasksComponent implements OnInit {
     description: '',
     priority: 'MEDIUM',
     deadline: '',
-    projectId: null
+    projectId: null,
+    type: 'FEATURE',
+    estimatedHours: 0,
+    actualHours: 0,
+    storyPoints: 3,
+    qualityScore: 0
   };
   editMode: boolean = false;
 
@@ -196,7 +201,12 @@ export class MyTasksComponent implements OnInit {
       description: '',
       priority: 'MEDIUM',
       deadline: '',
-      projectId: null
+      projectId: null,
+      type: 'FEATURE',
+      estimatedHours: 0,
+      actualHours: 0,
+      storyPoints: 3,
+      qualityScore: 0
     };
   }
 
@@ -208,7 +218,12 @@ export class MyTasksComponent implements OnInit {
       description: task.description,
       priority: task.priority,
       deadline: task.deadline ? new Date(task.deadline).toISOString().substring(0, 10) : '',
-      projectId: task.project ? task.project.id : null
+      projectId: task.project ? task.project.id : null,
+      type: task.type || 'FEATURE',
+      estimatedHours: task.estimatedHours || 0,
+      actualHours: task.actualHours || 0,
+      storyPoints: task.storyPoints || 3,
+      qualityScore: task.qualityScore || 0
     };
   }
 
@@ -221,6 +236,10 @@ export class MyTasksComponent implements OnInit {
       description: this.taskForm.description,
       priority: this.taskForm.priority,
       deadline: this.taskForm.deadline || undefined,
+      type: this.taskForm.type,
+      estimatedHours: this.taskForm.estimatedHours,
+      actualHours: this.taskForm.actualHours,
+      qualityScore: this.taskForm.qualityScore,
       status: this.editMode ? undefined : 'TODO'
     };
 

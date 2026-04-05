@@ -18,7 +18,7 @@ export class TaskManagementComponent implements OnInit {
     isLoading = true;
 
     editingTask: Task | null = null;
-    newTask: any = { title: '', description: '', status: 'TODO', priority: 'MEDIUM', deadline: '', startDate: '' };
+    newTask: any = { title: '', description: '', status: 'TODO', priority: 'MEDIUM', deadline: '', startDate: '', type: 'FEATURE', estimatedHours: 0, qualityScore: 0 };
     selectedManagerId: number | null = null;
     selectedProjectId: number | null = null;
 
@@ -90,7 +90,7 @@ export class TaskManagementComponent implements OnInit {
 
     resetTaskForm() {
         this.editingTask = null;
-        this.newTask = { title: '', description: '', status: 'TODO', priority: 'MEDIUM', deadline: '', startDate: '' };
+        this.newTask = { title: '', description: '', status: 'TODO', priority: 'MEDIUM', deadline: '', startDate: '', type: 'FEATURE', estimatedHours: 0, qualityScore: 0 };
         this.selectedManagerId = null;
         this.selectedProjectId = null;
     }

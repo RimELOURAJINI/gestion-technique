@@ -127,6 +127,30 @@
                             <option *ngFor="let p of projects" [value]="p.id">{{p.name}}</option>
                         </select>
                     </div>
+                    <div class="col-sm-4">
+                        <label class="form-label fw-bold">Type de Tâche</label>
+                        <select class="form-select" [(ngModel)]="newTask.type">
+                            <option value="FEATURE">Nouvelle Fonctionnalité</option>
+                            <option value="BUG">Correction de Bug</option>
+                            <option value="MAINTENANCE">Maintenance</option>
+                            <option value="RESEARCH">Recherche</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label fw-bold">Heures Estimées</label>
+                        <input type="number" class="form-control" [(ngModel)]="newTask.estimatedHours" min="0">
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label fw-bold">Score Qualité <small class="text-muted">(IA)</small></label>
+                        <select class="form-select" [(ngModel)]="newTask.qualityScore">
+                            <option [ngValue]="0">Non évalué</option>
+                            <option [ngValue]="1">1 - Très Bas</option>
+                            <option [ngValue]="2">2 - Bas</option>
+                            <option [ngValue]="3">3 - Moyen</option>
+                            <option [ngValue]="4">4 - Bon</option>
+                            <option [ngValue]="5">5 - Excellent</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer border-0 bg-light-50">

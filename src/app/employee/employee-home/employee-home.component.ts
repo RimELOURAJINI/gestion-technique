@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { EmployeeService } from '../../services/employee.service';
 import { AuthService } from '../../services/auth.service';
 import { Project, Task, SubTask } from '../../models/models';
+import { AiService } from '../../services/ai.service';
 
 declare var initDashboardCharts: any;
 
@@ -29,9 +30,17 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
   newTodoText = '';
   localTodos: { text: string; done: boolean }[] = JSON.parse(localStorage.getItem('employee_todos') || '[]');
 
+  isAiLoading = false;
+  aiMessage = '';
+
+  // Aide à la décision IA (Niveau d'énergie)
+  currentMood: string = localStorage.getItem('employee_mood') || 'Normal';
+  tasksContextStr: string = '';
+
   constructor(
     private employeeService: EmployeeService,
-    public authService: AuthService
+    public authService: AuthService,
+    private aiService: AiService
   ) {}
 
   ngOnInit(): void {
@@ -50,10 +59,16 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
         
         // Today's tasks
         const todayStr = this.today.toDateString();
+        let ctx = '';
         this.todayTasks = tasks.filter(t => {
           if (!t.deadline) return false;
-          return new Date(t.deadline).toDateString() === todayStr;
+          const isToday = new Date(t.deadline).toDateString() === todayStr;
+          if (isToday) {
+             ctx += `- ${t.title} (Complexité technique: ${t.storyPoints || 3}/8 points)\n`;
+          }
+          return isToday;
         });
+        this.tasksContextStr = ctx ? ctx : 'Aucune tâche précise deadline aujourd\'hui.';
 
         // Upcoming (non-today, non-completed)
         this.upcomingTasks = tasks
@@ -106,5 +121,39 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
     if (s === 'DONE' || s === 'COMPLETED') return 'Terminée';
     if (s === 'IN_PROGRESS') return 'En cours';
     return 'À faire';
+  }
+
+  setMood(mood: string) {
+    this.currentMood = mood;
+    localStorage.setItem('employee_mood', mood);
+  }
+
+  refreshAiStats() {
+    const userId = this.authService.getUserId();
+    if (!userId) return;
+    
+    this.isAiLoading = true;
+    this.aiMessage = '';
+    
+    const userName = this.authService.getUserName() || 'Collaborateur';
+    
+    // Injection discrète de l'état d'énergie et de la liste réelle des tâches
+    const extraContext = `\n[Données Avancées Frontend: Humeur/Énergie du jour= ${this.currentMood} | Liste des tâches pressantes avec 'Story Points' (Complexité sur 8)= \n${this.tasksContextStr}]\n`;
+    const prompt = `En tant qu'Assistant Décisionnel IA (Coach), personnalise ton conseil pour moi (Employé: ${userName}). Prends en compte mon niveau d'énergie actuel pour me suggérer exactement quelle tâche cibler en premier (parmi celles de la liste) pour optimiser ma vélocité globale sans me décourager. Ne donne que 3 recommandations directes.${extraContext}`;
+
+    this.aiService.getAIStatisticsStream(userId, prompt).subscribe({
+      next: (chunk) => {
+        this.isAiLoading = false;
+        this.aiMessage += chunk;
+      },
+      error: (err) => {
+        this.isAiLoading = false;
+        console.error('AI Error:', err);
+        if(!this.aiMessage) this.aiMessage = "Erreur de connexion à l'Agent IA.";
+      },
+      complete: () => {
+        this.isAiLoading = false;
+      }
+    });
   }
 }
