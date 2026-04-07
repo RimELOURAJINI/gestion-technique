@@ -74,7 +74,9 @@ export interface Ticket {
   status: string;
   priority: string;
   createdBy?: User;
-  createdAt?: Date;
+  createdAt?: string;
+  type?: string;
+  project?: Project;
 }
 
 export interface Reclamation {

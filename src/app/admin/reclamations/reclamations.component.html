@@ -1,31 +1,56 @@
 <!-- Page Header -->
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
     <div>
-        <h4 class="mb-1">Réclamations des Managers</h4>
-        <p class="mb-0 text-muted small">Consultez et répondez aux alertes et problèmes signalés par les responsables.</p>
+        <h4 class="mb-1">Centralisation des Signalements</h4>
+        <p class="mb-0 text-muted small">Gérez les réclamations et suivez les discussions commerciales globales.</p>
     </div>
 </div>
 
-<div class="row">
+<!-- Tabs -->
+<div class="mb-4 d-flex">
+    <ul class="nav nav-tabs nav-tabs-solid d-inline-flex border-0 gap-2 w-auto p-1 bg-light rounded shadow-sm" style="flex-wrap: nowrap;">
+        <li class="nav-item m-0">
+            <a class="nav-link border-0 px-4 py-2 fw-medium rounded d-flex align-items-center gap-2" 
+               [ngClass]="activeTab === 'reclamations' ? 'bg-white text-primary shadow-sm' : 'text-muted'" 
+               (click)="activeTab = 'reclamations'" href="javascript:void(0);">
+                <i class="ti ti-inbox fs-5"></i>
+                <span class="d-none d-md-inline">Réclamations & Signalements</span>
+            </a>
+        </li>
+        <li class="nav-item m-0">
+            <a class="nav-link border-0 px-4 py-2 fw-medium rounded d-flex align-items-center gap-2" 
+               [ngClass]="activeTab === 'commercial' ? 'bg-white text-info shadow-sm' : 'text-muted'" 
+               (click)="activeTab = 'commercial'" href="javascript:void(0);">
+                <i class="ti ti-messages fs-5"></i>
+                <span class="d-none d-md-inline">Suivi Commercial</span>
+                <span *ngIf="commercialTickets.length > 0" class="badge rounded-pill bg-info text-white ms-1">{{ commercialTickets.length }}</span>
+            </a>
+        </li>
+    </ul>
+</div>
+
+<!-- Loading -->
+<div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+</div>
+
+<!-- Tab: Reclamations -->
+<div *ngIf="!isLoading && activeTab === 'reclamations'" class="row">
     <div class="col-md-12">
         <div class="card main-card">
             <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <h5 class="mb-0 fs-16 fw-bold">Flux des Signalements</h5>
             </div>
             <div class="card-body p-0">
-                <div *ngIf="isLoading" class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status"></div>
-                </div>
-
-                <div class="table-responsive" *ngIf="!isLoading">
-                    <table class="table table-nowrap mb-0">
+                <div class="table-responsive">
+                    <table class="table table-nowrap mb-0 table-hover align-middle">
                         <thead class="thead-light">
                             <tr>
-                                <th>Manager</th>
+                                <th>Manager / Émetteur</th>
                                 <th>Contexte</th>
-                                <th>Date du signalement</th>
+                                <th>Date</th>
                                 <th>Objet & Message</th>
-                                <th>Statut actuel</th>
+                                <th>Statut</th>
                                 <th class="text-end">Actions</th>
                             </tr>
                         </thead>
@@ -33,47 +58,45 @@
                             <tr *ngFor="let r of reclamations">
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="avatar avatar-md avatar-rounded bg-light flex-shrink-0 me-2 border">
-                                            <span class="fs-12 fw-bold text-dark">
+                                        <div class="avatar avatar-sm bg-primary-transparent text-primary flex-shrink-0 me-2 rounded-circle fs-12 fw-bold d-flex justify-content-center align-items-center pt-1">
                                                 {{r.sender?.firstName?.charAt(0)}}{{r.sender?.lastName?.charAt(0)}}
-                                            </span>
                                         </div>
                                         <div>
-                                            <h6 class="mb-0 fw-medium fs-14">{{r.sender?.firstName}} {{r.sender?.lastName}}</h6>
-                                            <span class="fs-12 text-muted">Manager</span>
+                                            <h6 class="mb-0 fw-medium fs-13">{{r.sender?.firstName}} {{r.sender?.lastName}}</h6>
+                                            <span class="fs-11 text-muted">{{ r.sender?.roles?.[0]?.name || 'User' }}</span>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="d-flex flex-column">
-                                        <span class="fs-13 fw-bold text-primary">{{r.project?.name}}</span>
+                                        <span class="fs-13 text-dark">{{r.project?.name}}</span>
                                         <small *ngIf="r.task" class="text-muted fs-11">Tâche: {{r.task.title}}</small>
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="fs-13 text-dark"><i class="ti ti-calendar-event me-1 text-muted"></i>{{r.createdAt | date:'dd MMM yyyy'}}</span>
+                                    <span class="fs-13 text-muted"><i class="ti ti-calendar-event me-1"></i>{{r.createdAt | date:'dd MMM yyyy'}}</span>
                                 </td>
                                 <td>
-                                    <div class="d-flex flex-column" style="max-width: 300px;">
-                                        <span class="fw-bold fs-13 text-dark text-truncate" [title]="r.title">{{r.title}}</span>
+                                    <div class="d-flex flex-column" style="max-width: 250px;">
+                                        <span class="fw-medium fs-13 text-dark text-truncate" [title]="r.title">{{r.title}}</span>
                                         <small class="text-muted text-truncate fs-12" [title]="r.message">{{r.message}}</small>
                                     </div>
                                 </td>
                                 <td>
-                                    <span [class]="'badge fs-11 ' + (r.status === 'ACCEPTED' ? 'badge-soft-success' : r.status === 'REJECTED' ? 'badge-soft-danger' : 'badge-soft-warning')">
+                                    <span class="badge badge-pill px-2 py-1 fs-11" [ngClass]="getStatusClass(r.status || 'PENDING')">
                                         {{r.status || 'PENDING'}}
                                     </span>
                                 </td>
                                 <td class="text-end">
                                     <div class="dropdown table-action">
-                                        <button class="action-icon btn btn-xs shadow btn-icon btn-outline-light" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <button class="action-icon btn btn-xs shadow-sm border btn-icon btn-white rounded-circle" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="ti ti-dots-vertical"></i>
                                         </button>
-                                        <div class="dropdown-menu dropdown-menu-right">
-                                            <a class="dropdown-item py-2" href="javascript:void(0);" (click)="updateStatus(r, 'ACCEPTED')">
+                                        <div class="dropdown-menu dropdown-menu-right shadow-sm">
+                                            <a class="dropdown-item fs-13 py-2" href="javascript:void(0);" (click)="updateStatus(r, 'ACCEPTED')">
                                                 <i class="ti ti-circle-check text-success me-2"></i> Accepter
                                             </a>
-                                            <a class="dropdown-item py-2" href="javascript:void(0);" (click)="updateStatus(r, 'REJECTED')">
+                                            <a class="dropdown-item fs-13 py-2" href="javascript:void(0);" (click)="updateStatus(r, 'REJECTED')">
                                                 <i class="ti ti-circle-x text-danger me-2"></i> Rejeter
                                             </a>
                                         </div>
@@ -83,13 +106,136 @@
                             <tr *ngIf="reclamations.length === 0">
                                 <td colspan="6" class="text-center py-5">
                                     <div class="text-muted">
-                                        <i class="ti ti-circle-check fs-32 d-block mb-2 text-success"></i>
-                                        <p class="mb-0">Aucune réclamation en attente pour le moment.</p>
+                                        <i class="ti ti-circle-check fs-32 d-block mb-2 text-success opacity-50"></i>
+                                        <p class="mb-0">Aucun signalement en attente.</p>
                                     </div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tab: Commercial -->
+<div *ngIf="!isLoading && activeTab === 'commercial'" class="row">
+
+    <div *ngIf="!selectedCommercialTicket">
+        <div class="row">
+            <div class="col-md-6 col-lg-4 mb-4" *ngFor="let ct of commercialTickets">
+                <div class="card shadow-sm border border-light h-100 cursor-pointer" style="transition: transform 0.2s;" (click)="openCommercialChat(ct)">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="badge bg-soft-info text-info rounded-pill px-3 py-1 fs-11">
+                                {{ ct.project?.name }}
+                            </span>
+                            <span class="text-muted fs-12"><i class="ti ti-clock me-1"></i>{{ ct.createdAt | date:'shortDate' }}</span>
+                        </div>
+                        <h6 class="fw-bold mb-2">{{ ct.subject }}</h6>
+                        <p class="text-muted fs-13 text-truncate mb-4">{{ ct.description }}</p>
+                        
+                        <div class="d-flex align-items-center justify-content-between mt-auto">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar avatar-sm bg-soft-primary text-primary rounded-circle d-flex justify-content-center align-items-center me-2 pt-1 border border-primary border-opacity-10">
+                                    <i class="ti ti-user fs-14"></i>
+                                </div>
+                                <span class="fs-12 text-dark fw-medium">{{ ct.createdBy?.firstName }} {{ ct.createdBy?.lastName }}</span>
+                            </div>
+                            <button class="btn btn-sm btn-info text-white rounded-pill px-3 shadow-sm fs-12">
+                                Gérer <i class="ti ti-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 text-center py-5" *ngIf="commercialTickets.length === 0">
+                <div class="bg-white rounded-circle d-inline-flex justify-content-center align-items-center shadow-sm mb-3" style="width: 80px; height: 80px;">
+                    <i class="ti ti-messages text-muted" style="font-size: 2rem;"></i>
+                </div>
+                <h5 class="text-muted">Aucune discussion commerciale.</h5>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat View -->
+    <div *ngIf="selectedCommercialTicket" class="col-12">
+        <div class="card shadow-sm border rounded border-light bg-white" style="height: calc(100vh - 200px); min-height: 500px; display: flex; flex-direction: column;">
+            
+            <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-3 flex-shrink-0">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-sm btn-icon btn-white border shadow-sm me-3 rounded-circle" (click)="closeCommercialChat()" title="Retour">
+                        <i class="ti ti-arrow-left"></i>
+                    </button>
+                    <div>
+                        <h6 class="fw-bold mb-1 text-dark fs-15">{{ selectedCommercialTicket.subject }}</h6>
+                        <p class="text-muted fs-12 mb-0 d-flex align-items-center">
+                            <i class="ti ti-folder-open me-1"></i> 
+                            Projet : <span class="fw-medium text-dark ms-1">{{ selectedCommercialTicket.project?.name }}</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="badge bg-soft-info text-info rounded-pill px-3 py-1 border border-info border-opacity-25">
+                    Modération Admin
+                </div>
+            </div>
+            
+            <div class="card-body overflow-auto bg-light p-4 flex-grow-1" id="adminCommercialChatContainer">
+                <div class="text-center mb-4">
+                    <span class="badge bg-white text-muted border px-3 py-1 rounded-pill shadow-sm fs-11">
+                        Historique de la discussion
+                    </span>
+                </div>
+
+                <div *ngFor="let msg of commercialMessages" class="mb-4 d-flex" [ngClass]="{'justify-content-end': msg.sender?.id === currentUserId}">
+                    
+                    <div *ngIf="msg.sender?.id !== currentUserId" class="avatar avatar-md bg-white text-dark rounded-circle me-3 flex-shrink-0 d-flex justify-content-center align-items-center shadow-sm border mt-1 fs-14 fw-bold">
+                        {{ msg.sender?.firstName?.charAt(0) || '?' }}
+                    </div>
+
+                    <div style="max-width: 65%;">
+                        <div class="p-3 mb-1 shadow-sm fs-14" 
+                             [ngClass]="msg.sender?.id === currentUserId ? 'bg-primary text-white text-end rounded-4 rounded-bottom-end-0' : 'bg-white text-dark text-start rounded-4 rounded-bottom-start-0 border border-light'">
+                            <p class="mb-0" style="white-space: pre-wrap; line-height: 1.5;">{{ msg.content }}</p>
+                            
+                            <!-- Images -->
+                            <div *ngIf="msg.images && msg.images.length > 0" class="mt-3">
+                                <div class="d-flex flex-wrap gap-2" [ngClass]="{'justify-content-end': msg.sender?.id === currentUserId}">
+                                    <img *ngFor="let img of msg.images" [src]="img" class="img-thumbnail border-0 rounded shadow-sm" style="max-height: 150px; object-fit: cover; cursor: pointer;">
+                                </div>
+                            </div>
+                        </div>
+                        <small class="text-muted fs-11" [ngClass]="msg.sender?.id === currentUserId ? 'd-block text-end pe-2' : 'd-block text-start ps-2'">
+                            <span class="fw-medium">{{ msg.sender?.id === currentUserId ? 'Vous (Admin)' : (msg.sender?.firstName + ' ' + msg.sender?.lastName) }}</span> &bull; {{ msg.createdAt | date:'shortTime' }}
+                        </small>
+                    </div>
+
+                    <div *ngIf="msg.sender?.id === currentUserId" class="avatar avatar-md bg-dark text-white shadow-sm border border-secondary rounded-circle ms-3 flex-shrink-0 d-flex justify-content-center align-items-center mt-1 pt-1 fs-13 fw-bold">
+                        AD
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-white border-top p-3 flex-shrink-0">
+                <div *ngIf="base64Images.length > 0" class="mb-3 p-2 bg-light rounded border shadow-sm d-inline-flex gap-2 flex-wrap">
+                    <div *ngFor="let img of base64Images" class="position-relative">
+                        <img [src]="img" class="rounded border shadow-sm" style="width: 50px; height: 50px; object-fit: cover;">
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-2 align-items-center">
+                    <button class="btn btn-light border shadow-sm btn-icon flex-shrink-0 rounded-circle" onclick="document.getElementById('chatImagesAdmin').click()" title="Joindre image">
+                        <i class="ti ti-photo text-muted fs-5"></i>
+                    </button>
+                    <input type="file" id="chatImagesAdmin" (change)="onFileSelected($event)" accept="image/*" multiple style="display: none;">
+                    
+                    <div class="input-group bg-light rounded-pill shadow-sm border px-2 py-1 align-items-center flex-grow-1">
+                        <input type="text" class="form-control border-0 shadow-none bg-transparent ps-3" placeholder="Intervenir dans la discussion..." [(ngModel)]="newCommercialMessage" (keyup.enter)="sendCommercialMessage()">
+                        <button class="btn btn-primary rounded-circle btn-icon ms-2 shadow-sm d-flex justify-content-center align-items-center pe-1" style="height: 38px; width: 38px;" (click)="sendCommercialMessage()" [disabled]="!newCommercialMessage.trim() && base64Images.length === 0">
+                            <i class="ti ti-send fs-5"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

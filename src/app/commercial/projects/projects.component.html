@@ -1,0 +1,66 @@
+<div class="row align-items-center mb-4">
+    <div class="col-sm-6">
+        <h4 class="mb-0">Tous les Projets</h4>
+        <p class="text-muted fs-14 mb-0">Vue globale des projets pour le suivi commercial</p>
+    </div>
+</div>
+
+<div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Chargement...</span>
+    </div>
+</div>
+
+<div *ngIf="!isLoading && projects.length === 0" class="text-center py-5">
+    <div class="alert alert-info">
+        <i class="ti ti-info-circle me-2"></i> Aucun projet trouvé dans le système.
+    </div>
+</div>
+
+<div *ngIf="!isLoading && projects.length > 0" class="row">
+    <div class="col-xl-4 col-md-6 mb-4" *ngFor="let p of projects">
+        <div class="card h-100 shadow-sm border-0 lift">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title mb-0 text-truncate" style="max-width: 80%;">
+                        <a [routerLink]="['/commercial/projects', p.id]" class="text-dark">{{ p.name }}</a>
+                    </h5>
+                    <span class="badge rounded-pill text-white fs-11 px-2 py-1" [ngClass]="getStatusClass(p.status)">
+                        {{ getTranslateStatus(p.status) }}
+                    </span>
+                </div>
+                
+                <p class="text-muted fs-13 mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                    {{ p.description || 'Aucune description fournie.' }}
+                </p>
+
+                <div class="row g-2 mb-3 fs-13">
+                    <div class="col-6">
+                        <span class="text-muted d-block mb-1">Budget Initial</span>
+                        <span class="fw-semibold text-dark">{{ p.budget ? (p.budget | currency:'EUR') : 'N/A' }}</span>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted d-block mb-1">Budget Consommé</span>
+                        <span class="fw-semibold text-danger">{{ p.spentBudget ? (p.spentBudget | currency:'EUR') : 'N/A' }}</span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar avatar-sm bg-soft-primary text-primary rounded-circle me-2 d-flex justify-content-center align-items-center">
+                            <i class="ti ti-user fs-14"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted fs-11 d-block mb-0">Manager</span>
+                            <span class="fw-medium fs-13 text-dark">{{ p.manager?.firstName || 'Non' }} {{ p.manager?.lastName || 'Assigné' }}</span>
+                        </div>
+                    </div>
+                    
+                    <a [routerLink]="['/commercial/projects', p.id]" class="btn btn-sm btn-soft-primary shadow-none">
+                        Détails & Chat <i class="ti ti-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

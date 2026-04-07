@@ -54,6 +54,15 @@ export class TeamLeaderService {
     return this.http.post<Ticket>(`${this.baseUrl}/tickets/user/${userId}`, ticket);
   }
 
+  getTicketMessages(ticketId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/tickets/${ticketId}/messages`);
+  }
+
+  addTicketMessage(ticketId: number, userId: number, content: string, images: string[]): Observable<any> {
+    const payload = { content, images };
+    return this.http.post<any>(`${this.baseUrl}/tickets/${ticketId}/messages/user/${userId}`, payload);
+  }
+
   // Reclamations
   sendReclamation(userId: number, projectId: number, reclamation: Reclamation): Observable<Reclamation> {
     return this.http.post<Reclamation>(`${this.baseUrl}/reclamations/user/${userId}/project/${projectId}`, reclamation);

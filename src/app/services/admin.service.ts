@@ -118,4 +118,22 @@ export class AdminService {
   updateReclamationStatus(id: number, status: string, response: string = ''): Observable<Reclamation> {
     return this.http.patch<Reclamation>(`${this.baseUrl}/reclamations/${id}/status?status=${status}&response=${response}`, {});
   }
+
+  // ========== TICKETS & MESSAGES (Commercial Chat) ==========
+  getTicketMessages(ticketId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/tickets/${ticketId}/messages`);
+  }
+
+  addTicketMessage(ticketId: number, userId: number, content: string, images: string[]): Observable<any> {
+    const payload = { content, images };
+    return this.http.post<any>(`${this.baseUrl}/tickets/${ticketId}/messages/user/${userId}`, payload);
+  }
+
+  createTicket(userId: number, payload: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/tickets/user/${userId}`, payload);
+  }
+
+  getAllTickets(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/tickets`);
+  }
 }

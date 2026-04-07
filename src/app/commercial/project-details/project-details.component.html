@@ -1,0 +1,153 @@
+<div class="row align-items-center mb-4">
+    <div class="col-sm-6">
+        <div class="d-flex align-items-center">
+            <button class="btn btn-sm btn-icon btn-soft-secondary me-3" (click)="goBack()">
+                <i class="ti ti-arrow-left"></i>
+            </button>
+            <div>
+                <h4 class="mb-0">Détails du Projet</h4>
+                <p class="text-muted fs-14 mb-0" *ngIf="project">{{ project.name }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Chargement...</span>
+    </div>
+</div>
+
+<div *ngIf="!isLoading && project" class="row">
+    <!-- Colonne de gauche : Infos Projet -->
+    <div class="col-xl-4 col-lg-5 mb-4">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title fw-bold text-dark mb-0">Informations Générales</h5>
+                    <span class="badge rounded-pill text-white fs-11 px-2 py-1" [ngClass]="getStatusClass(project.status)">
+                        {{ getTranslateStatus(project.status) }}
+                    </span>
+                </div>
+                
+                <h6 class="fw-semibold mt-4 mb-2">Description</h6>
+                <p class="text-muted fs-13 mb-4">{{ project.description || 'Aucune description disponible.' }}</p>
+                
+                <h6 class="fw-semibold mb-2">Budgets</h6>
+                <div class="row g-2 mb-4">
+                    <div class="col-6">
+                        <div class="p-3 bg-light rounded">
+                            <span class="text-muted d-block fs-12 mb-1">Initial</span>
+                            <span class="fw-bold text-dark fs-14">{{ project.budget ? (project.budget | currency:'EUR') : 'N/A' }}</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-light rounded border border-danger border-opacity-25">
+                            <span class="text-danger d-block fs-12 mb-1">Consommé</span>
+                            <span class="fw-bold text-danger fs-14">{{ project.spentBudget ? (project.spentBudget | currency:'EUR') : 'N/A' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="list-unstyled mb-0">
+                    <li class="d-flex py-2 border-bottom">
+                        <span class="text-muted fs-13 w-50">Date début</span>
+                        <span class="text-dark fs-13 fw-medium text-end w-50">{{ project.startDate ? (project.startDate | date:'dd/MM/yyyy') : 'Non définie' }}</span>
+                    </li>
+                    <li class="d-flex py-2 border-bottom">
+                        <span class="text-muted fs-13 w-50">Date fin prévue</span>
+                        <span class="text-dark fs-13 fw-medium text-end w-50">{{ project.expectedEndDate ? (project.expectedEndDate | date:'dd/MM/yyyy') : 'Non définie' }}</span>
+                    </li>
+                    <li class="d-flex py-2">
+                        <span class="text-muted fs-13 w-50">Manager</span>
+                        <div class="text-end w-50 d-flex align-items-center justify-content-end">
+                            <div class="avatar avatar-xs bg-soft-primary text-primary rounded-circle me-2 d-flex justify-content-center align-items-center">
+                                <i class="ti ti-user fs-12"></i>
+                            </div>
+                            <span class="text-dark fs-13 fw-medium">{{ project.manager?.firstName || 'Non' }} {{ project.manager?.lastName || 'Assigné' }}</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Colonne de droite : Chat avec l'équipe projet -->
+    <div class="col-xl-8 col-lg-7 mb-4">
+        <div class="card shadow-sm border-0 d-flex flex-column h-100" style="min-height: 500px;">
+            <div class="card-header bg-white border-bottom py-3 d-flex align-items-center">
+                <div class="avatar avatar-sm bg-soft-primary text-primary rounded-circle me-3 d-flex justify-content-center align-items-center">
+                    <i class="ti ti-messages fs-16"></i>
+                </div>
+                <div>
+                    <h5 class="card-title fw-bold text-dark mb-0">Discussion avec l'équipe</h5>
+                    <p class="text-muted fs-12 mb-0">Ce chat est partagé avec le manager et l'administrateur de ce projet.</p>
+                </div>
+            </div>
+
+            <!-- Chat Zone -->
+            <div class="card-body overflow-auto bg-light p-4 flex-grow-1" id="chatContainer" style="max-height: 500px;">
+                
+                <div *ngIf="messages.length === 0" class="text-center py-5">
+                    <i class="ti ti-message-circle-2 text-muted fs-40 mb-3 block"></i>
+                    <h6 class="text-muted">Aucun message pour le moment</h6>
+                    <p class="text-muted fs-13">Démarrez la conversation en envoyant un message.</p>
+                </div>
+
+                <div *ngFor="let msg of messages" class="mb-4 d-flex" [ngClass]="{'justify-content-end': msg.sender?.id === currentUserId}">
+                    
+                    <div *ngIf="msg.sender?.id !== currentUserId" class="avatar avatar-sm bg-primary text-white rounded-circle me-2 flex-shrink-0 d-flex justify-content-center align-items-center mt-1">
+                        {{ msg.sender?.firstName?.charAt(0) || '?' }}
+                    </div>
+
+                    <div style="max-width: 75%;">
+                        <div class="p-3 mb-1 shadow-sm rounded-3" 
+                             [ngClass]="msg.sender?.id === currentUserId ? 'bg-primary text-white text-end rounded-bottom-end-0' : 'bg-white rounded-bottom-start-0 border'">
+                            <p class="mb-0 fs-14" style="white-space: pre-wrap;">{{ msg.content }}</p>
+                            
+                            <!-- Display Images if any -->
+                            <div *ngIf="msg.images && msg.images.length > 0" class="mt-2 text-start">
+                                <div class="d-flex flex-wrap gap-2">
+                                    <img *ngFor="let img of msg.images" [src]="img" class="img-thumbnail border-0 rounded" style="max-height: 100px; max-width: 150px; object-fit: cover; cursor: pointer;">
+                                </div>
+                            </div>
+                        </div>
+                        <small class="text-muted fs-11" [ngClass]="msg.sender?.id === currentUserId ? 'd-block text-end' : 'd-block text-start'">
+                            {{ msg.sender?.id === currentUserId ? 'Vous' : (msg.sender?.firstName + ' ' + msg.sender?.lastName) }} • {{ msg.createdAt | date:'shortTime' }}
+                        </small>
+                    </div>
+
+                    <div *ngIf="msg.sender?.id === currentUserId" class="avatar avatar-sm bg-soft-primary text-primary rounded-circle ms-2 flex-shrink-0 d-flex justify-content-center align-items-center mt-1">
+                        C
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Zone -->
+            <div class="card-footer bg-white border-top p-3">
+                
+                <!-- Image Previre -->
+                <div *ngIf="base64Images.length > 0" class="mb-2 p-2 bg-light rounded d-flex gap-2 flex-wrap">
+                    <div *ngFor="let img of base64Images" class="position-relative">
+                        <img [src]="img" class="rounded border" style="width: 50px; height: 50px; object-fit: cover;">
+                    </div>
+                    <span class="align-self-center text-muted fs-12 ms-2">{{ base64Images.length }} image(s) jointe(s)</span>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-soft-secondary btn-icon" onclick="document.getElementById('chatImages').click()">
+                        <i class="ti ti-photo"></i>
+                    </button>
+                    <input type="file" id="chatImages" (change)="onFileSelected($event)" accept="image/*" multiple style="display: none;">
+                    
+                    <textarea class="form-control" rows="1" placeholder="Rédigez votre demande / message..." [(ngModel)]="newMessage" (keyup.enter)="sendMessage()"></textarea>
+                    
+                    <button class="btn btn-primary btn-icon px-3" (click)="sendMessage()" [disabled]="!newMessage.trim() && base64Images.length === 0">
+                        <i class="ti ti-send"></i>
+                    </button>
+                </div>
+                <small class="text-muted fs-11 mt-2 d-block">Max 3 images. Appuyez sur Entrée pour envoyer le texte.</small>
+            </div>
+        </div>
+    </div>
+</div>

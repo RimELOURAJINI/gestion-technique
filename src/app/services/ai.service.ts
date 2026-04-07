@@ -9,14 +9,16 @@ export class AiService {
 
   constructor(private zone: NgZone) { }
 
-  getAIStatisticsStream(userId: number, prompt: string): Observable<string> {
+  getAIStatisticsStream(userId: number, prompt: string, mode: 'insights' | 'chat' = 'insights'): Observable<string> {
     return new Observable<string>(observer => {
-      const url = `${this.baseUrl}?userId=${userId}&prompt=${encodeURIComponent(prompt)}`;
       const controller = new AbortController();
 
-      // Utiliser fetch manuellement au lieu de EventSource permet de contourner le bug des navigateurs
-      // qui suppriment l'espace initial (EventSource spec) s'il n'y a pas d'espace de séparation après "data:"
-      fetch(url, { signal: controller.signal })
+      fetch(this.baseUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, prompt, mode }),
+        signal: controller.signal
+      })
         .then(async response => {
           if (!response.body) throw new Error('Streaming not supported');
           const reader = response.body.getReader();

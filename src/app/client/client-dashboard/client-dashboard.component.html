@@ -1,0 +1,121 @@
+<div class="d-flex flex-column h-100 bg-light" style="min-height: 100vh;">
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm px-4 py-3">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary text-white rounded p-2 me-3 d-flex justify-content-center align-items-center shadow-sm">
+                    <i class="ti ti-briefcase fs-4"></i>
+                </div>
+                <h4 class="mb-0 fw-bold text-dark">Espace Client</h4>
+            </div>
+
+            <div class="d-flex align-items-center ms-auto gap-3">
+                <div class="d-none d-md-block text-end">
+                    <p class="mb-0 fw-medium text-dark fs-14">Bonjour, {{ clientName }}</p>
+                    <small class="text-muted fs-12">Tableau de bord de suivi</small>
+                </div>
+                <div class="dropdown">
+                    <a href="javascript:void(0);" class="d-block dropdown-toggle text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="avatar avatar-md bg-soft-primary text-primary border border-primary border-opacity-10 rounded-circle fw-bold fs-14 d-flex justify-content-center align-items-center shadow-sm">
+                            {{ clientName.charAt(0) }}
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                        <li><a class="dropdown-item py-2" href="javascript:void(0);" (click)="logout()"><i class="ti ti-logout me-2 text-danger"></i>Se déconnecter</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid flex-grow-1 p-4">
+        
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h5 class="fw-bold fs-20 text-dark mb-1">Vos Projets</h5>
+                <p class="text-muted fs-14 mb-0">Suivez l'avancement et les indicateurs clés de vos projets.</p>
+            </div>
+            <button class="btn btn-outline-primary bg-white shadow-sm btn-icon rounded-circle" (click)="loadClientProjects()" title="Actualiser">
+                <i class="ti ti-refresh"></i>
+            </button>
+        </div>
+
+        <div *ngIf="isLoading" class="text-center py-5 my-5">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Chargement...</span>
+            </div>
+            <p class="text-muted mt-3 fw-medium">Chargement de vos projets...</p>
+        </div>
+
+        <div *ngIf="!isLoading && projects.length === 0" class="text-center py-5 my-5 bg-white rounded shadow-sm border border-light">
+            <i class="ti ti-folder-off text-muted opacity-50 mb-3 d-block" style="font-size: 4rem;"></i>
+            <h5 class="fw-bold text-dark">Aucun projet trouvé</h5>
+            <p class="text-muted">Vous n'avez pas encore de projets associés à votre compte.</p>
+        </div>
+
+        <!-- Projects Grid -->
+        <div *ngIf="!isLoading && projects.length > 0" class="row">
+            <div class="col-xl-4 col-md-6 mb-4" *ngFor="let p of projects">
+                <div class="card shadow-sm border-0 h-100 hover-elevate">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <span class="badge rounded-pill px-3 py-2 fs-11 fw-medium shadow-sm" [ngClass]="getStatusClass(p.status)">
+                                {{ getTranslateStatus(p.status) }}
+                            </span>
+                            <span class="text-muted fs-12 fw-medium d-flex align-items-center">
+                                <i class="ti ti-calendar me-1"></i>
+                                {{ p.startDate | date:'shortDate' }}
+                            </span>
+                        </div>
+
+                        <h5 class="fw-bold text-dark mb-2 text-truncate" [title]="p.name">{{ p.name }}</h5>
+                        <p class="text-muted fs-13 mb-4" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            {{ p.description || 'Aucune description fournie.' }}
+                        </p>
+
+                        <div class="p-3 bg-light rounded-3 mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fs-13 fw-medium text-dark">Progression du Budget</span>
+                                <span class="fs-13 fw-bold text-primary">{{ getProgress(p) }}%</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-primary rounded-pill" role="progressbar" [style.width]="getProgress(p) + '%'" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 pt-2 border-top">
+                            <div class="col-6">
+                                <span class="d-block text-muted fs-11 text-uppercase fw-semibold mb-1">Manager</span>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar avatar-xs bg-primary-transparent text-primary rounded-circle me-2 fw-bold d-flex justify-content-center align-items-center fs-10 pt-1">
+                                        {{ p.manager?.firstName?.charAt(0) || 'N' }}
+                                    </div>
+                                    <span class="text-dark fs-13 fw-medium text-truncate">{{ p.manager ? p.manager.firstName + ' ' + p.manager.lastName : 'Non Assigné' }}</span>
+                                </div>
+                            </div>
+                            <div class="col-6 text-end">
+                                <span class="d-block text-muted fs-11 text-uppercase fw-semibold mb-1">Date de fin</span>
+                                <span class="text-dark fs-13 fw-medium text-truncate d-block">
+                                    <i class="ti ti-flag-3 me-1 text-primary"></i>
+                                    {{ p.expectedEndDate ? (p.expectedEndDate | date:'dd MMM yyyy') : 'N/A' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+.hover-elevate {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.hover-elevate:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+}
+</style>

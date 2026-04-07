@@ -3,13 +3,14 @@ import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService, NotificationDTO } from '../../services/notification.service';
+import { AiChatbotComponent } from '../../shared/ai-chatbot/ai-chatbot.component';
 import { interval, Subscription } from 'rxjs';
 
 
 @Component({
   selector: 'app-employee-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, RouterOutlet],
+  imports: [CommonModule, RouterModule, RouterOutlet, AiChatbotComponent],
   templateUrl: './employee-dashboard.component.html',
   styleUrls: ['./employee-dashboard.component.css']
 })

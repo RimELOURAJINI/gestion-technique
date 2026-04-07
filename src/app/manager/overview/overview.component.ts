@@ -125,14 +125,11 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
     const userId = this.authService.getUserId();
     if (!userId) return;
     
+    console.log(`[AI-INSIGHTS] 🚀 Génération analyse - userId: ${userId} - mode: insights`);
     this.isAiLoading = true;
     this.aiMessage = '';
     
-    // Injection discrète de la Surcharge et des Goulots
-    const extraContext = `\n[Données Avancées Frontend: Charge de travail en cours par développeur= ${this.workloadStr} | Tâches en situation de Goulot d'étranglement= ${this.blockedStr}]\n`;
-    const prompt = `En tant qu'Assistant Décisionnel IA, analyse la charge de chaque membre et détecte les surcharges cachées ou mauvaises répartitions. Liste les goulots d'étranglement et donne des conseils préventifs directs de réassignation.${extraContext}`;
-
-    this.aiService.getAIStatisticsStream(userId, prompt).subscribe({
+    this.aiService.getAIStatisticsStream(userId, '', 'insights').subscribe({
       next: (chunk) => {
         this.isAiLoading = false;
         this.aiMessage += chunk;

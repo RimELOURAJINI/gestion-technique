@@ -140,7 +140,7 @@
                                 </a>
                                 <ul>
                                     <li><a routerLink="/manager/overview" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Équipe Overview</a></li>
-                                    <li><a href="javascript:void(0);">Performance</a></li>
+                                    <li><a routerLink="/manager/performance" routerLinkActive="active">Performance</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -150,7 +150,7 @@
                     <li>
                         <ul>
                             <li><a routerLink="/manager/deals" routerLinkActive="active"><i class="ti ti-medal"></i><span>Deals & Clients</span></a></li>
-                            <li><a href="javascript:void(0);"><i class="ti ti-user-up"></i><span>Contacts</span></a></li>
+                            <li><a routerLink="/manager/contacts" routerLinkActive="active"><i class="ti ti-user-up"></i><span>Contacts</span></a></li>
                         </ul>
                     </li>
 
@@ -172,14 +172,16 @@
                     <li class="menu-title"><span>Ressources Humaines</span></li>
                     <li>
                         <ul>
-                            <li><a href="javascript:void(0);"><i class="ti ti-article"></i><span>Présences</span></a></li>
-                            <li><a href="javascript:void(0);"><i class="ti ti-message-star"></i><span>Congés</span></a></li>
+                            <li><a routerLink="/manager/attendance" routerLinkActive="active"><i class="ti ti-article"></i><span>Présences</span></a></li>
+                            <li><a routerLink="/manager/leaves" routerLinkActive="active"><i class="ti ti-message-star"></i><span>Congés</span></a></li>
                         </ul>
                     </li>
 
                     <li class="menu-title"><span>Compte</span></li>
                     <li>
                         <ul>
+                            <li><a routerLink="/manager/team" routerLinkActive="active"><i class="ti ti-users-group"></i><span>Mon Équipe</span></a></li>
+                            <li><a routerLink="/manager/settings" routerLinkActive="active"><i class="ti ti-settings-cog"></i><span>Paramètres</span></a></li>
                             <li><a href="javascript:void(0)" (click)="logout()" class="text-danger"><i class="ti ti-logout"></i><span>Déconnexion</span></a></li>
                         </ul>
                     </li>
@@ -203,4 +205,5 @@
            </div>
         </footer>
     </div>
-</div>
+</div>
+<app-ai-chatbot></app-ai-chatbot>

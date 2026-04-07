@@ -48,6 +48,7 @@ export class AiChatbotComponent implements OnInit, OnDestroy {
 
   private readonly API_URL = 'http://localhost:8080/AIEducanet/';
   private readonly LOG = '[AI-CHATBOT]';
+  private sseBuffer = '';
 
   constructor(
     private authService: AuthService,
@@ -98,8 +99,8 @@ export class AiChatbotComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Log envoi
-    console.log(`${this.LOG} 📤 Envoi prompt au backend: "${prompt}"`);
+    console.log(`${this.LOG} 🚀 Envoi question    - userId: ${this.userId} - mode: chat`);
+    console.log(`${this.LOG} 📤 Prompt envoyé: "${prompt}"`);
 
     // Ajouter message user
     this.messages.push({ role: 'user', text: prompt, timestamp: new Date() });
@@ -124,7 +125,7 @@ export class AiChatbotComponent implements OnInit, OnDestroy {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.authService.getToken() ?? ''}`
         },
-        body: JSON.stringify({ userId: this.userId, prompt }),
+        body: JSON.stringify({ userId: this.userId, prompt, mode: 'chat' }),
         signal: this.abortController.signal
       });
 
@@ -135,26 +136,22 @@ export class AiChatbotComponent implements OnInit, OnDestroy {
         throw new Error('ReadableStream non supporté par ce navigateur');
       }
 
-      console.log(`${this.LOG} 🔗 Connexion au stream SSE établie`);
+      console.log(`[AI-STREAM] 🔗 Connexion SSE établie`);
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder('utf-8');
+      this.sseBuffer = '';
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });
-        console.log(`${this.LOG} 📥 Chunk reçu: "${chunk}"`);
-
-        // Mettre à jour le message IA dans la zone Angular
-        this.zone.run(() => {
-          this.messages[aiMsgIndex].text += chunk;
-          this.cdr.detectChanges();
-          this.scrollToBottom();
-        });
+        this.consumeSseChunk(chunk, aiMsgIndex);
       }
 
+      this.flushSseBuffer(aiMsgIndex);
+      console.log(`[AI-STREAM] ✅ Stream terminé`);
       console.log(`${this.LOG} ✅ Stream terminé - réponse complète reçue`);
 
     } catch (err: any) {
@@ -164,6 +161,7 @@ export class AiChatbotComponent implements OnInit, OnDestroy {
           this.messages[aiMsgIndex].text += ' _(réponse interrompue)_';
         });
       } else {
+        console.error(`[AI-STREAM] ❌ Erreur: ${err?.message || err}`);
         console.error(`${this.LOG} ❌ Erreur stream: ${err?.message || err}`);
         this.zone.run(() => {
           this.messages[aiMsgIndex].text = `❌ Une erreur est survenue : ${err?.message || 'Impossible de contacter le serveur.'}`;
@@ -178,6 +176,45 @@ export class AiChatbotComponent implements OnInit, OnDestroy {
         setTimeout(() => this.chatInput?.nativeElement?.focus(), 100);
       });
     }
+  }
+
+  private consumeSseChunk(rawChunk: string, aiMsgIndex: number): void {
+    this.sseBuffer += rawChunk;
+    const events = this.sseBuffer.split('\n\n');
+    this.sseBuffer = events.pop() ?? '';
+
+    for (const eventBlock of events) {
+      const eventText = this.extractSseEventText(eventBlock);
+      if (!eventText) continue;
+
+      console.log(`[AI-STREAM] 📥 Chunk reçu: "${eventText}"`);
+      this.zone.run(() => {
+        this.messages[aiMsgIndex].text += eventText;
+        this.cdr.detectChanges();
+        this.scrollToBottom();
+      });
+    }
+  }
+
+  private flushSseBuffer(aiMsgIndex: number): void {
+    const pending = this.extractSseEventText(this.sseBuffer);
+    this.sseBuffer = '';
+    if (!pending) return;
+
+    console.log(`[AI-STREAM] 📥 Chunk reçu: "${pending}"`);
+    this.zone.run(() => {
+      this.messages[aiMsgIndex].text += pending;
+      this.cdr.detectChanges();
+      this.scrollToBottom();
+    });
+  }
+
+  private extractSseEventText(eventBlock: string): string {
+    return eventBlock
+      .split('\n')
+      .filter((line) => line.startsWith('data:'))
+      .map((line) => line.substring(5))
+      .join('');
   }
 
   // ── Envoi par touche Entrée ───────────────────────────────────────

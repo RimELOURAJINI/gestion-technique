@@ -6,7 +6,7 @@
             <div class="d-flex align-items-center gap-2">
 
                 <!-- Logo -->
-                <a routerLink="/admin" class="logo">
+                <a routerLink="/commercial" class="logo">
                     <span class="logo-light">
                         <span class="logo-lg"><img src="assets/assets/img/logo.svg" alt="logo"></span>
                         <span class="logo-sm"><img src="assets/assets/img/logo-small.svg" alt="small logo"></span>
@@ -25,10 +25,10 @@
                     <i class="ti ti-arrow-bar-to-right"></i>
                 </button> 
                 
-                <!-- Search (Template Feature) -->
+                <!-- Search -->
                 <div class="me-auto d-flex align-items-center header-search d-lg-flex d-none">
                     <div class="input-icon position-relative me-2">
-                       <input type="text" class="form-control" placeholder="Rechercher...">
+                       <input type="text" class="form-control" placeholder="Rechercher projet / client...">
                        <span class="input-icon-addon d-inline-flex p-0 header-search-icon"><i class="ti ti-command"></i></span>
                     </div>
                 </div>
@@ -43,13 +43,6 @@
                         <a href="javascript:void(0);" class="btn topbar-link btnFullscreen"><i class="ti ti-maximize"></i></a>
                     </div> 
                 </div> 
-
-                <!-- Dark Mode -->
-                <div class="header-item d-none d-sm-flex me-2">
-                    <button class="topbar-link btn" id="light-dark-mode" type="button">
-                        <i class="ti ti-moon fs-16"></i>
-                    </button>
-                </div>
 
                 <!-- Notifications -->
                 <div class="header-item">
@@ -78,7 +71,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -86,22 +78,22 @@
                 <!-- User Dropdown -->
                 <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center">
                     <a href="javascript:void(0);" class="topbar-link dropdown-toggle drop-arrow-none position-relative" data-bs-toggle="dropdown" data-bs-offset="0,22">
-                        <img src="assets/assets/img/profiles/avatar-01.jpg" width="38" class="rounded-1 d-flex" alt="user-image">
+                        <img src="assets/assets/img/profiles/avatar-05.jpg" width="38" class="rounded-1 d-flex" alt="user-image">
                         <span class="online text-success"><i class="ti ti-circle-filled d-flex bg-white rounded-circle border border-1 border-white"></i></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-md p-2">
                     
                         <div class="d-flex align-items-center bg-light rounded-3 p-2 mb-2">
-                            <img src="assets/assets/img/profiles/avatar-01.jpg" class="rounded-circle" width="42" height="42" alt="Img">
+                            <img src="assets/assets/img/profiles/avatar-05.jpg" class="rounded-circle" width="42" height="42" alt="Img">
                             <div class="ms-2">
-                                <p class="fw-medium text-dark mb-0">{{ adminName }}</p>
-                                <span class="d-block fs-13">{{ adminRole }}</span>
+                                <p class="fw-medium text-dark mb-0">{{ commercialName }}</p>
+                                <span class="d-block fs-13">{{ commercialRole }}</span>
                             </div>
                         </div>
 
-                        <a routerLink="/admin/overview" class="dropdown-item">
+                        <a routerLink="/commercial/projects" class="dropdown-item">
                             <i class="ti ti-user-circle me-1 align-middle"></i>
-                            <span class="align-middle">Profil</span>
+                            <span class="align-middle">Mon Espace</span>
                         </a>
 
                         <div class="pt-2 mt-2 border-top">
@@ -121,13 +113,12 @@
     <!-- Sidenav Menu Start -->
     <div class="sidebar" id="sidebar">
         
-        <!-- Sidebar Logo -->
         <div class="sidebar-logo">
             <div>
-                <a routerLink="/admin" class="logo logo-normal">
+                <a routerLink="/commercial" class="logo logo-normal">
                     <img src="assets/assets/img/logo.svg" alt="Logo">
                 </a>
-                <a routerLink="/admin" class="logo-small">
+                <a routerLink="/commercial" class="logo-small">
                     <img src="assets/assets/img/logo-small.svg" alt="Logo">
                 </a>
             </div>
@@ -139,63 +130,35 @@
             </button>                
         </div>
 
-        <!-- Sidenav Menu -->
         <div class="sidebar-inner" data-simplebar>                
             <div id="sidebar-menu" class="sidebar-menu text-uppercase fs-11 fw-bold">
                 <ul>
-                    <li class="menu-title"><span>Menu Principal</span></li>
+                    <li class="menu-title"><span>Espace Commercial</span></li>
                     <li>
                         <ul>
                             <li class="submenu">
-                                <a href="javascript:void(0);" (click)="toggleDashboardMenu()" [ngClass]="{'active': router.url.includes('/admin/overview'), 'subdrop': dashboardMenuOpen}">
-                                    <i class="ti ti-dashboard"></i><span>Dashboard</span><span class="menu-arrow"></span>
+                                <a href="javascript:void(0);" (click)="toggleProjectsMenu()" [ngClass]="{'active': router.url.includes('/commercial/projects'), 'subdrop': projectsMenuOpen}">
+                                    <i class="ti ti-atom-2"></i><span>Mes Projets</span><span class="menu-arrow"></span>
                                 </a>
-                                <ul [style.display]="dashboardMenuOpen ? 'block' : 'none'">
-                                    <li><a routerLink="/admin/overview" routerLinkActive="active">Vue d'ensemble</a></li>
-                                    <li><a routerLink="/admin/sales-stats" routerLinkActive="active">Statistiques Ventes</a></li>
+                                <ul [style.display]="projectsMenuOpen ? 'block' : 'none'">
+                                    <li><a routerLink="/commercial/projects" routerLinkActive="active">Tous les Projets</a></li>
+                                    <li><a routerLink="/commercial/settings" routerLinkActive="active">Mes Paramètres</a></li>
                                 </ul>
                             </li>
                         </ul>
                     </li>
 
-                    <li class="menu-title"><span>Projets & Travail</span></li>
+                    <li class="menu-title"><span>Support & Ventes</span></li>
                     <li>
                         <ul>
-                            <li><a routerLink="/admin/projects" routerLinkActive="active"><i class="ti ti-atom-2"></i><span>Gestion Projets</span></a></li>
-                            <li><a routerLink="/admin/tasks" routerLinkActive="active"><i class="ti ti-list-check"></i><span>Tâches Système</span></a></li>
+                            <li><a href="javascript:void(0);"><i class="ti ti-ticket"></i><span>Discussions Clients</span></a></li>
+                            <li><a href="javascript:void(0);"><i class="ti ti-medal"></i><span>Mes Deals</span></a></li>
                         </ul>
                     </li>
 
-                    <li class="menu-title"><span>Administration</span></li>
+                    <li class="menu-title"><span>Compte</span></li>
                     <li>
                         <ul>
-                            <li class="submenu">
-                                <a href="javascript:void(0);" (click)="toggleUsersMenu()" [ngClass]="{'active': router.url.includes('/admin/users') || router.url.includes('/admin/teams'), 'subdrop': usersMenuOpen}">
-                                    <i class="ti ti-users"></i><span>Utilisateurs</span><span class="menu-arrow"></span>
-                                </a>
-                                <ul [style.display]="usersMenuOpen ? 'block' : 'none'">
-                                    <li><a routerLink="/admin/users" routerLinkActive="active">Tous les Utilisateurs</a></li>
-                                    <li><a routerLink="/admin/teams" routerLinkActive="active">Equipes & Membres</a></li>
-                                    <li><a routerLink="/admin/role-permissions" routerLinkActive="active">Rôles & Permissions</a></li>
-                                </ul>
-                            </li>
-                            <li><a routerLink="/admin/reclamations" routerLinkActive="active"><i class="ti ti-ticket"></i><span>Réclamations</span></a></li>
-                        </ul>
-                    </li>
-
-                    <li class="menu-title"><span>Paramètres</span></li>
-                    <li>
-                        <ul>
-                            <li class="submenu">
-                                <a href="javascript:void(0);" (click)="toggleConfigMenu()" [class.subdrop]="configMenuOpen">
-                                    <i class="ti ti-settings-cog"></i><span>Configuration</span><span class="menu-arrow"></span>
-                                </a>
-                                <ul [style.display]="configMenuOpen ? 'block' : 'none'">
-                                    <li><a routerLink="/admin/settings" routerLinkActive="active">Paramètres Généraux</a></li>
-                                    <li><a routerLink="/admin/settings" routerLinkActive="active">Logs Système</a></li>
-                                    <li><a routerLink="/admin/settings" routerLinkActive="active">Sauvegardes</a></li>
-                                </ul>
-                            </li>
                             <li><a href="javascript:void(0)" (click)="logout()" class="text-danger"><i class="ti ti-logout"></i><span>Déconnexion</span></a></li>
                         </ul>
                     </li>
@@ -212,13 +175,12 @@
         </div>
         
         <footer class="footer d-block d-md-flex justify-content-between text-md-start text-center mt-4 border-top pt-3">
-           <p class="mb-md-0 mb-1 fs-12 text-muted">Copyright &copy; 2024 CRMS - Gestion de Projet</p>
+           <p class="mb-md-0 mb-1 fs-12 text-muted">Copyright &copy; 2024 CRMS - Espace Commercial</p>
            <div class="d-flex align-items-center gap-2 footer-links justify-content-center justify-content-md-end fs-12">
               <a href="javascript:void(0);" class="text-muted">Support</a>
-              <a href="javascript:void(0);" class="text-muted">Confidentialité</a>
+              <a href="javascript:void(0);" class="text-muted">Aide</a>
            </div>
         </footer>
     </div>
 </div>
 <app-ai-chatbot></app-ai-chatbot>
-

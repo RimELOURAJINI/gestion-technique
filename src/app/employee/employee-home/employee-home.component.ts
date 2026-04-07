@@ -132,16 +132,11 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
     const userId = this.authService.getUserId();
     if (!userId) return;
     
+    console.log(`[AI-INSIGHTS] 🚀 Génération analyse - userId: ${userId} - mode: insights`);
     this.isAiLoading = true;
     this.aiMessage = '';
     
-    const userName = this.authService.getUserName() || 'Collaborateur';
-    
-    // Injection discrète de l'état d'énergie et de la liste réelle des tâches
-    const extraContext = `\n[Données Avancées Frontend: Humeur/Énergie du jour= ${this.currentMood} | Liste des tâches pressantes avec 'Story Points' (Complexité sur 8)= \n${this.tasksContextStr}]\n`;
-    const prompt = `En tant qu'Assistant Décisionnel IA (Coach), personnalise ton conseil pour moi (Employé: ${userName}). Prends en compte mon niveau d'énergie actuel pour me suggérer exactement quelle tâche cibler en premier (parmi celles de la liste) pour optimiser ma vélocité globale sans me décourager. Ne donne que 3 recommandations directes.${extraContext}`;
-
-    this.aiService.getAIStatisticsStream(userId, prompt).subscribe({
+    this.aiService.getAIStatisticsStream(userId, '', 'insights').subscribe({
       next: (chunk) => {
         this.isAiLoading = false;
         this.aiMessage += chunk;

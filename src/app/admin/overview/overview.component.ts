@@ -91,14 +91,11 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
     const userId = this.authService.getUserId();
     if (!userId) return;
     
+    console.log(`[AI-INSIGHTS] 🚀 Génération analyse - userId: ${userId} - mode: insights`);
     this.isAiLoading = true;
     this.aiMessage = '';
     
-    // Injection du contexte calculé par le Frontend
-    const extraContext = `\n[Données Avancées Frontend: Total Réclamations=${this.totalReclamations}, Résolues=${this.resolvedReclamations}. Seuil de risque budgétaire toléré par l'Administrateur=${this.riskThreshold}%]\n`;
-    const prompt = `En tant qu'Assistant Décisionnel IA, analyse les risques de dépassement budgétaire (utilise le seuil de ${this.riskThreshold}%) et la santé globale (basé sur le SAV). Donne 3 alertes concrètes de réattribution de moyens s'il y a un danger financier ou humain.${extraContext}`;
-
-    this.aiService.getAIStatisticsStream(userId, prompt).subscribe({
+    this.aiService.getAIStatisticsStream(userId, '', 'insights').subscribe({
       next: (chunk) => {
         this.isAiLoading = false;
         this.aiMessage += chunk;
