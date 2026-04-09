@@ -194,110 +194,43 @@
 
 			<!-- Tab: Commercial -->
 			<div *ngIf="!isLoading && activeTab === 'commercial'">
-				
-				<div *ngIf="!selectedCommercialTicket">
-					<div class="row">
-						<div class="col-md-6 col-lg-4 mb-4" *ngFor="let ct of commercialTickets">
-							<div class="card shadow-sm border border-light h-100 cursor-pointer" style="transition: transform 0.2s;" (click)="openCommercialChat(ct)">
-								<div class="card-body">
-									<div class="d-flex align-items-center justify-content-between mb-3">
-										<span class="badge bg-soft-info text-info rounded-pill px-3 py-1 fs-11">
-											{{ ct.project?.name }}
-										</span>
-										<span class="text-muted fs-12"><i class="ti ti-clock me-1"></i>{{ ct.createdAt | date:'shortDate' }}</span>
-									</div>
-									<h6 class="fw-bold mb-2">{{ ct.subject }}</h6>
-									<p class="text-muted fs-13 text-truncate mb-4">{{ ct.description }}</p>
-									
-									<div class="d-flex align-items-center justify-content-between mt-auto">
-										<div class="d-flex align-items-center">
-											<div class="avatar avatar-sm bg-soft-primary text-primary rounded-circle d-flex justify-content-center align-items-center me-2">
-												<i class="ti ti-user fs-14"></i>
-											</div>
-											<span class="fs-12 text-dark fw-medium">{{ ct.createdBy?.firstName }} {{ ct.createdBy?.lastName }}</span>
+				<div class="row">
+					<div class="col-md-6 col-lg-4 mb-4" *ngFor="let ct of commercialTickets">
+						<div class="card shadow-sm border border-light h-100 cursor-pointer ticket-block" (click)="openCommercialChat(ct)">
+							<div class="card-body p-4">
+								<div class="d-flex align-items-center justify-content-between mb-3">
+									<span class="badge bg-soft-info text-info rounded-pill px-3 py-1 fs-11">
+										{{ ct.project?.name }}
+									</span>
+									<span class="text-muted fs-11"><i class="ti ti-calendar me-1"></i>{{ ct.createdAt | date:'dd/MM' }}</span>
+								</div>
+								<h6 class="fw-bold mb-2 text-dark">{{ ct.subject }}</h6>
+								<p class="text-muted fs-13 text-truncate-2 mb-4">{{ ct.description }}</p>
+								
+								<div class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-2">
+											{{ ct.createdBy?.firstName?.substring(0,1) }}
 										</div>
-										<button class="btn btn-sm btn-info text-white rounded-pill px-3 shadow-sm">
-											Discuter <i class="ti ti-arrow-right ms-1"></i>
-										</button>
+										<span class="fs-12 text-dark fw-medium">{{ ct.createdBy?.firstName }}</span>
+									</div>
+									<div class="text-primary fs-12 fw-bold">
+										<i class="ti ti-messages me-1"></i> Ouvrir Chat
 									</div>
 								</div>
 							</div>
 						</div>
-						<div class="col-12 text-center py-5" *ngIf="commercialTickets.length === 0">
-							<i class="ti ti-messages text-muted mb-3 d-block" style="font-size: 3rem;"></i>
-							<h5 class="text-muted">Aucune discussion commerciale en cours.</h5>
-						</div>
+					</div>
+					<div class="col-12 text-center py-5" *ngIf="commercialTickets.length === 0">
+						<i class="ti ti-messages text-muted mb-3 d-block" style="font-size: 3rem;"></i>
+						<h5 class="text-muted">Aucune discussion commerciale en cours.</h5>
 					</div>
 				</div>
 
-				<!-- Chat View -->
-				<div *ngIf="selectedCommercialTicket" class="card shadow-none border rounded border-light">
-					<div class="card-header bg-light border-bottom d-flex align-items-center justify-content-between py-3">
-						<div class="d-flex align-items-center">
-							<button class="btn btn-sm btn-icon btn-white border shadow-sm me-3" (click)="closeCommercialChat()">
-								<i class="ti ti-arrow-left"></i>
-							</button>
-							<div>
-								<h6 class="fw-bold mb-0 text-dark">{{ selectedCommercialTicket.subject }}</h6>
-								<p class="text-muted fs-12 mb-0">Lié au projet : <span class="fw-medium">{{ selectedCommercialTicket.project?.name }}</span></p>
-							</div>
-						</div>
-					</div>
-					
-					<div class="card-body overflow-auto bg-white p-4" id="commercialChatContainer" style="height: 400px;">
-						<div class="text-center mb-4">
-							<span class="badge bg-light text-muted border px-3 py-1 rounded-pill">Début de la discussion</span>
-						</div>
-
-						<div *ngFor="let msg of commercialMessages" class="mb-4 d-flex" [ngClass]="{'justify-content-end': msg.sender?.id === currentUserId}">
-							
-							<div *ngIf="msg.sender?.id !== currentUserId" class="avatar avatar-md bg-info text-white rounded-circle me-3 flex-shrink-0 d-flex justify-content-center align-items-center shadow-sm border border-light mt-1">
-								{{ msg.sender?.firstName?.charAt(0) || '?' }}
-							</div>
-		
-							<div style="max-width: 65%;">
-								<div class="p-3 mb-1 shadow-sm fs-14" 
-									 [ngClass]="msg.sender?.id === currentUserId ? 'bg-primary text-white text-end rounded-4 rounded-bottom-end-0' : 'bg-light text-dark text-start rounded-4 rounded-bottom-start-0 border border-light'">
-									<p class="mb-0" style="white-space: pre-wrap; line-height: 1.5;">{{ msg.content }}</p>
-									
-									<!-- Images -->
-									<div *ngIf="msg.images && msg.images.length > 0" class="mt-3 text-start">
-										<div class="d-flex flex-wrap gap-2" [ngClass]="{'justify-content-end': msg.sender?.id === currentUserId}">
-											<img *ngFor="let img of msg.images" [src]="img" class="img-thumbnail border-0 rounded shadow-sm" style="max-height: 120px; object-fit: cover; cursor: pointer;">
-										</div>
-									</div>
-								</div>
-								<small class="text-muted fs-11" [ngClass]="msg.sender?.id === currentUserId ? 'd-block text-end pe-2' : 'd-block text-start ps-2'">
-									<span class="fw-medium">{{ msg.sender?.id === currentUserId ? 'Vous' : (msg.sender?.firstName + ' ' + msg.sender?.lastName) }}</span> &bull; {{ msg.createdAt | date:'shortTime' }}
-								</small>
-							</div>
-		
-							<div *ngIf="msg.sender?.id === currentUserId" class="avatar avatar-md bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-circle ms-3 flex-shrink-0 d-flex justify-content-center align-items-center mt-1">
-								M
-							</div>
-						</div>
-					</div>
-
-					<div class="card-footer bg-light border-top p-3">
-						<div *ngIf="base64Images.length > 0" class="mb-3 p-2 bg-white rounded border shadow-sm d-inline-flex gap-2 flex-wrap">
-							<div *ngFor="let img of base64Images" class="position-relative">
-								<img [src]="img" class="rounded border" style="width: 60px; height: 60px; object-fit: cover;">
-							</div>
-						</div>
-						
-						<div class="d-flex gap-2">
-							<button class="btn btn-white border shadow-sm btn-icon flex-shrink-0 rounded-circle" onclick="document.getElementById('chatImagesManager').click()" data-bs-toggle="tooltip" title="Joindre image">
-								<i class="ti ti-paperclip text-muted"></i>
-							</button>
-							<input type="file" id="chatImagesManager" (change)="onFileSelected($event)" accept="image/*" multiple style="display: none;">
-							
-							<div class="input-group bg-white rounded-pill shadow-sm border px-2 py-1">
-								<input type="text" class="form-control border-0 shadow-none bg-transparent ps-3" placeholder="Écrivez votre message..." [(ngModel)]="newCommercialMessage" (keyup.enter)="sendCommercialMessage()">
-								<button class="btn btn-primary rounded-circle btn-icon ms-1" style="height: 38px; width: 38px;" (click)="sendCommercialMessage()" [disabled]="!newCommercialMessage.trim() && base64Images.length === 0">
-									<i class="ti ti-send"></i>
-								</button>
-							</div>
-						</div>
+				<!-- Chat Overlay -->
+				<div class="chat-overlay" *ngIf="selectedCommercialTicket" (click)="closeCommercialChat()">
+					<div class="chat-content" (click)="$event.stopPropagation()">
+						<app-ticket-chat [ticket]="selectedCommercialTicket" [onClose]="closeCommercialChat.bind(this)"></app-ticket-chat>
 					</div>
 				</div>
 			</div>

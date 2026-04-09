@@ -1,0 +1,69 @@
+<div class="container-fluid p-0">
+    <div class="row align-items-center mb-4">
+        <div class="col-sm-6 text-dark">
+            <h4 class="fw-bold mb-0 text-info"><i class="ti ti-heart-rate-monitor me-2"></i> Mon Bien-être & Énergie</h4>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Energy Level Widget -->
+        <div class="col-md-5">
+            <div class="card border-0 shadow-sm bg-gradient-info text-white rounded-4 shadow-lg p-3">
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <i class="ti ti-bolt fs-80 opacity-50"></i>
+                    </div>
+                    <h1 class="display-3 fw-bold mb-0">85%</h1>
+                    <p class="fs-18 mb-4">Votre niveau d'énergie actuel</p>
+                    <p class="fs-13 text-white-50">Basé sur vos tâches complétées et votre temps de focus.</p>
+                    <button class="btn btn-white btn-sm rounded-pill px-4 mt-2 text-info fw-bold">Détailler mon état</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Focus & Productivity -->
+        <div class="col-md-7">
+            <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-header bg-white py-3 border-0">
+                    <h5 class="card-title mb-0 fw-bold">Statistiques de Productivité</h5>
+                </div>
+                <div class="card-body p-4 pt-0">
+                    <div class="mb-4">
+                        <label class="form-label d-flex justify-content-between">
+                            <span>Niveau d'énergie</span>
+                            <span class="fw-bold text-primary">{{ energyLevel }}%</span>
+                        </label>
+                        <input type="range" class="form-range" min="0" max="100" [(ngModel)]="energyLevel">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Humeur dominante</label>
+                        <select class="form-select border-0 bg-light" [(ngModel)]="mood">
+                            <option>Zen</option>
+                            <option>Productif</option>
+                            <option>Fatigué</option>
+                            <option>Stressé</option>
+                            <option>Créatif</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary w-100 rounded-pill shadow-sm" (click) = "saveWellness()">Sauvegarder mon état</button>
+                    <p class="text-center mt-2 text-success" *ngIf="message">{{ message }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Coaching Insight -->
+    <div class="card border-0 shadow-sm mt-4 bg-light overflow-hidden">
+        <div class="row g-0">
+            <div class="col-auto bg-primary d-flex align-items-center justify-content-center p-4">
+                <i class="ti ti-brand-openai fs-40 text-white"></i>
+            </div>
+            <div class="col">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold text-primary mb-2">Conseil de l'IA Agentique</h6>
+                    <p class="mb-0 text-muted fs-14">"Vous avez été très productif ce matin ! Votre courbe de concentration suggère de faire une pause de 15 minutes maintenant pour maintenir ce niveau d'énergie pour la session de l'après-midi."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

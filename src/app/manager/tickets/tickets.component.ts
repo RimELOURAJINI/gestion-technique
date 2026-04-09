@@ -5,11 +5,12 @@ import { RouterModule } from '@angular/router';
 import { TeamLeaderService } from '../../services/manager.service';
 import { AuthService } from '../../services/auth.service';
 import { Reclamation, Project } from '../../models/models';
+import { TicketChatComponent } from '../../shared/ticket-chat/ticket-chat.component';
 
 @Component({
   selector: 'app-tickets',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, TicketChatComponent],
   templateUrl: './tickets.component.html',
   styleUrl: './tickets.component.css'
 })

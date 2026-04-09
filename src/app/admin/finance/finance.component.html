@@ -1,0 +1,110 @@
+<div class="container-fluid p-0">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-flex align-items-center justify-content-between mb-4">
+                <h4 class="mb-0 text-primary fw-bold"><i class="ti ti-chart-line me-2"></i> Flux Financier & Budgets</h4>
+                <div class="page-title-right">
+                    <button class="btn btn-primary btn-sm rounded-pill"><i class="ti ti-download me-1"></i> Exporter Rapport</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm bg-gradient-primary text-white">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="avatar-sm bg-white-transparent rounded-circle me-3 d-flex align-items-center justify-content-center">
+                            <i class="ti ti-wallet fs-24"></i>
+                        </div>
+                        <h5 class="card-title mb-0">Budget Prévu</h5>
+                    </div>
+                    <h2 class="fw-bold mb-2">{{ stats.totalBudget | number:'1.0-0' }} DT</h2>
+                    <p class="mb-0 fs-12 text-white-50"><i class="ti ti-trending-up me-1"></i> Global système</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm border-start border-4 border-warning">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="avatar-sm bg-soft-warning text-warning rounded-circle me-3 d-flex align-items-center justify-content-center">
+                            <i class="ti ti-cash fs-24"></i>
+                        </div>
+                        <h5 class="card-title mb-0 text-muted">Coûts Réels</h5>
+                    </div>
+                    <h2 class="fw-bold mb-2">{{ stats.totalSpent | number:'1.0-0' }} DT</h2>
+                    <p class="mb-0 fs-12 text-success"><i class="ti ti-arrow-down me-1"></i> Dépensé</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm border-start border-4 border-success">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="avatar-sm bg-soft-success text-success rounded-circle me-3 d-flex align-items-center justify-content-center">
+                            <i class="ti ti-calculator fs-24"></i>
+                        </div>
+                        <h5 class="card-title mb-0 text-muted">Marge Nette</h5>
+                    </div>
+                    <h2 class="fw-bold mb-2">{{ stats.netMargin | number:'1.0-0' }} DT</h2>
+                    <p class="mb-0 fs-12 text-primary">Utilisation de {{ stats.usagePercentage | number:'1.1-1' }}% du budget</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Expenses Table -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="card-title mb-0 fw-bold">Dépenses Récentes par Projet</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light fs-12 text-uppercase text-muted">
+                        <tr>
+                            <th class="ps-4">Projet</th>
+                            <th>Département</th>
+                            <th>Coût</th>
+                            <th>Status</th>
+                            <th class="text-end pe-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-xs bg-soft-primary text-primary rounded me-2 d-flex align-items-center justify-content-center fs-10 fw-bold">ERP</div>
+                                    <span>Cloud ERP Migration</span>
+                                </div>
+                            </td>
+                            <td>IT Infrastructure</td>
+                            <td class="fw-bold">45,000 DT</td>
+                            <td><span class="badge bg-soft-success text-success rounded-pill px-2">Validé</span></td>
+                            <td class="text-end pe-4">
+                                <button class="btn btn-sm btn-icon border-0"><i class="ti ti-dots-vertical"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-xs bg-soft-info text-info rounded me-2 d-flex align-items-center justify-content-center fs-10 fw-bold">SEC</div>
+                                    <span>Cybersecurity Audit</span>
+                                </div>
+                            </td>
+                            <td>Compliance</td>
+                            <td class="fw-bold">12,500 DT</td>
+                            <td><span class="badge bg-soft-warning text-warning rounded-pill px-2">En attente</span></td>
+                            <td class="text-end pe-4">
+                                <button class="btn btn-sm btn-icon border-0"><i class="ti ti-dots-vertical"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

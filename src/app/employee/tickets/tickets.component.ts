@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { EmployeeService } from '../../services/employee.service';
 import { AuthService } from '../../services/auth.service';
 import { Reclamation, Project } from '../../models/models';
+import { TicketService } from '../../services/ticket.service';
+import { TicketChatComponent } from '../../shared/ticket-chat/ticket-chat.component';
 
 @Component({
   selector: 'app-tickets',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TicketChatComponent],
   templateUrl: './tickets.component.html',
   styleUrl: './tickets.component.css'
 })
@@ -25,14 +27,39 @@ export class TicketsComponent implements OnInit {
 
   showCreateForm: boolean = false;
 
+  // Commercial / Project Chat
+  commercialTickets: any[] = [];
+  selectedCommercialTicket: any = null;
+  currentUserId: number | null = null;
+
   constructor(
     private employeeService: EmployeeService,
-    private authService: AuthService
+    private authService: AuthService,
+    private ticketService: TicketService
   ) {}
 
   ngOnInit(): void {
+    this.currentUserId = this.authService.getUserId();
     this.loadTickets();
     this.loadProjects();
+    this.loadCommercialTickets();
+  }
+
+  loadCommercialTickets(): void {
+    if (this.currentUserId) {
+      this.ticketService.getTicketsByUserId(this.currentUserId).subscribe(res => {
+        this.commercialTickets = res;
+      });
+    }
+  }
+
+  openCommercialChat(ticket: any) {
+    this.selectedCommercialTicket = ticket;
+  }
+
+  closeCommercialChat() {
+    this.selectedCommercialTicket = null;
+    this.loadCommercialTickets();
   }
 
   loadTickets(): void {

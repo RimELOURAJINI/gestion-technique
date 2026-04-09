@@ -1,0 +1,108 @@
+<div class="container-fluid p-0">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-flex align-items-center justify-content-between mb-4">
+                <h4 class="mb-0 text-dark fw-bold"><i class="ti ti-shield-lock me-2 text-danger"></i> Audit & Sécurité Système</h4>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary btn-sm rounded-pill"><i class="ti ti-trash me-1 text-danger"></i> Purger Logs (Anciens)</button>
+                    <button class="btn btn-dark btn-sm rounded-pill"><i class="ti ti-refresh me-1"></i> Rafraîchir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Status Widgets -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body p-4">
+                    <h6 class="text-muted fw-normal mb-2 fs-12">Utilisateurs Actifs</h6>
+                    <h3 class="fw-bold mb-0">128</h3>
+                    <div class="progress mt-3 rounded-pill" style="height: 4px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 75%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body p-4">
+                    <h6 class="text-muted fw-normal mb-2 fs-12">Tentatives de Connexion (24h)</h6>
+                    <h3 class="fw-bold mb-0 text-warning">14</h3>
+                    <div class="progress mt-3 rounded-pill" style="height: 4px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 30%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body p-4">
+                    <h6 class="text-muted fw-normal mb-2 fs-12">Santé Base de Données</h6>
+                    <h3 class="fw-bold mb-0 text-success">Optimale</h3>
+                    <div class="progress mt-3 rounded-pill" style="height: 4px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body p-4">
+                    <h6 class="text-muted fw-normal mb-2 fs-12">Alertes critiques</h6>
+                    <h3 class="fw-bold mb-0 text-danger">0</h3>
+                    <div class="progress mt-3 rounded-pill" style="height: 4px;">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Log Table -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+            <h5 class="card-title mb-0 fw-bold">Journal des Actions Administratives</h5>
+            <div class="input-icon-start">
+                <input type="text" class="form-control form-control-sm border-0 bg-light" placeholder="Filtrer par IP / Utilisateur...">
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 fs-13">
+                    <thead class="bg-light text-muted">
+                        <tr>
+                            <th class="ps-4">Horodatage</th>
+                            <th>Utilisateur</th>
+                            <th>Action</th>
+                            <th>Module</th>
+                            <th>Adresse IP</th>
+                            <th class="text-end pe-4">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let log of auditLogs">
+                            <td class="ps-4">{{ log.timestamp | date:'short' }}</td>
+                            <td><span class="fw-semibold">{{ log.userId }}</span></td>
+                            <td>{{ log.action }}</td>
+                            <td>{{ log.module }}</td>
+                            <td>{{ log.ipAddress }}</td>
+                            <td class="text-end pe-4">
+                                <span class="badge rounded-pill px-2" 
+                                      [ngClass]="{'bg-soft-info text-info': log.status === 'INFO', 
+                                                 'bg-soft-warning text-warning': log.status === 'WARN', 
+                                                 'bg-soft-success text-success': log.status === 'SUCCESS', 
+                                                 'bg-soft-danger text-danger': log.status === 'DANGER'}">
+                                    {{ log.status }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr *ngIf="auditLogs.length === 0">
+                            <td colspan="6" class="text-center py-4 text-muted">Aucun log d'audit trouvé.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

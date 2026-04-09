@@ -47,12 +47,20 @@
 
                 <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
                     <div class="d-flex align-items-center">
-                        <div class="avatar avatar-sm bg-soft-primary text-primary rounded-circle me-2 d-flex justify-content-center align-items-center">
-                            <i class="ti ti-user fs-14"></i>
+                        <div class="team-avatars d-flex me-3" *ngIf="p.team">
+                            <div *ngFor="let member of p.team.users | slice:0:3" 
+                                 class="avatar-xs bg-soft-primary text-primary rounded-circle d-flex align-items-center justify-content-center border border-white" 
+                                 [title]="member.firstName"
+                                 style="margin-left: -8px;">
+                                {{ member.firstName.charAt(0) }}
+                            </div>
+                            <div *ngIf="p.team.users && p.team.users.length > 3" class="avatar-xs bg-dark text-white rounded-circle d-flex align-items-center justify-content-center border border-white fs-10" style="margin-left: -8px;">
+                                +{{ p.team.users.length - 3 }}
+                            </div>
                         </div>
                         <div>
-                            <span class="text-muted fs-11 d-block mb-0">Manager</span>
-                            <span class="fw-medium fs-13 text-dark">{{ p.manager?.firstName || 'Non' }} {{ p.manager?.lastName || 'Assigné' }}</span>
+                            <span class="text-muted fs-11 d-block mb-0">Équipe Assignée</span>
+                            <span class="fw-medium fs-13 text-dark">{{ p.team?.name || 'En attente' }}</span>
                         </div>
                     </div>
                     

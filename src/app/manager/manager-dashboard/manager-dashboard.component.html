@@ -140,6 +140,7 @@
                                 </a>
                                 <ul>
                                     <li><a routerLink="/manager/overview" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Équipe Overview</a></li>
+                                    <li><a routerLink="/manager/planning" routerLinkActive="active">Planification Charge</a></li>
                                     <li><a routerLink="/manager/performance" routerLinkActive="active">Performance</a></li>
                                 </ul>
                             </li>
@@ -166,6 +167,7 @@
                     <li>
                         <ul>
                             <li><a routerLink="/manager/tickets" routerLinkActive="active"><i class="ti ti-ticket"></i><span>Tickets Support</span></a></li>
+                            <li><a routerLink="/manager/approvals" routerLinkActive="active"><i class="ti ti-checklist text-success"></i><span>Centre Approbation</span></a></li>
                         </ul>
                     </li>
 
@@ -187,6 +189,22 @@
                     </li>
                 </ul>
             </div>
+            
+            <!-- Risk Alert Widget -->
+            <div class="sidebar-widget mt-4 mx-3 p-3 bg-soft-danger rounded-3 d-none d-lg-block border-start border-3 border-danger">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="avatar-xs bg-danger text-white rounded-circle me-2 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-alert-triangle fs-12"></i>
+                    </div>
+                    <span class="fs-11 fw-bold text-uppercase text-danger">Alerte de Risques</span>
+                </div>
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="fs-10 text-muted">Projets Critiques</span>
+                    <span class="badge bg-danger rounded-pill fs-9">2</span>
+                </div>
+                <p class="fs-10 text-muted mb-0">Retard détecté sur projet <span class="fw-bold">ERP Cloud</span>.</p>
+            </div>
+            
         </div>
     </div>
     <!-- Sidenav Menu End -->

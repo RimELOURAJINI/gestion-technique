@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
 import { Reclamation } from '../../models/models';
+import { TicketChatComponent } from '../../shared/ticket-chat/ticket-chat.component';
 
 @Component({
   selector: 'app-reclamations',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TicketChatComponent],
   templateUrl: './reclamations.component.html',
   styleUrl: './reclamations.component.css'
 })

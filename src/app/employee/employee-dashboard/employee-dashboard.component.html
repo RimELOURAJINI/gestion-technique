@@ -145,6 +145,7 @@
                                 <ul [style.display]="dashboardMenuOpen ? 'block' : 'none'">
                                     <li><a routerLink="/employee/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Mon Accueil</a></li>
                                     <li><a routerLink="/employee/performance" routerLinkActive="active">Performance Indiv.</a></li>
+                                    <li><a routerLink="/employee/wellness" routerLinkActive="active">Mon Bien-être & Énergie</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -186,6 +187,24 @@
                     </li>
                 </ul>
             </div>
+            
+            <!-- Daily Focus Widget -->
+            <div class="sidebar-widget mt-4 mx-3 p-3 bg-soft-info rounded-3 d-none d-lg-block">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="avatar-xs bg-info text-white rounded-circle me-2 d-flex align-items-center justify-content-center">
+                        <i class="ti ti-target fs-12"></i>
+                    </div>
+                    <span class="fs-11 fw-bold text-uppercase text-info">Focus du Jour</span>
+                </div>
+                <div class="mb-2">
+                    <p class="fs-10 fw-medium text-dark mb-1">Finaliser l'API Auth</p>
+                    <div class="progress rounded-pill shadow-inner" style="height: 3px;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 70%"></div>
+                    </div>
+                </div>
+                <button class="btn btn-white btn-xs rounded-pill shadow-sm border-0 w-100 fs-10 fw-bold py-1">Continuer</button>
+            </div>
+            
         </div>
     </div>
     <!-- Sidenav Menu End -->

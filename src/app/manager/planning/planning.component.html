@@ -1,0 +1,102 @@
+<div class="container-fluid p-0">
+    <div class="row">
+        <div class="col-12 text-dark">
+            <h4 class="fw-bold mb-4"><i class="ti ti-calendar-stats me-2 text-primary"></i> Planification de Charge Équipe</h4>
+        </div>
+    </div>
+
+    <!-- Capacity Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-center card-hover-shadow">
+                <div class="card-body py-4">
+                    <h1 class="display-5 text-primary fw-bold mb-0">{{ globalOccupancy }}%</h1>
+                    <p class="text-muted mb-0">Taux d'occupation global</p>
+                    <div class="progress mt-3 rounded-pill" style="height: 6px;">
+                        <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="globalOccupancy"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-center card-hover-shadow">
+                <div class="card-body py-4">
+                    <h1 class="display-5 text-danger fw-bold mb-0">{{ overloadedCount }}</h1>
+                    <p class="text-muted mb-0">Membres surchargés (>95%)</p>
+                    <div class="progress mt-3 rounded-pill" style="height: 6px;">
+                        <div class="progress-bar bg-danger" role="progressbar" [style.width.%]="overloadedCount > 0 ? 100 : 0"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-center card-hover-shadow">
+                <div class="card-body py-4">
+                    <h1 class="display-5 text-success fw-bold mb-0">Disponibilité</h1>
+                    <p class="text-muted mb-0">Capacité de 40h / membre</p>
+                    <div class="progress mt-3 rounded-pill" style="height: 6px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resource Availability Table -->
+    <div class="card border-0 shadow-sm overflow-hidden">
+        <div class="card-header bg-white py-3">
+            <div class="d-md-flex align-items-center justify-content-between">
+                <h5 class="card-title mb-md-0 mb-3 fw-bold">Disponibilité des Ressources</h5>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-dark">
+                    <thead class="bg-light text-muted fs-12">
+                        <tr>
+                            <th class="ps-4">Membre de l'Équipe</th>
+                            <th>Charge (h/sem)</th>
+                            <th>Taux d'occupation</th>
+                            <th>Niveau de Risque</th>
+                            <th class="text-end pe-4">Planning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let member of workloadData">
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm bg-info text-white rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                        {{ member.userName.substring(0,2) }}
+                                    </div>
+                                    <div>
+                                        <p class="mb-0 fw-bold">{{ member.userName }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ member.totalHours }} / {{ member.capacity }} h</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">{{ member.occupancyRate | number:'1.0-0' }}%</span>
+                                    <div class="progress rounded-pill flex-grow-1" style="height: 4px; min-width: 50px;">
+                                        <div class="progress-bar" role="progressbar" 
+                                             [style.width.%]="member.occupancyRate"
+                                             [ngClass]="member.occupancyRate > 95 ? 'bg-danger' : 'bg-primary'"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill" 
+                                      [ngClass]="member.occupancyRate > 95 ? 'bg-soft-danger text-danger' : 'bg-soft-success text-success'">
+                                    {{ member.occupancyRate > 95 ? 'Critique' : 'Optimal' }}
+                                </span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <button class="btn btn-sm btn-outline-primary rounded-pill">Voir GANTT</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

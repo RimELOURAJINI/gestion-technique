@@ -1,1 +1,20 @@
-/* Tickets styles */
+.main-card { border: 0; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); border-radius: 12px; }
+
+.ticket-block { cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(0,0,0,0.05) !important; }
+.ticket-block:hover { transform: translateY(-5px); box-shadow: 0 1rem 3rem rgba(0,0,0,0.1) !important; border-color: #4e73df !important; }
+
+.chat-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1050; display: flex; align-items: center; justify-content: flex-end; }
+.chat-content { margin-right: 30px; animation: slideIn 0.3s ease-out; }
+
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.text-truncate-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.bg-soft-primary { background-color: #eef2ff; }
+.bg-soft-success { background-color: #ecfdf5; }
+.bg-soft-warning { background-color: #fffbeb; }
+.bg-soft-danger { background-color: #fef2f2; }
+.bg-soft-info { background-color: #e0f7fa; }
+
+.nav-pills .nav-link.active { background-color: #4e73df; color: white !important; }
+.nav-pills .nav-link { color: #858796; }
+.nav-pills .nav-link:hover:not(.active) { background-color: #f8f9fc; }
