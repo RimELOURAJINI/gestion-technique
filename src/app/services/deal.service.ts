@@ -40,10 +40,10 @@ export class DealService {
     return this.http.post<any>(this.apiUrl, deal);
   }
 
-  updateStatus(id: number, status: string, teamId?: number): Observable<any> {
+  updateStatus(id: number, status: string, teamIds?: number[]): Observable<any> {
     let url = `${this.apiUrl}/${id}/status?status=${status}`;
-    if (teamId) {
-      url += `&teamId=${teamId}`;
+    if (teamIds && teamIds.length > 0) {
+      url += `&teamIds=${teamIds.join(',')}`;
     }
     return this.http.put<any>(url, {});
   }

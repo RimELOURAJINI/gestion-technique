@@ -3,11 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
 import { Project, Team, User } from '../../models/models';
+import { TicketChatComponent } from '../../shared/ticket-chat/ticket-chat.component';
+import { TicketService } from '../../services/ticket.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-project-management',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, TicketChatComponent],
     templateUrl: './project-management.component.html',
     styleUrl: './project-management.component.css'
 })
@@ -26,7 +29,11 @@ export class ProjectManagementComponent implements OnInit {
     selectedProjectId: number | null = null;
     selectedManagerId: number | null = null;
 
-    constructor(private adminService: AdminService) { }
+    // Chat Support
+    chatProject: any = null;
+    chatTicketId: number | null = null;
+
+    constructor(private adminService: AdminService, private ticketService: TicketService, private authService: AuthService) { }
 
     ngOnInit() {
         this.loadAll();
@@ -123,6 +130,34 @@ export class ProjectManagementComponent implements OnInit {
 
     openAssignModal(projectId: number) {
         this.selectedProjectId = projectId;
+    }
+
+    openChatForProject(project: any) {
+        this.chatProject = project;
+        this.chatTicketId = null;
+        // Try to find existing ticket for this project
+        const clientId = project.client?.id;
+        if (clientId) {
+            this.ticketService.getClientTickets(clientId).subscribe((tickets: any[]) => {
+                const existing = tickets.find((t: any) => t.project?.id === project.id && t.type === 'SUPPORT');
+                if (existing) this.chatTicketId = existing.id ?? null;
+            });
+        }
+    }
+
+    openAdminProjectChat() {
+        if (!this.chatProject) return;
+        const adminId = this.authService.getUserId();
+        if (!adminId) return;
+        const payload: any = {
+            subject: `Support Admin: ${this.chatProject.name}`,
+            description: `Discussion support pour le projet ${this.chatProject.name}`,
+            type: 'SUPPORT',
+            project: { id: this.chatProject.id }
+        };
+        this.ticketService.createTicket(adminId, payload).subscribe((res: any) => {
+            this.chatTicketId = res.id ?? null;
+        });
     }
 
     resetForm() {

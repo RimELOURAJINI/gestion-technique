@@ -17,6 +17,7 @@ import { EmployeeHomeComponent } from './employee/employee-home/employee-home.co
 import { MyTasksComponent } from './employee/my-tasks/my-tasks.component';
 import { MyProjectsComponent } from './employee/my-projects/my-projects.component';
 import { AdminReclamationsComponent } from './admin/reclamations/reclamations.component';
+import { AdminTicketsComponent } from './admin/tickets/tickets.component';
 import { AdminOverviewComponent } from './admin/overview/overview.component';
 import { UserManagementComponent } from './admin/user-management/user-management.component';
 import { ManagerOverviewComponent } from './manager/overview/overview.component';
@@ -60,6 +61,7 @@ export const routes: Routes = [
       { path: 'projects', component: ProjectManagementComponent },
       { path: 'tasks', component: TaskManagementComponent },
       { path: 'reclamations', component: AdminReclamationsComponent },
+      { path: 'tickets', component: AdminTicketsComponent },
       { path: 'users', component: UserManagementComponent },
       { path: 'finance', component: AdminFinanceComponent },
       { path: 'audit', component: AdminAuditComponent },

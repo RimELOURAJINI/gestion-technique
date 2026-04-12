@@ -168,22 +168,10 @@
                     </li>
 
                     <li class="menu-title"><span>Administration</span></li>
-                    <li>
-                        <ul>
-                            <li class="submenu">
-                                <a href="javascript:void(0);" (click)="toggleUsersMenu()" [ngClass]="{'active': router.url.includes('/admin/users') || router.url.includes('/admin/teams'), 'subdrop': usersMenuOpen}">
-                                    <i class="ti ti-users"></i><span>Utilisateurs</span><span class="menu-arrow"></span>
-                                </a>
-                                <ul [style.display]="usersMenuOpen ? 'block' : 'none'">
-                                    <li><a routerLink="/admin/users" routerLinkActive="active">Tous les Utilisateurs</a></li>
-                                    <li><a routerLink="/admin/teams" routerLinkActive="active">Equipes & Membres</a></li>
-                                    <li><a routerLink="/admin/role-permissions" routerLinkActive="active">Rôles & Permissions</a></li>
-                                </ul>
-                            </li>
-                            <li><a routerLink="/admin/reclamations" routerLinkActive="active"><i class="ti ti-ticket"></i><span>Réclamations</span></a></li>
-                            <li><a routerLink="/admin/audit" routerLinkActive="active"><i class="ti ti-shield-lock"></i><span>Audit Système</span></a></li>
-                        </ul>
-                    </li>
+                    <li><a routerLink="/admin/users" routerLinkActive="active"><i class="ti ti-users"></i><span>Gestion Utilisateurs</span></a></li>
+                    <li><a routerLink="/admin/teams" routerLinkActive="active"><i class="ti ti-users-group"></i><span>Équipes & Membres</span></a></li>
+                    <li><a routerLink="/admin/tickets" routerLinkActive="active"><i class="ti ti-messages"></i><span>Tickets / Discussions Clients</span></a></li>
+                    <li><a routerLink="/admin/audit" routerLinkActive="active"><i class="ti ti-shield-lock"></i><span>Audit Système</span></a></li>
 
                     <li class="menu-title"><span>Paramètres</span></li>
                     <li>

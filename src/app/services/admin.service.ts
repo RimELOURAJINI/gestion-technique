@@ -44,6 +44,10 @@ export class AdminService {
     return this.http.post(`${this.baseUrl}/projects/${projectId}/assign-manager/${userId}`, {});
   }
 
+  getProjectIdsWithTickets(): Observable<number[]> {
+    return this.http.get<number[]>(`${this.baseUrl}/projects/with-tickets`);
+  }
+
   // ========== TASKS ==========
   getAllTasks(): Observable<Task[]> {
     return this.http.get<Task[]>(`${this.baseUrl}/tasks/all`);

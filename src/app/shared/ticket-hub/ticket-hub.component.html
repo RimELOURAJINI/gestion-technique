@@ -1,0 +1,105 @@
+<div class="ticket-hub-container d-flex">
+    <!-- Left Panel: Ticket List -->
+    <div class="ticket-sidebar d-flex flex-column border-end bg-white">
+        <div class="sidebar-header p-3 border-bottom">
+            <h5 class="mb-3">Tickets / Discussions</h5>
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-light border-end-0"><i class="ti ti-search text-muted"></i></span>
+                <input type="text" 
+                       class="form-control bg-light border-start-0 shadow-none" 
+                       placeholder="Rechercher..." 
+                       [(ngModel)]="searchTerm" 
+                       (input)="filterTickets()">
+            </div>
+        </div>
+
+        <div class="flex-grow-1 overflow-auto list-container">
+            <div *ngIf="isLoading" class="text-center py-4">
+                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+            </div>
+
+            <div *ngIf="!isLoading && filteredTickets.length === 0" class="text-center py-5 px-3">
+                <img src="assets/assets/img/no-data.svg" alt="no-tickets" class="img-fluid mb-2" style="max-height: 80px; opacity: 0.5;">
+                <p class="text-muted fs-12">Aucune discussion trouvée</p>
+            </div>
+
+            <div *ngFor="let t of filteredTickets" 
+                 class="ticket-item p-3 border-bottom cursor-pointer position-relative hover-bg"
+                 [class.active]="selectedTicket?.id === t.id"
+                 (click)="selectTicket(t)">
+                
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="d-flex gap-1">
+                        <span class="badge rounded-pill fs-10" [ngClass]="getStatusClass(t.status)">
+                            {{ t.status }}
+                        </span>
+                        <span class="badge rounded-pill fs-10" [ngClass]="getPriorityClass(t.priority)">
+                            {{ getPriorityLabel(t.priority) }}
+                        </span>
+                    </div>
+                    <small class="text-muted fs-10">{{ t.createdAt | date:'dd/MM HH:mm' }}</small>
+                </div>
+                
+                <h6 class="fs-13 mb-1 text-truncate" [title]="t.subject">{{ t.subject }}</h6>
+                <div class="d-flex align-items-center">
+                    <i class="ti ti-briefcase fs-12 text-muted me-1"></i>
+                    <span class="fs-11 text-muted text-truncate">{{ t.project?.name || 'Sans Projet' }}</span>
+                </div>
+
+                <div class="active-indicator" *ngIf="selectedTicket?.id === t.id"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Panel: Chat Area -->
+    <div class="chat-main-area flex-grow-1 bg-light">
+        <div *ngIf="selectedTicket" class="h-100 d-flex flex-column">
+            <!-- Header for metadata potentially -->
+            <div class="chat-header p-3 bg-white border-bottom shadow-sm">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="mb-1">{{ selectedTicket.subject }}</h6>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="fs-12 text-muted fw-bold">
+                                <i class="ti ti-user-circle me-1"></i> Créé par : {{ selectedTicket.createdBy?.firstName }} {{ selectedTicket.createdBy?.lastName }}
+                            </span>
+                            <span class="badge rounded-pill fs-11 ms-2" [ngClass]="getPriorityClass(selectedTicket.priority)">
+                                <i class="ti ti-alert-circle me-1"></i> {{ getPriorityLabel(selectedTicket.priority) }}
+                            </span>
+                            <span class="fs-12 text-muted">
+                                <i class="ti ti-layout-2 me-1"></i> {{ selectedTicket.project?.name || 'Sans Projet' }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-soft-secondary dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown">
+                            <i class="ti ti-dots-vertical"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item fs-12" href="javascript:void(0);" (click)="loadTickets()">Rafraîchir</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Component -->
+            <div class="flex-grow-1 overflow-hidden d-flex flex-column" style="min-height: 0;">
+                <app-ticket-chat 
+                    [ticket]="selectedTicket" 
+                    [showHeader]="false"
+                    class="flex-grow-1 d-flex flex-column overflow-hidden">
+                </app-ticket-chat>
+            </div>
+        </div>
+
+        <div *ngIf="!selectedTicket && !isLoading" class="h-100 d-flex align-items-center justify-content-center text-center p-5">
+            <div class="no-selection-state">
+                <div class="icon-circle bg-soft-primary text-primary mb-3 mx-auto">
+                    <i class="ti ti-messages fs-32"></i>
+                </div>
+                <h5>Sélectionnez une discussion</h5>
+                <p class="text-muted">Choisissez un ticket dans la liste de gauche pour voir les messages ou participer à la discussion.</p>
+            </div>
+        </div>
+    </div>
+</div>

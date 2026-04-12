@@ -25,6 +25,18 @@ export class TicketService {
     return this.http.get<Ticket[]>(`${this.baseUrl}/user/${userId}`);
   }
 
+  getTicketsByManager(userId: number): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.baseUrl}/manager/${userId}`);
+  }
+
+  getTicketsByCommercial(userId: number): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.baseUrl}/commercial/${userId}`);
+  }
+
+  getTicketsByEmployee(userId: number): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.baseUrl}/employee/${userId}`);
+  }
+
   createTicket(userId: number, ticket: Ticket): Observable<Ticket> {
     return this.http.post<Ticket>(`${this.baseUrl}/user/${userId}`, ticket);
   }
@@ -35,7 +47,7 @@ export class TicketService {
 
   // Client Specific
   getClientProjects(clientId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.clientUrl}/${clientId}/projects`);
+    return this.http.get<any[]>(`http://localhost:8080/api/projects/user/${clientId}`);
   }
 
   getClientTickets(clientId: number): Observable<Ticket[]> {

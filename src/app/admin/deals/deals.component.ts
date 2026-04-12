@@ -51,13 +51,13 @@ import { DealNegotiationComponent } from '../../shared/deal-negotiation/deal-neg
                     </td>
                     <td>
                       <div *ngIf="deal.status === 'PENDING_ADMIN'">
-                        <select class="form-select form-select-sm fs-12 border-primary" [(ngModel)]="deal.selectedTeamId" style="width: 180px;">
-                          <option [ngValue]="null">-- Choisir Équipe --</option>
+                        <select class="form-select form-select-sm fs-12 border-primary" multiple [(ngModel)]="deal.selectedTeamIds" style="width: 180px; height: 60px;">
                           <option *ngFor="let team of teams" [ngValue]="team.id">{{ team.name }}</option>
                         </select>
+                        <small class="text-muted fs-10 d-block mt-1">Ctrl+clic pour multiple</small>
                       </div>
                       <div *ngIf="deal.status === 'VALIDATED'" class="fs-12 text-muted">
-                         <i class="ti ti-users me-1"></i> Équipe assignée lors de la validation
+                         <i class="ti ti-users me-1"></i> Équipes assignées
                       </div>
                     </td>
                     <td class="text-end pe-4">
@@ -68,7 +68,7 @@ import { DealNegotiationComponent } from '../../shared/deal-negotiation/deal-neg
                         
                         <ng-container *ngIf="deal.status === 'PENDING_ADMIN'">
                           <button class="btn btn-sm btn-success px-3 d-flex align-items-center gap-1" 
-                                  [disabled]="!deal.selectedTeamId"
+                                  [disabled]="!deal.selectedTeamIds || deal.selectedTeamIds.length === 0"
                                   (click)="validateDeal(deal)">
                             <i class="ti ti-check fs-14"></i> Valider
                           </button>
@@ -126,7 +126,7 @@ export class DealsComponent implements OnInit {
 
   loadDeals() {
     this.dealService.getAllDeals().subscribe(res => {
-      this.deals = res.map((d: any) => ({...d, selectedTeamId: null}))
+      this.deals = res.map((d: any) => ({...d, selectedTeamIds: []}))
                       .sort((a:any, b:any) => b.id - a.id);
     });
   }
@@ -138,13 +138,13 @@ export class DealsComponent implements OnInit {
   }
 
   validateDeal(deal: any) {
-    if (!deal.selectedTeamId) {
-      alert("Veuillez sélectionner une équipe technique dans le tableau avant de valider et créer le projet.");
+    if (!deal.selectedTeamIds || deal.selectedTeamIds.length === 0) {
+      alert("Veuillez sélectionner au moins une équipe technique dans le tableau avant de valider et créer le projet.");
       return;
     }
     
-    if (confirm(`Confirmer la validation du deal "${deal.name}" avec l'équipe sélectionnée ? Cela créera officiellement le projet.`)) {
-      this.dealService.updateStatus(deal.id, 'VALIDATED', deal.selectedTeamId).subscribe({
+    if (confirm(`Confirmer la validation du deal "${deal.name}" avec les équipes sélectionnées ? Cela créera officiellement le projet.`)) {
+      this.dealService.updateStatus(deal.id, 'VALIDATED', deal.selectedTeamIds).subscribe({
         next: () => {
           this.loadDeals();
           if (this.selectedDealChat?.id === deal.id) {

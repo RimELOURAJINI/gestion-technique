@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
+import { AuthService } from '../../services/auth.service';
 import { Project } from '../../models/models';
 
 @Component({
@@ -12,22 +13,38 @@ import { Project } from '../../models/models';
   styleUrl: './projects.component.css'
 })
 export class ProjectsComponent implements OnInit {
-  projects: Project[] = [];
+  projects: any[] = [];
+  projectIdsWithTickets: number[] = [];
   isLoading = true;
 
-  constructor(private adminService: AdminService) {}
+  constructor(
+    private adminService: AdminService,
+    private authService: AuthService
+  ) {}
 
-  ngOnInit() {
-    this.adminService.getAllProjects().subscribe({
-      next: (data) => {
-        this.projects = data;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Error fetching projects:', err);
-        this.isLoading = false;
-      }
+  ngOnInit(): void {
+    const userId = this.authService.getUserId();
+    if (userId) {
+      this.loadProjects(userId);
+      this.loadTicketIndicators();
+    }
+  }
+
+  loadProjects(userId: number) {
+    this.adminService.getAllProjects().subscribe((res: any) => {
+      this.projects = res;
+      this.isLoading = false;
     });
+  }
+
+  loadTicketIndicators() {
+    this.adminService.getProjectIdsWithTickets().subscribe({
+        next: (ids) => this.projectIdsWithTickets = ids
+    });
+  }
+
+  hasTickets(projectId: number): boolean {
+      return this.projectIdsWithTickets.includes(projectId);
   }
 
   getStatusClass(status?: string): string {

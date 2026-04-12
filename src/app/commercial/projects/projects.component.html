@@ -20,7 +20,14 @@
 <div *ngIf="!isLoading && projects.length > 0" class="row">
     <div class="col-xl-4 col-md-6 mb-4" *ngFor="let p of projects">
         <div class="card h-100 shadow-sm border-0 lift">
-            <div class="card-body p-4">
+            <div class="card-body p-4 position-relative">
+                <!-- Glowing Ticket Indicator -->
+                <a *ngIf="hasTickets(p.id)" routerLink="/commercial/tickets" [queryParams]="{projectId: p.id}" class="ticket-status-badge cursor-pointer" title="Voir la discussion active">
+                   <span class="badge bg-danger pulse-ring">
+                      <i class="ti ti-messages me-1"></i> TICKET ACTIF
+                   </span>
+                </a>
+
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <h5 class="card-title mb-0 text-truncate" style="max-width: 80%;">
                         <a [routerLink]="['/commercial/projects', p.id]" class="text-dark">{{ p.name }}</a>
@@ -48,11 +55,11 @@
                 <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
                     <div class="d-flex align-items-center">
                         <div class="team-avatars d-flex me-3" *ngIf="p.team">
-                            <div *ngFor="let member of p.team.users | slice:0:3" 
+                            <div *ngFor="let member of $any(p.team).users | slice:0:3" 
                                  class="avatar-xs bg-soft-primary text-primary rounded-circle d-flex align-items-center justify-content-center border border-white" 
-                                 [title]="member.firstName"
+                                 [title]="$any(member).firstName"
                                  style="margin-left: -8px;">
-                                {{ member.firstName.charAt(0) }}
+                                {{ $any(member).firstName.charAt(0) }}
                             </div>
                             <div *ngIf="p.team.users && p.team.users.length > 3" class="avatar-xs bg-dark text-white rounded-circle d-flex align-items-center justify-content-center border border-white fs-10" style="margin-left: -8px;">
                                 +{{ p.team.users.length - 3 }}
@@ -65,7 +72,10 @@
                     </div>
                     
                     <a [routerLink]="['/commercial/projects', p.id]" class="btn btn-sm btn-soft-primary shadow-none">
-                        Détails & Chat <i class="ti ti-arrow-right ms-1"></i>
+                        Détails <i class="ti ti-arrow-right ms-1"></i>
+                    </a>
+                    <a *ngIf="hasTickets(p.id)" routerLink="/commercial/tickets" [queryParams]="{ticketId: p.id}" class="btn btn-sm btn-danger shadow-none ms-2 pulse-animation" title="Discussion Client Active">
+                        <i class="ti ti-messages"></i> Chat
                     </a>
                 </div>
             </div>

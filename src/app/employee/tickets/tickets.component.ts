@@ -1,112 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { EmployeeService } from '../../services/employee.service';
-import { AuthService } from '../../services/auth.service';
-import { Reclamation, Project } from '../../models/models';
-import { TicketService } from '../../services/ticket.service';
-import { TicketChatComponent } from '../../shared/ticket-chat/ticket-chat.component';
+import { TicketHubComponent } from '../../shared/ticket-hub/ticket-hub.component';
 
 @Component({
   selector: 'app-tickets',
   standalone: true,
-  imports: [CommonModule, FormsModule, TicketChatComponent],
-  templateUrl: './tickets.component.html',
-  styleUrl: './tickets.component.css'
+  imports: [CommonModule, TicketHubComponent],
+  template: `
+    <div class="p-2 p-md-4 mb-4">
+        <div class="mb-4">
+            <h4 class="fw-bold text-dark mb-1">Tickets / Discussions Clients</h4>
+            <p class="text-muted small">Partagez vos mises à jour techniques et répondez aux besoins clients sur vos projets.</p>
+        </div>
+        <app-ticket-hub mode="employee"></app-ticket-hub>
+    </div>
+  `,
+  styles: []
 })
-export class TicketsComponent implements OnInit {
-  reclamations: Reclamation[] = [];
-  projects: Project[] = [];
-  
-  newReclamation: Reclamation = {
-    title: '',
-    message: '',
-    status: 'PENDING'
-  };
-  selectedProjectId?: number;
-
-  showCreateForm: boolean = false;
-
-  // Commercial / Project Chat
-  commercialTickets: any[] = [];
-  selectedCommercialTicket: any = null;
-  currentUserId: number | null = null;
-
-  constructor(
-    private employeeService: EmployeeService,
-    private authService: AuthService,
-    private ticketService: TicketService
-  ) {}
-
-  ngOnInit(): void {
-    this.currentUserId = this.authService.getUserId();
-    this.loadTickets();
-    this.loadProjects();
-    this.loadCommercialTickets();
-  }
-
-  loadCommercialTickets(): void {
-    if (this.currentUserId) {
-      this.ticketService.getTicketsByUserId(this.currentUserId).subscribe(res => {
-        this.commercialTickets = res;
-      });
-    }
-  }
-
-  openCommercialChat(ticket: any) {
-    this.selectedCommercialTicket = ticket;
-  }
-
-  closeCommercialChat() {
-    this.selectedCommercialTicket = null;
-    this.loadCommercialTickets();
-  }
-
-  loadTickets(): void {
-    const userId = this.authService.getUserId();
-    if (userId) {
-      this.employeeService.getMyReclamations(userId).subscribe(
-        res => this.reclamations = res,
-        (err: any) => console.error('Error loading reclamations', err)
-      );
-    }
-  }
-
-  loadProjects(): void {
-    const userId = this.authService.getUserId();
-    if (userId) {
-      this.employeeService.getMyProjects(userId).subscribe(
-        res => this.projects = res,
-        (err: any) => console.error('Error loading projects', err)
-      );
-    }
-  }
-
-  submitTicket(): void {
-    const userId = this.authService.getUserId();
-    if (userId && this.selectedProjectId && this.newReclamation.title && this.newReclamation.message) {
-      this.employeeService.createReclamation(this.newReclamation, userId, +this.selectedProjectId).subscribe(
-        () => {
-          alert('Réclamation envoyée avec succès !');
-          this.newReclamation = { title: '', message: '', status: 'PENDING' };
-          this.selectedProjectId = undefined;
-          this.showCreateForm = false;
-          this.loadTickets();
-        },
-        (err: any) => {
-          console.error('Error creating reclamation:', err);
-          if (err.status === 500) {
-            console.error('SERVER ERROR (500): Check for circular references or DB constraints.');
-          }
-          alert('Erreur lors de l\'envoi de la réclamation. ' + (err.error?.message || 'Vérifiez les logs console.'));
-        }
-      );
-    } else if (!this.selectedProjectId) {
-      alert('Veuillez sélectionner un projet.');
-    }
-  }
-
-  toggleCreateForm(): void {
-    this.showCreateForm = !this.showCreateForm;
-  }
-}
+export class TicketsComponent {}

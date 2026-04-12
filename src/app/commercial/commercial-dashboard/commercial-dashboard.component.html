@@ -132,36 +132,15 @@
 
         <div class="sidebar-inner" data-simplebar>                
             <div id="sidebar-menu" class="sidebar-menu text-uppercase fs-11 fw-bold">
-                <ul>
+                <ul class="sidebar-list">
                     <li class="menu-title"><span>Espace Commercial</span></li>
-                    <li>
-                        <ul>
-                            <li class="submenu">
-                                <a href="javascript:void(0);" (click)="toggleProjectsMenu()" [ngClass]="{'active': router.url.includes('/commercial/projects'), 'subdrop': projectsMenuOpen}">
-                                    <i class="ti ti-atom-2"></i><span>Mes Projets</span><span class="menu-arrow"></span>
-                                </a>
-                                <ul [style.display]="projectsMenuOpen ? 'block' : 'none'">
-                                    <li><a routerLink="/commercial/projects" routerLinkActive="active">Tous les Projets</a></li>
-                                    <li><a routerLink="/commercial/settings" routerLinkActive="active">Mes Paramètres</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <li class="menu-title"><span>Support & Ventes</span></li>
-                    <li>
-                        <ul>
-                            <li><a routerLink="/commercial/tickets" routerLinkActive="active"><i class="ti ti-ticket"></i><span>Discussions Clients</span></a></li>
-                            <li><a routerLink="/commercial/deals" routerLinkActive="active"><i class="ti ti-medal"></i><span>Mes Deals</span></a></li>
-                        </ul>
-                    </li>
+                    <li><a routerLink="/commercial/projects" routerLinkActive="active"><i class="ti ti-atom-2"></i><span>Mes Projets</span></a></li>
+                    <li><a routerLink="/commercial/tickets" routerLinkActive="active"><i class="ti ti-messages"></i><span>Tickets / Discussions Clients</span></a></li>
+                    <li><a routerLink="/commercial/deals" routerLinkActive="active"><i class="ti ti-medal"></i><span>Mes Deals</span></a></li>
+                    <li><a routerLink="/commercial/settings" routerLinkActive="active"><i class="ti ti-settings"></i><span>Paramètres</span></a></li>
 
                     <li class="menu-title"><span>Compte</span></li>
-                    <li>
-                        <ul>
-                            <li><a href="javascript:void(0)" (click)="logout()" class="text-danger"><i class="ti ti-logout"></i><span>Déconnexion</span></a></li>
-                        </ul>
-                    </li>
+                    <li><a href="javascript:void(0)" (click)="logout()" class="text-danger"><i class="ti ti-logout"></i><span>Déconnexion</span></a></li>
                 </ul>
             </div>
         </div>
