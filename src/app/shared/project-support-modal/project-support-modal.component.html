@@ -1,0 +1,83 @@
+<div class="modal-overlay" (click)="close()">
+    <div class="modal-content-wrapper shadow-lg" (click)="$event.stopPropagation()">
+        <!-- Header -->
+        <div class="modal-header-custom p-3 d-flex align-items-center justify-content-between text-white">
+            <div class="d-flex align-items-center">
+                <div class="avatar-sm bg-white-transparent rounded-circle me-3 d-flex align-items-center justify-content-center">
+                    <i class="ti ti-headset fs-20"></i>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold">Support Hub : {{project?.name}}</h6>
+                    <p class="mb-0 text-white-50 fs-11">Discussions techniques et tickets ouverts</p>
+                </div>
+            </div>
+            <button class="btn btn-link text-white p-0 border-0" (click)="close()">
+                <i class="ti ti-square-x fs-24"></i>
+            </button>
+        </div>
+
+        <div class="modal-body-custom d-flex overflow-hidden" style="height: 550px;">
+            <!-- Ticket List Sidebar -->
+            <div class="ticket-sidebar bg-light border-end" [ngClass]="{'d-none d-md-block': selectedTicketId, 'w-100': !selectedTicketId}">
+                <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-white sticky-top">
+                    <h6 class="mb-0 fw-bold fs-13">Tickets du Projet</h6>
+                    <button class="btn btn-primary btn-xs rounded-pill px-2 py-1 fs-11" (click)="createNewTicket()">
+                        <i class="ti ti-plus me-1"></i>NOUVEAU
+                    </button>
+                </div>
+
+                <div class="ticket-scroll-area p-2 overflow-auto h-100">
+                    <div *ngIf="isLoading" class="text-center py-4">
+                        <div class="spinner-border spinner-border-sm text-primary"></div>
+                    </div>
+
+                    <div *ngIf="!isLoading && tickets.length === 0" class="text-center py-5 px-3">
+                        <i class="ti ti-mood-empty fs-1 text-muted-50 mb-2 d-block"></i>
+                        <p class="text-muted small">Aucun ticket actif. Besoin d'aide technique ?</p>
+                        <button class="btn btn-outline-primary btn-sm rounded-pill mt-2" (click)="createNewTicket()">
+                            Ouvrir un ticket
+                        </button>
+                    </div>
+
+                    <div *ngFor="let t of tickets" 
+                         class="ticket-item p-3 mb-2 rounded-3 border bg-white shadow-sm cursor-pointer border-start"
+                         [ngClass]="{'selected border-primary border-4': selectedTicketId === t.id}"
+                         (click)="selectTicket(t)">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="fs-10 text-muted-50">#{{t.id}}</span>
+                            <span class="badge rounded-pill fs-9" [ngClass]="getStatusBadge(t.status)">{{t.status}}</span>
+                        </div>
+                        <h6 class="mb-1 fw-bold fs-13 text-truncate">{{t.subject}}</h6>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="fs-11 text-muted"><i class="ti ti-clock me-1"></i>{{t.createdAt | date:'dd MMM'}}</span>
+                            <div class="avatar-group" *ngIf="t.participantsCount > 0">
+                                <span class="avatar-xs rounded-circle bg-soft-primary text-primary fs-9 d-flex align-items-center justify-content-center">
+                                    +{{t.participantsCount}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ticket Details / Chat View -->
+            <div class="chat-area flex-grow-1 d-flex flex-column bg-white position-relative" [ngClass]="{'d-block': selectedTicketId, 'd-none d-md-flex': true}">
+                <div *ngIf="!selectedTicketId" class="h-100 d-flex flex-column align-items-center justify-content-center text-center p-5">
+                    <img src="assets/assets/img/icons/elemnt-01.svg" class="img-fluid mb-4 opacity-25" style="max-height: 120px;">
+                    <h5 class="fw-bold">Bienvenue au Support Hub</h5>
+                    <p class="text-muted small px-4">Sélectionnez un ticket à gauche pour voir les messages ou créez-en un nouveau pour discuter avec l'équipe Admin et Technique.</p>
+                </div>
+
+                <div *ngIf="selectedTicketId" class="h-100 d-flex flex-column overflow-hidden">
+                    <!-- Chat Header (Mobile back button) -->
+                    <div class="p-2 border-bottom d-md-none">
+                        <button class="btn btn-link btn-sm text-decoration-none" (click)="selectedTicketId = null">
+                            <i class="ti ti-chevron-left me-1"></i>Retour à la liste
+                        </button>
+                    </div>
+                    <app-ticket-chat [ticketId]="selectedTicketId" [showHeader]="false" class="h-100"></app-ticket-chat>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

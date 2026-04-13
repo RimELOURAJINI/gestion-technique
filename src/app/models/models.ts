@@ -18,6 +18,7 @@ export interface Team {
   name: string;
   description: string;
   users?: User[];
+  manager?: User;
 }
 
 export interface Project {
@@ -33,8 +34,10 @@ export interface Project {
   spentBudget?: number; // Added for AI statistics
   priorityLevel?: string; // e.g. CRITIQUE, NORMAL
   riskThreshold?: number; // e.g. 80 (%)
-  team?: Team;
+  teams?: Team[];
   manager?: User;
+  client?: User;
+  commercial?: User;
 }
 
 export interface SubTask {

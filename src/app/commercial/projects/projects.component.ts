@@ -1,14 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
 import { Project } from '../../models/models';
+import { PersonalPointageComponent } from '../../shared/personal-pointage/personal-pointage.component';
+
+import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PersonalPointageComponent, ProjectSupportModalComponent],
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.css'
 })
@@ -16,10 +19,13 @@ export class ProjectsComponent implements OnInit {
   projects: any[] = [];
   projectIdsWithTickets: number[] = [];
   isLoading = true;
+  showSupportModal = false;
+  selectedProjectForSupport: any = null;
 
   constructor(
     private adminService: AdminService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -43,8 +49,21 @@ export class ProjectsComponent implements OnInit {
     });
   }
 
+  viewDetails(project: Project) {
+    this.router.navigate(['/commercial/projects', project.id]);
+  }
+
+  isProjectTicketActive(projectId: number): boolean {
+      return this.projectIdsWithTickets.includes(projectId);
+  }
+
   hasTickets(projectId: number): boolean {
       return this.projectIdsWithTickets.includes(projectId);
+  }
+
+  openProjectSupport(project: any): void {
+      this.selectedProjectForSupport = project;
+      this.showSupportModal = true;
   }
 
   getStatusClass(status?: string): string {

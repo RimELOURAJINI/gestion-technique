@@ -1,0 +1,96 @@
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+    <div>
+        <h4 class="mb-1">Mon Équipe</h4>
+        <p class="mb-0 text-muted small">Espace dédié à la gestion de vos collaborateurs.</p>
+    </div>
+</div>
+
+<div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-muted">Recherche de votre équipe...</p>
+</div>
+
+<div *ngIf="!isLoading && errorMessage" class="alert alert-warning text-center p-4">
+    <i class="ti ti-info-circle fs-32 text-warning mb-2 d-block"></i>
+    <p class="mb-0 fw-medium">{{errorMessage}}</p>
+</div>
+
+<!-- Team Display -->
+<div *ngIf="!isLoading && team">
+    <div class="row align-items-center mb-4">
+        <div class="col-12">
+            <div class="card bg-primary-gradient-100 border-primary border-opacity-10 shadow-sm">
+                <div class="card-body p-4 d-flex align-items-center justify-content-between flex-wrap gap-4">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar avatar-xl bg-white text-primary rounded-circle shadow-sm me-4 d-flex align-items-center justify-content-center">
+                            <i class="ti ti-users-group fs-32"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-1 fw-bold text-dark">{{team.name}}</h3>
+                            <p class="text-muted mb-0 fs-14">{{team.description || 'Équipe principale'}}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="bg-white rounded-pill px-4 py-2 shadow-sm d-inline-flex align-items-center">
+                            <i class="ti ti-users text-primary me-2 fs-18"></i>
+                            <span class="fs-15 fw-bold text-dark me-1">{{team.users ? team.users.length : 0}}</span>
+                            <span class="fs-14 text-muted">Membres</span>
+                        </div>
+                        <a routerLink="/manager/team-chat" class="btn btn-dark rounded-pill px-4 ms-2 shadow-sm">
+                            <i class="ti ti-messages me-1"></i> Chat de Groupe
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Members Grid -->
+    <h5 class="mb-3 fw-bold">Membres de l'Équipe</h5>
+    <div class="row">
+        <div class="col-xl-4 col-md-6 mb-4" *ngFor="let user of team.users">
+            <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
+                <div class="card-body text-center p-4">
+                    <div class="dropdown position-absolute top-0 end-0 mt-3 me-3">
+                        <a href="javascript:void(0);" class="text-muted" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" [href]="'mailto:' + user.email"><i class="ti ti-mail me-2"></i>Envoyer un Email</a></li>
+                        </ul>
+                    </div>
+                    
+                    <span class="avatar avatar-xl avatar-rounded bg-light-primary text-primary mb-3 mx-auto shadow-sm">
+                        <span class="fs-20 fw-bold">{{user.firstName.charAt(0)}}{{user.lastName.charAt(0)}}</span>
+                    </span>
+                    
+                    <h5 class="mb-1 fw-bold">{{user.firstName}} {{user.lastName}}</h5>
+                    <p class="text-muted fs-13 mb-3">{{user.email}}</p>
+                    
+                    <div class="d-flex justify-content-center flex-wrap gap-1 mb-4">
+                        <span *ngFor="let role of user.roles" class="badge bg-soft-info text-info">
+                            {{ role.name.replace('ROLE_', '') }}
+                        </span>
+                        <span *ngIf="!user.roles || user.roles.length === 0" class="badge bg-soft-secondary text-secondary">Membre</span>
+                    </div>
+                    
+                    <div class="row g-2 mb-4">
+                        <div class="col-6">
+                            <a [href]="'mailto:' + user.email" class="btn btn-outline-light btn-sm w-100 rounded-pill text-dark">
+                                <i class="ti ti-mail me-1"></i> Email
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a routerLink="/manager/team-chat" class="btn btn-soft-primary btn-sm w-100 rounded-pill">
+                                <i class="ti ti-message-2 me-1"></i> Chat
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 text-center py-4" *ngIf="!team.users || team.users.length === 0">
+            <img src="assets/assets/img/icons/elemnt-02.svg" alt="Empty" class="img-fluid mb-3 opacity-50" style="max-height: 120px;">
+            <p class="text-muted">Votre équipe est actuellement vide.</p>
+        </div>
+    </div>
+</div>

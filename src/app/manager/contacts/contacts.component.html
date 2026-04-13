@@ -1,0 +1,63 @@
+<div class="container-fluid p-0">
+    <div class="row align-items-center mb-4">
+        <div class="col-sm-6">
+            <h4 class="fw-bold mb-1">Carnet de Contacts Équipe</h4>
+            <p class="text-muted small mb-0">Annuaire de vos collaborateurs pour une communication simplifiée.</p>
+        </div>
+        <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+            <div class="search-box d-inline-flex align-items-center bg-white border rounded-pill px-3 py-1 shadow-sm w-100 w-sm-auto">
+                <i class="ti ti-search me-2 text-muted"></i>
+                <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()" placeholder="Rechercher un membre..." class="border-0 bg-transparent fs-13 focus-none py-1">
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2 text-muted">Chargement de l'annuaire...</p>
+    </div>
+
+    <div *ngIf="!isLoading && filteredMembers.length === 0" class="text-center py-5">
+        <img src="assets/assets/img/icons/elemnt-02.svg" alt="Empty" class="img-fluid mb-3 opacity-25" style="max-height: 120px;">
+        <p class="text-muted">Aucun membre trouvé correspondant à votre recherche.</p>
+    </div>
+
+    <div class="row" *ngIf="!isLoading && filteredMembers.length > 0">
+        <div class="col-xl-3 col-lg-4 col-md-6 mb-4" *ngFor="let member of filteredMembers">
+            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative hover-shadow transition-all">
+                <div class="card-body text-center p-4">
+                    <div class="avatar avatar-xxl avatar-rounded bg-soft-primary text-primary mb-3 mx-auto shadow-sm">
+                        <span class="fs-24 fw-bold">{{member.firstName.charAt(0)}}{{member.lastName.charAt(0)}}</span>
+                    </div>
+                    
+                    <h5 class="mb-1 fw-bold text-dark">{{member.firstName}} {{member.lastName}}</h5>
+                    <div class="d-flex justify-content-center gap-1 mb-3">
+                        <span *ngFor="let role of member.roles" class="badge bg-soft-info text-info fs-10 rounded-pill">
+                            {{role.name.replace('ROLE_', '')}}
+                        </span>
+                        <span *ngIf="!member.roles || member.roles.length === 0" class="badge bg-soft-secondary text-secondary fs-10 rounded-pill">Membre</span>
+                    </div>
+                    
+                    <hr class="my-3 opacity-10">
+                    
+                    <ul class="list-unstyled text-start mb-4 fs-12 text-muted">
+                        <li class="mb-2 d-flex align-items-center">
+                            <i class="ti ti-mail me-2 text-primary fs-14"></i>
+                            <span class="text-truncate">{{member.email}}</span>
+                        </li>
+                        <li class="d-flex align-items-center">
+                            <i class="ti ti-phone me-2 text-primary fs-14"></i>
+                            <span>Non renseigné</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="d-grid">
+                        <a [href]="'mailto:' + member.email" class="btn btn-outline-primary btn-sm rounded-pill py-2">
+                            <i class="ti ti-mail me-1"></i> Envoyer un message
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

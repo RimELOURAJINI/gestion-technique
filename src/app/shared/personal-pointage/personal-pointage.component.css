@@ -1,0 +1,5 @@
+/* Shared Pointage Styles */
+.avatar-md { width: 48px; height: 48px; }
+.fs-24 { font-size: 24px; }
+.bg-soft-success { background-color: rgba(40, 199, 111, 0.1); }
+.text-success { color: #28c76f !important; }

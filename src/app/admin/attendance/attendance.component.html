@@ -1,0 +1,73 @@
+<div class="container-fluid p-0">
+    <div class="row align-items-center mb-4">
+        <div class="col-sm-6">
+            <h4 class="fw-bold mb-1">Suivi des Présences</h4>
+            <p class="text-muted small mb-0">Consultez les pointages de tous les employés en temps réel.</p>
+        </div>
+        <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+            <div class="input-group d-inline-flex w-auto shadow-sm rounded-pill overflow-hidden border">
+                <span class="input-group-text bg-white border-0"><i class="ti ti-calendar"></i></span>
+                <input type="date" [(ngModel)]="selectedDate" (change)="onDateChange()" class="form-control border-0 px-3 fs-14" style="outline: none;">
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+            <div *ngIf="isLoading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 text-muted">Récupération des données...</p>
+            </div>
+
+            <div *ngIf="!isLoading && attendances.length === 0" class="text-center py-5">
+                <div class="avatar avatar-xl bg-soft-secondary rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center">
+                    <i class="ti ti-user-x fs-32 text-secondary"></i>
+                </div>
+                <h6 class="fw-bold">Aucun pointage trouvé</h6>
+                <p class="text-muted small">Personne n'a encore pointé pour cette date.</p>
+            </div>
+
+            <div class="table-responsive" *ngIf="!isLoading && attendances.length > 0">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 border-0 py-3 fs-13 text-muted fw-semibold">Employé</th>
+                            <th class="border-0 py-3 fs-13 text-muted fw-semibold">Arrivée</th>
+                            <th class="border-0 py-3 fs-13 text-muted fw-semibold">Départ</th>
+                            <th class="border-0 py-3 fs-13 text-muted fw-semibold text-center">Statut</th>
+                            <th class="pe-4 border-0 py-3 fs-13 text-muted fw-semibold text-end">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let attendance of attendances">
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar avatar-sm bg-primary rounded-circle me-2 text-white fw-bold fs-12 d-flex align-items-center justify-content-center">
+                                        {{ attendance.user?.name?.substring(0,2) | uppercase }}
+                                    </div>
+                                    <div>
+                                        <div class="fs-14 fw-bold text-dark">{{ attendance.user?.name }}</div>
+                                        <div class="fs-11 text-muted">{{ attendance.user?.email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3">
+                                <span class="fw-bold text-primary">{{ attendance.checkIn | date:'HH:mm' }}</span>
+                            </td>
+                            <td class="py-3">
+                                <span class="fw-bold text-dark" *ngIf="attendance.checkOut">{{ attendance.checkOut | date:'HH:mm' }}</span>
+                                <span class="text-muted italic fs-12" *ngIf="!attendance.checkOut">En cours...</span>
+                            </td>
+                            <td class="text-center py-3">
+                                <span [class]="getStatusClass(attendance.status)">{{ attendance.status }}</span>
+                            </td>
+                            <td class="pe-4 py-3 text-end fs-13 text-muted">
+                                {{ attendance.date | date:'dd/MM/yyyy' }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -29,6 +29,83 @@
 </div>
 <!-- /Welcome Wrap -->
 
+<!-- Pointage Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-body p-0">
+                <div class="bg-primary text-white p-3 d-flex align-items-center justify-content-between" [class.bg-success]="activeAttendance?.checkIn">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar avatar-md bg-white bg-opacity-25 rounded-circle me-3 d-flex align-items-center justify-content-center">
+                            <i class="ti ti-clock-check fs-24" *ngIf="!activeAttendance?.checkIn"></i>
+                            <i class="ti ti-user-check fs-24" *ngIf="activeAttendance?.checkIn"></i>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 text-white fw-bold">Pointage du Jour</h5>
+                            <p class="mb-0 text-white text-opacity-75 fs-12">{{ activeAttendance?.checkIn ? 'Votre présence est confirmée' : 'Veuillez marquer votre arrivée' }}</p>
+                        </div>
+                    </div>
+                    <div *ngIf="activeAttendance?.checkIn" class="badge bg-white bg-opacity-25 text-white border border-white border-opacity-50 px-3 py-2 rounded-pill">
+                        <i class="ti ti-circle-check-filled me-1"></i> Présence Enregistrée
+                    </div>
+                </div>
+                <div class="p-4 bg-white">
+                    <div class="row align-items-center">
+                        <div class="col-md-7">
+                            <div *ngIf="!activeAttendance?.checkIn">
+                                <h6 class="fw-bold text-dark mb-1">Vous n'avez pas encore pointé votre arrivée.</h6>
+                                <p class="text-muted fs-13 mb-0">Marquez votre présence pour informer votre manager que vous avez commencé.</p>
+                            </div>
+                            <div *ngIf="activeAttendance?.checkIn && !activeAttendance?.checkOut">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-4 pe-4 border-end">
+                                        <h6 class="text-muted fs-12 text-uppercase fw-bold mb-1">Pointage Arrivée</h6>
+                                        <h3 class="fw-bold text-success mb-0">{{ activeAttendance.checkIn | date:'HH:mm' }}</h3>
+                                    </div>
+                                    <div>
+                                        <h6 class="text-muted fs-12 text-uppercase fw-bold mb-1">Statut Equipe</h6>
+                                        <span class="badge bg-soft-success text-success fs-13 rounded-pill fw-bold">
+                                            <i class="ti ti-point-filled me-1"></i>Visible pour le Manager
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="activeAttendance?.checkOut">
+                                <div class="d-flex align-items-center gap-4">
+                                    <div>
+                                        <h6 class="text-muted fs-12 text-uppercase fw-bold mb-1">Arrivée</h6>
+                                        <p class="fw-bold text-dark mb-0">{{ activeAttendance.checkIn | date:'HH:mm' }}</p>
+                                    </div>
+                                    <div>
+                                        <h6 class="text-muted fs-12 text-uppercase fw-bold mb-1">Départ</h6>
+                                        <p class="fw-bold text-dark mb-0">{{ activeAttendance.checkOut | date:'HH:mm' }}</p>
+                                    </div>
+                                    <div class="alert alert-soft-success border-0 rounded-pill py-1 px-3 mb-0 fs-13 fw-bold">
+                                        <i class="ti ti-circle-check me-1"></i> Session de travail terminée
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5 text-md-end mt-3 mt-md-0">
+                            <button *ngIf="!activeAttendance?.checkIn" (click)="onCheckIn()" [disabled]="isClockingIn" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm">
+                                <i class="ti ti-login me-2" *ngIf="!isClockingIn"></i>
+                                <span class="spinner-border spinner-border-sm me-2" *ngIf="isClockingIn"></span>
+                                Marquer l'arrivée
+                            </button>
+                            <button *ngIf="activeAttendance?.checkIn && !activeAttendance?.checkOut" (click)="onCheckOut()" [disabled]="isClockingIn" class="btn btn-outline-danger btn-lg rounded-pill px-5">
+                                <i class="ti ti-logout me-2" *ngIf="!isClockingIn"></i>
+                                <span class="spinner-border spinner-border-sm me-2" *ngIf="isClockingIn"></span>
+                                Marquer le départ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Pointage Section -->
+
 <!-- Stats Cards -->
 <div class="row row-gap-3 mb-4">
     <div class="col-xl-4 col-sm-6 d-flex">

@@ -1,5 +1,9 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
+import { UnifiedProjectDetailComponent } from './shared/unified-project-detail/unified-project-detail.component';
+import { ManagerLeavesComponent } from './manager/leaves/leaves.component';
+import { TeamChatComponent } from './manager/team-chat/team-chat.component';
+
 import { HomeComponent } from './home/home.component';
 import { AuthGuard } from './guards/auth.guard';
 
@@ -42,8 +46,14 @@ import { AdminAuditComponent } from './admin/audit/audit.component';
 import { ManagerPlanningComponent } from './manager/planning/planning.component';
 import { ManagerApprovalsComponent } from './manager/approvals/approvals.component';
 import { EmployeeWellnessComponent } from './employee/wellness/wellness.component';
+import { EmployeeLeavesComponent } from './employee/leaves/leaves.component';
+import { AdminAttendanceComponent } from './admin/attendance/attendance.component';
 import { ClientProjectsComponent } from './client/projects/projects.component';
 import { ClientTicketsComponent } from './client/tickets/tickets.component';
+import { ManagerAttendanceComponent } from './manager/attendance/attendance.component';
+import { ManagerPerformanceComponent } from './manager/performance/performance.component';
+import { ManagerContactsComponent } from './manager/contacts/contacts.component';
+import { AttendancePersonalComponent } from './shared/attendance-personal/attendance-personal.component';
 
 import { SignupComponent } from './signup/signup.component';
 
@@ -58,7 +68,9 @@ export const routes: Routes = [
     children: [
       { path: 'overview', component: AdminOverviewComponent },
       { path: 'teams', component: TeamManagementComponent },
+      { path: 'teams/:id', loadComponent: () => import('./admin/team-detail/team-detail.component').then(m => m.TeamDetailComponent) },
       { path: 'projects', component: ProjectManagementComponent },
+      { path: 'projects/:id', component: UnifiedProjectDetailComponent },
       { path: 'tasks', component: TaskManagementComponent },
       { path: 'reclamations', component: AdminReclamationsComponent },
       { path: 'tickets', component: AdminTicketsComponent },
@@ -68,6 +80,9 @@ export const routes: Routes = [
       { path: 'role-permissions', component: FeaturePlaceholderComponent, data: { title: 'Rôles & Permissions', description: 'Configuration des rôles et droits d\'accès.' } },
       { path: 'settings', component: FeaturePlaceholderComponent, data: { title: 'Paramètres Admin', description: 'Paramètres généraux, logs et sauvegardes.' } },
       { path: 'deals', component: AdminDealsComponent },
+      { path: 'attendance', component: AdminAttendanceComponent },
+      { path: 'my-attendance', component: AttendancePersonalComponent },
+      { path: 'my-leaves', component: EmployeeLeavesComponent },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }
     ]
   },
@@ -79,16 +94,20 @@ export const routes: Routes = [
     children: [
       { path: 'overview', component: ManagerOverviewComponent },
       { path: 'projects', component: TeamProjectsComponent },
+      { path: 'projects/:id', component: UnifiedProjectDetailComponent },
       { path: 'tasks', component: TeamTasksComponent },
       { path: 'deals', component: DealsComponent },
       { path: 'tickets', component: TicketsComponent },
       { path: 'planning', component: ManagerPlanningComponent },
       { path: 'approvals', component: ManagerApprovalsComponent },
-      { path: 'performance', component: FeaturePlaceholderComponent, data: { title: 'Performance Équipe', description: 'KPI et suivi de performance des membres.' } },
-      { path: 'contacts', component: FeaturePlaceholderComponent, data: { title: 'Contacts', description: 'Annuaire et gestion des contacts.' } },
-      { path: 'attendance', component: FeaturePlaceholderComponent, data: { title: 'Présences', description: 'Suivi de présence de l\'équipe.' } },
-      { path: 'leaves', component: FeaturePlaceholderComponent, data: { title: 'Congés Équipe', description: 'Demandes de congés en attente et historiques.' } },
-      { path: 'team', component: FeaturePlaceholderComponent, data: { title: 'Mon Équipe', description: 'Vue d\'ensemble des membres et rôles de l\'équipe.' } },
+      { path: 'performance', component: ManagerPerformanceComponent },
+      { path: 'contacts', component: ManagerContactsComponent },
+      { path: 'attendance', component: ManagerAttendanceComponent },
+      { path: 'leaves', component: ManagerLeavesComponent },
+      { path: 'my-attendance', component: AttendancePersonalComponent },
+      { path: 'my-leaves', component: EmployeeLeavesComponent },
+      { path: 'team-chat', component: TeamChatComponent },
+      { path: 'team', loadComponent: () => import('./manager/my-team/my-team.component').then(m => m.MyTeamComponent) },
       { path: 'settings', component: FeaturePlaceholderComponent, data: { title: 'Paramètres Manager', description: 'Préférences manager et options de pilotage.' } },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }
     ]
@@ -105,12 +124,12 @@ export const routes: Routes = [
       { path: 'tickets', component: EmployeeTicketsComponent },
       { path: 'calendar', component: CalendarComponent },
       { path: 'timesheets', component: TimesheetsComponent },
-      { path: 'leaves', component: FeaturePlaceholderComponent, data: { title: 'Mes Congés', description: 'Demandes de congés et historique des validations.' } },
+      { path: 'leaves', component: EmployeeLeavesComponent },
       { path: 'settings', component: EmployeeSettingsComponent },
       { path: 'performance', component: EmployeePerformanceComponent },
       { path: 'wellness', component: EmployeeWellnessComponent },
       { path: 'tasks/:id', component: TaskDetailComponent },
-      { path: 'projects/:id', component: ProjectDetailComponent },
+      { path: 'projects/:id', component: UnifiedProjectDetailComponent },
       { path: '', redirectTo: 'home', pathMatch: 'full' }
     ]
   },
@@ -121,10 +140,12 @@ export const routes: Routes = [
     data: { expectedRole: 'ROLE_COMMERCIAL' },
     children: [
       { path: 'projects', component: CommercialProjectsComponent },
-      { path: 'projects/:id', component: CommercialProjectDetailsComponent },
+      { path: 'projects/:id', component: UnifiedProjectDetailComponent },
       { path: 'settings', component: FeaturePlaceholderComponent, data: { title: 'Paramètres Commercial', description: 'Préférences commercial et options de suivi.' } },
       { path: 'deals', component: CommercialDealsComponent },
       { path: 'tickets', component: CommercialTicketsComponent },
+      { path: 'my-attendance', component: AttendancePersonalComponent },
+      { path: 'my-leaves', component: EmployeeLeavesComponent },
       { path: '', redirectTo: 'projects', pathMatch: 'full' }
     ]
   },
@@ -135,8 +156,11 @@ export const routes: Routes = [
     data: { expectedRole: 'ROLE_CLIENT' },
     children: [
       { path: 'overview', component: ClientProjectsComponent },
+      { path: 'projects/:id', component: UnifiedProjectDetailComponent },
       { path: 'tickets', component: ClientTicketsComponent },
       { path: 'deals', component: ClientDealsComponent },
+      { path: 'my-attendance', component: AttendancePersonalComponent },
+      { path: 'my-leaves', component: EmployeeLeavesComponent },
       { path: 'settings', component: FeaturePlaceholderComponent, data: { title: 'Paramètres Client', description: 'Préférences client et options de compte.' } },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }
     ]

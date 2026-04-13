@@ -14,6 +14,8 @@
 </div>
 <!-- /Page Header -->
 
+<app-personal-pointage></app-personal-pointage>
+
 <!-- Welcome Wrap -->
 <div class="welcome-wrap mb-4">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 bg-dark rounded p-4">
@@ -188,15 +190,15 @@
                 <div class="mt-4">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <p class="f-14 fw-medium text-dark mb-0"><i class="ti ti-circle-filled text-success me-1"></i>Terminés</p>
-                        <p class="f-14 fw-medium text-dark mb-0">45%</p>
+                        <p class="f-14 fw-medium text-dark mb-0">{{projectBreakdown.completedText}}</p>
                     </div>
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <p class="f-14 fw-medium text-dark mb-0"><i class="ti ti-circle-filled text-danger me-1"></i>Retard</p>
-                        <p class="f-14 fw-medium text-dark mb-0">15%</p>
+                        <p class="f-14 fw-medium text-dark mb-0">{{projectBreakdown.delayedText}}</p>
                     </div>
                     <div class="d-flex align-items-center justify-content-between mb-0">
                         <p class="f-14 fw-medium text-dark mb-0"><i class="ti ti-circle-filled text-warning me-1"></i>En cours</p>
-                        <p class="f-14 fw-medium text-dark mb-0">40%</p>
+                        <p class="f-14 fw-medium text-dark mb-0">{{projectBreakdown.inProgressText}}</p>
                     </div>
                 </div>
             </div>
@@ -214,33 +216,48 @@
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-nowrap mb-0">
-                        <thead>
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
                             <tr>
-                                <th>Projet</th>
-                                <th>Statut</th>
-                                <th>Team Leader</th>
+                                <th class="ps-4 py-3 fs-13 text-muted fw-semibold">Projet</th>
+                                <th class="py-3 fs-13 text-muted fw-semibold">Client</th>
+                                <th class="py-3 fs-13 text-muted fw-semibold">Manager</th>
+                                <th class="py-3 fs-13 text-muted fw-semibold text-center">Progression</th>
+                                <th class="pe-4 py-3 fs-13 text-muted fw-semibold text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let p of recentProjects">
-                                <td>
+                            <tr *ngFor="let p of projects" class="cursor-pointer">
+                                <td class="ps-4 py-3" [routerLink]="['/admin/projects', p.id]">
                                     <div class="d-flex align-items-center">
-                                        <div class="avatar avatar-md bg-light-500 rounded-circle flex-shrink-0">
-                                            <i class="ti ti-folder text-dark"></i>
+                                        <div class="avatar avatar-sm bg-soft-info text-info rounded-circle me-3 d-flex align-items-center justify-content-center">
+                                            <i class="ti ti-folder fs-16"></i>
                                         </div>
-                                        <div class="ms-2">
-                                            <p class="fw-medium mb-0 text-dark">{{p.name}}</p>
-                                            <span class="fs-12 text-muted">{{p.startDate | date:'dd MMM yyyy'}}</span>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold fs-14">{{p.name}}</h6>
+                                            <span class="text-muted fs-11">{{p.expectedEndDate | date:'dd MMM yyyy'}}</span>
                                         </div>
                                     </div>
                                 </td>
-                                <td>
-                                    <span class="badge" [ngClass]="p.status === 'ACTIVE' ? 'bg-soft-success text-success' : 'bg-soft-warning text-warning'">
-                                        {{p.status}}
-                                    </span>
+                                <td class="py-3" [routerLink]="['/admin/projects', p.id]">
+                                    <span class="fs-13">{{p.client?.firstName}} {{p.client?.lastName}}</span>
                                 </td>
-                                <td>{{p.manager?.firstName}} {{p.manager?.lastName}}</td>
+                                <td class="py-3" [routerLink]="['/admin/projects', p.id]">
+                                    <span class="badge bg-soft-primary text-primary fs-12">{{p.manager?.firstName}}</span>
+                                </td>
+                                <td class="py-3 text-center" [routerLink]="['/admin/projects', p.id]">
+                                    <div class="progress" style="height: 6px; width: 80px; margin: 0 auto;">
+                                        <div class="progress-bar bg-success" role="progressbar" [style.width.%]="75"></div>
+                                    </div>
+                                </td>
+                                <td class="pe-4 py-3 text-end">
+                                    <button class="btn btn-soft-primary btn-sm btn-icon rounded-circle shadow-sm me-1" (click)="openProjectTickets(p); $event.stopPropagation()" title="Tickets">
+                                        <i class="ti ti-headset"></i>
+                                    </button>
+                                    <button class="btn btn-soft-light btn-sm btn-icon rounded-circle shadow-sm" [routerLink]="['/admin/projects', p.id]">
+                                        <i class="ti ti-chevron-right"></i>
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -276,4 +293,6 @@
         </div>
     </div>
 </div>
+
+<app-project-support-modal *ngIf="showSupportModal" [project]="selectedProject" (onClose)="showSupportModal = false"></app-project-support-modal>
 

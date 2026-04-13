@@ -1,0 +1,122 @@
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+    <div>
+        <h4 class="mb-1 d-flex align-items-center">
+            <a routerLink="/admin/teams" class="btn btn-sm btn-icon btn-outline-light me-2 rounded-circle">
+                <i class="ti ti-arrow-left"></i>
+            </a>
+            Détails de l'Équipe
+        </h4>
+        <p class="mb-0 text-muted small ms-5">Consultez les informations de l'équipe et ses membres.</p>
+    </div>
+</div>
+
+<div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-muted">Chargement de l'équipe...</p>
+</div>
+
+<div *ngIf="!isLoading && !team" class="alert alert-danger">
+    Équipe introuvable.
+</div>
+
+<div class="row" *ngIf="!isLoading && team">
+    <div class="col-xl-4 col-lg-5">
+        <!-- Team Info Card -->
+        <div class="card main-card">
+            <div class="card-body text-center p-4">
+                <div class="avatar avatar-xl bg-info-gradient-100 rounded-circle mb-3 mx-auto shadow-sm">
+                    <i class="ti ti-users-group fs-32 text-info"></i>
+                </div>
+                <h5 class="fw-bold mb-1">{{team.name}}</h5>
+                <p class="text-muted fs-13 mb-3">{{team.description || 'Aucune description disponible.'}}</p>
+                
+                <div class="bg-light rounded p-3 text-start mb-3">
+                    <h6 class="fs-12 fw-semibold text-uppercase text-muted mb-2">Responsable (Team Leader)</h6>
+                    <div class="d-flex align-items-center justify-content-between" *ngIf="team.manager">
+                        <div class="d-flex align-items-center">
+                            <span class="avatar avatar-sm avatar-rounded me-2">
+                                <img src="assets/assets/img/profiles/avatar-01.jpg" alt="img">
+                            </span>
+                            <div>
+                                <p class="mb-0 fw-medium fs-14">{{team.manager.firstName}} {{team.manager.lastName}}</p>
+                                <p class="mb-0 text-muted fs-12">{{team.manager.email}}</p>
+                            </div>
+                        </div>
+                        <a [href]="'mailto:' + team.manager.email" class="btn btn-icon btn-sm btn-primary rounded-circle" title="Contacter">
+                            <i class="ti ti-mail"></i>
+                        </a>
+                    </div>
+                    <div *ngIf="!team.manager" class="text-muted fs-13 font-italic">
+                        Aucun responsable défini.
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-around mt-4 pt-2 border-top">
+                    <div>
+                        <h6 class="fs-18 fw-bold mb-1">{{team.users ? team.users.length : 0}}</h6>
+                        <span class="text-muted fs-13">Membres</span>
+                    </div>
+                    <div>
+                        <h6 class="fs-18 fw-bold mb-1 text-success">Actif</h6>
+                        <span class="text-muted fs-13">Statut</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-8 col-lg-7">
+        <!-- Members List Card -->
+        <div class="card main-card h-100">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="mb-0 fs-16 fw-bold">Membres de l'Équipe</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-nowrap mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Membre</th>
+                                <th>Rôles</th>
+                                <th class="text-end">Contact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let user of team.users">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <span class="avatar avatar-md avatar-rounded bg-light-500 me-2">
+                                            <span class="fs-14 fw-bold text-dark">{{user.firstName.charAt(0)}}{{user.lastName.charAt(0)}}</span>
+                                        </span>
+                                        <div>
+                                            <p class="fw-medium mb-0 text-dark">{{user.firstName}} {{user.lastName}}</p>
+                                            <span class="fs-12 text-muted">{{user.email}}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        <span *ngFor="let role of user.roles" class="badge bg-soft-secondary text-secondary">
+                                            {{ role.name.replace('ROLE_', '') }}
+                                        </span>
+                                        <span *ngIf="!user.roles || user.roles.length === 0" class="text-muted fs-12">Aucun rôle</span>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <a [href]="'mailto:' + user.email" class="btn btn-icon btn-sm btn-outline-light rounded-circle" title="Envoyer un email">
+                                        <i class="ti ti-mail"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr *ngIf="!team.users || team.users.length === 0">
+                                <td colspan="3" class="text-center py-5">
+                                    <p class="text-muted mb-0">Aucun membre dans cette équipe.</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

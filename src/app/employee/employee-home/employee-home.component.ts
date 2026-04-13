@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { EmployeeService } from '../../services/employee.service';
+import { HrService } from '../../services/hr.service';
 import { AuthService } from '../../services/auth.service';
 import { Project, Task, SubTask } from '../../models/models';
 import { AiService } from '../../services/ai.service';
@@ -37,8 +38,13 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
   currentMood: string = localStorage.getItem('employee_mood') || 'Normal';
   tasksContextStr: string = '';
 
+  // Pointage (Presence)
+  activeAttendance: any = null;
+  isClockingIn = false;
+
   constructor(
     private employeeService: EmployeeService,
+    private hrService: HrService,
     public authService: AuthService,
     private aiService: AiService
   ) {}
@@ -78,7 +84,50 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
           
         this.isLoading = false;
       });
+
+      // Load Today's Attendance
+      this.hrService.getTodayAttendance(userId).subscribe(attendance => {
+        this.activeAttendance = attendance;
+      });
     }
+  }
+
+  onCheckIn(): void {
+    const userId = this.authService.getUserId();
+    if (!userId) return;
+    this.isClockingIn = true;
+    console.log(`[ATTENDANCE] Checking in for user ${userId}`);
+    this.hrService.checkIn(userId).subscribe({
+      next: (res) => {
+        console.log('[ATTENDANCE] Check-in success:', res);
+        this.activeAttendance = res;
+        this.isClockingIn = false;
+      },
+      error: (err) => {
+        console.error('[ATTENDANCE] Check-in error:', err);
+        this.isClockingIn = false;
+        alert('Erreur lors du pointage. Verifiez votre connexion ou contactez l\'administrateur.');
+      }
+    });
+  }
+
+  onCheckOut(): void {
+    const userId = this.authService.getUserId();
+    if (!userId || !this.activeAttendance) return;
+    this.isClockingIn = true;
+    console.log(`[ATTENDANCE] Checking out for user ${userId}, session ${this.activeAttendance.id}`);
+    this.hrService.checkOut(userId, this.activeAttendance.id).subscribe({
+      next: (res) => {
+        console.log('[ATTENDANCE] Check-out success:', res);
+        this.activeAttendance = res;
+        this.isClockingIn = false;
+      },
+      error: (err) => {
+        console.error('[ATTENDANCE] Check-out error:', err);
+        this.isClockingIn = false;
+        alert('Erreur lors du départ. Réessayez plus tard.');
+      }
+    });
   }
 
   ngAfterViewInit() {

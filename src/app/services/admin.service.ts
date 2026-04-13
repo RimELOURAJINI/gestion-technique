@@ -17,6 +17,10 @@ export class AdminService {
     return this.http.get<Project[]>(`${this.baseUrl}/projects/all`);
   }
 
+  getProjectById(id: number): Observable<Project> {
+    return this.http.get<Project>(`${this.baseUrl}/projects/${id}`);
+  }
+
   createProject(project: any): Observable<any> {
     console.log("🚀 AdminService: Posting Project", project);
     return this.http.post(`${this.baseUrl}/projects/create`, project).pipe(
@@ -91,6 +95,10 @@ export class AdminService {
 
   assignUserToTeam(teamId: number, userId: number): Observable<Team> {
     return this.http.post<Team>(`${this.baseUrl}/teams/${teamId}/assign-user/${userId}`, {});
+  }
+
+  assignManagerToTeam(teamId: number, userId: number): Observable<Team> {
+    return this.http.post<Team>(`${this.baseUrl}/teams/${teamId}/assign-manager/${userId}`, {});
   }
 
   removeUserFromTeam(teamId: number, userId: number): Observable<Team> {

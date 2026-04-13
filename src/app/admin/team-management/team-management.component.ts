@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 import { Team, User } from '../../models/models';
 
 @Component({
     selector: 'app-team-management',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, RouterModule],
     templateUrl: './team-management.component.html',
     styleUrl: './team-management.component.css'
 })
@@ -20,6 +21,7 @@ export class TeamManagementComponent implements OnInit {
     
     selectedTeamForAssign: Team | null = null;
     selectedUserId: number | null = null;
+    assignMode: 'user' | 'manager' = 'user';
 
     constructor(private adminService: AdminService) { }
 
@@ -80,9 +82,10 @@ export class TeamManagementComponent implements OnInit {
         });
     }
 
-    openAssignModal(team: Team) {
+    openAssignModal(team: Team, mode: 'user' | 'manager' = 'user') {
         this.selectedTeamForAssign = team;
         this.selectedUserId = null;
+        this.assignMode = mode;
     }
 
     assignUser() {
@@ -91,17 +94,31 @@ export class TeamManagementComponent implements OnInit {
             alert("Veuillez sélectionner un utilisateur d'abord.");
             return;
         }
-        this.adminService.assignUserToTeam(this.selectedTeamForAssign.id, +this.selectedUserId).subscribe({
-            next: () => {
-                this.loadTeams();
-                alert("Utilisateur assigné avec succès !");
-            },
-            error: (err) => {
-                console.error("Assign error details:", err);
-                const msg = err.error?.message || err.error || err.message;
-                alert("Erreur lors de l'assignation: " + msg);
-            }
-        });
+        if (this.assignMode === 'user') {
+            this.adminService.assignUserToTeam(this.selectedTeamForAssign.id, +this.selectedUserId).subscribe({
+                next: () => {
+                    this.loadTeams();
+                    alert("Utilisateur assigné avec succès !");
+                },
+                error: (err) => {
+                    console.error("Assign error details:", err);
+                    const msg = err.error?.message || err.error || err.message;
+                    alert("Erreur lors de l'assignation: " + msg);
+                }
+            });
+        } else {
+            this.adminService.assignManagerToTeam(this.selectedTeamForAssign.id, +this.selectedUserId).subscribe({
+                next: () => {
+                    this.loadTeams();
+                    alert("Responsable assigné avec succès !");
+                },
+                error: (err) => {
+                    console.error("Assign error details:", err);
+                    const msg = err.error?.message || err.error || err.message;
+                    alert("Erreur lors de l'assignation: " + msg);
+                }
+            });
+        }
     }
 
     removeUser(teamId: number, userId: number) {

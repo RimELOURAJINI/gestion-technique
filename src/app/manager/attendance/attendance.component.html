@@ -1,0 +1,69 @@
+<div class="container-fluid p-0">
+    <div class="row align-items-center mb-4">
+        <div class="col-sm-6">
+            <h4 class="fw-bold mb-1">Suivi des Présences</h4>
+            <p class="text-muted small mb-0">Visualisez la présence de votre équipe en temps réel.</p>
+        </div>
+        <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+            <div class="d-inline-flex align-items-center bg-white border rounded-pill px-3 py-1 shadow-sm">
+                <i class="ti ti-calendar me-2 text-primary"></i>
+                <input type="date" [(ngModel)]="selectedDate" (change)="onDateChange()" class="border-0 bg-transparent fs-13 focus-none py-1">
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+            <div *ngIf="isLoading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 text-muted">Chargement des présences...</p>
+            </div>
+
+            <div *ngIf="!isLoading && attendanceList.length === 0" class="text-center py-5">
+                <img src="assets/assets/img/icons/elemnt-02.svg" alt="Empty" class="img-fluid mb-3 opacity-25" style="max-height: 100px;">
+                <p class="text-muted">Aucune donnée de présence pour cette date.</p>
+            </div>
+
+            <div class="table-responsive" *ngIf="!isLoading && attendanceList.length > 0">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 border-0 py-3 fs-13 text-muted fw-semibold">Membre</th>
+                            <th class="border-0 py-3 fs-13 text-muted fw-semibold text-center">Date</th>
+                            <th class="border-0 py-3 fs-13 text-muted fw-semibold text-center">Arrivée</th>
+                            <th class="border-0 py-3 fs-13 text-muted fw-semibold text-center">Départ</th>
+                            <th class="border-0 py-3 fs-13 text-muted fw-semibold text-center">Status</th>
+                            <th class="pe-4 border-0 py-3 fs-13 text-muted fw-semibold">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of attendanceList">
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar avatar-sm bg-soft-primary text-primary rounded-circle me-3">
+                                        {{item.user?.firstName?.charAt(0)}}{{item.user?.lastName?.charAt(0)}}
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold fs-14">{{item.user?.firstName}} {{item.user?.lastName}}</h6>
+                                        <p class="mb-0 text-muted fs-11">{{item.user?.email}}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center py-3 fs-13">{{item.date | date:'dd/MM/yyyy'}}</td>
+                            <td class="text-center py-3">
+                                <span class="fw-medium text-dark">{{item.checkIn ? (item.checkIn | date:'HH:mm') : '--:--'}}</span>
+                            </td>
+                            <td class="text-center py-3">
+                                <span class="fw-medium text-dark">{{item.checkOut ? (item.checkOut | date:'HH:mm') : '--:--'}}</span>
+                            </td>
+                            <td class="text-center py-3">
+                                <span [class]="getStatusClass(item.status)">{{item.status}}</span>
+                            </td>
+                            <td class="pe-4 py-3 text-muted fs-12">{{item.notes || '-'}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

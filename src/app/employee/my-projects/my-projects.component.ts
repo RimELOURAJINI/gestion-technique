@@ -6,10 +6,12 @@ import { Project } from '../../models/models';
 
 import { RouterModule, Router } from '@angular/router';
 
+import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
+
 @Component({
   selector: 'app-my-projects',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ProjectSupportModalComponent],
   templateUrl: './my-projects.component.html',
   styleUrl: './my-projects.component.css'
 })
@@ -18,6 +20,8 @@ export class MyProjectsComponent implements OnInit {
   ongoingProjects: Project[] = [];
   historicalProjects: Project[] = [];
   activeTab: 'ongoing' | 'history' = 'ongoing';
+  showSupportModal = false;
+  selectedProjectForSupport: any = null;
 
   constructor(
     private employeeService: EmployeeService,
@@ -51,6 +55,11 @@ export class MyProjectsComponent implements OnInit {
     if (project.id) {
       this.router.navigate(['/employee/projects', project.id]);
     }
+  }
+
+  openProjectSupport(project: Project): void {
+    this.selectedProjectForSupport = project;
+    this.showSupportModal = true;
   }
 
 

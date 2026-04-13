@@ -82,17 +82,17 @@
                 <div class="mb-0">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <small class="text-muted fs-11 text-uppercase fw-bold">Membres de l'Équipe</small>
-                        <span class="badge badge-soft-dark fs-10">{{project.team?.users?.length || 0}} Pers.</span>
+                        <span class="badge badge-soft-dark fs-10">{{project.teams?.[0]?.users?.length || 0}} Pers.</span>
                     </div>
                     <div class="avatar-list-stacked d-flex">
-                        <div *ngFor="let member of project.team?.users | slice:0:5" class="avatar avatar-sm rounded-circle border border-white" [title]="member.firstName + ' ' + member.lastName">
+                        <div *ngFor="let member of project.teams?.[0]?.users | slice:0:5" class="avatar avatar-sm rounded-circle border border-white" [title]="member.firstName + ' ' + member.lastName">
                             <span class="bg-soft-indigo text-indigo fs-10 fw-bold d-flex align-items-center justify-content-center w-100 h-100">
                                 {{member.firstName.charAt(0)}}{{member.lastName.charAt(0)}}
                             </span>
                         </div>
-                        <div *ngIf="(project.team?.users?.length || 0) > 5" class="avatar avatar-sm rounded-circle border border-white bg-dark">
+                        <div *ngIf="(project.teams?.[0]?.users?.length || 0) > 5" class="avatar avatar-sm rounded-circle border border-white bg-dark">
                             <span class="text-white fs-10 fw-bold d-flex align-items-center justify-content-center w-100 h-100">
-                                +{{(project.team?.users?.length || 0) - 5}}
+                                +{{(project.teams?.[0]?.users?.length || 0) - 5}}
                             </span>
                         </div>
                     </div>
@@ -165,9 +165,9 @@
 
         <!-- Team Info -->
         <div class="mb-4">
-            <h6 class="fw-bold mb-3">Membres de l'Équipe ({{ selectedProject.team?.users?.length || 0 }})</h6>
+            <h6 class="fw-bold mb-3">Membres de l'Équipe ({{ selectedProject.teams?.[0]?.users?.length || 0 }})</h6>
             <div class="team-list border rounded p-2">
-                <div *ngFor="let user of selectedProject.team?.users" class="d-flex align-items-center p-2 border-bottom last-child-no-border">
+                <div *ngFor="let user of selectedProject.teams?.[0]?.users" class="d-flex align-items-center p-2 border-bottom last-child-no-border">
                     <div class="avatar avatar-sm bg-soft-indigo text-indigo rounded-circle me-2 d-flex align-items-center justify-content-center">
                         {{ user.firstName[0] }}{{ user.lastName[0] }}
                     </div>
@@ -176,7 +176,7 @@
                         <small class="text-muted">{{ user.email }}</small>
                     </div>
                 </div>
-                <p *ngIf="!selectedProject.team?.users?.length" class="text-muted small text-center p-3 mb-0">Aucun membre assigné spécifiquement.</p>
+                <p *ngIf="!selectedProject.teams?.[0]?.users?.length" class="text-muted small text-center p-3 mb-0">Aucun membre assigné spécifiquement.</p>
             </div>
         </div>
 

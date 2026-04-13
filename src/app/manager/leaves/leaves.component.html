@@ -1,0 +1,86 @@
+<div class="container-fluid p-0">
+    <div class="row align-items-center mb-4">
+        <div class="col-sm-6">
+            <h4 class="fw-bold mb-1">Congés Équipe</h4>
+            <p class="text-muted small mb-0">Géner et approuver les demandes de repos de vos collaborateurs.</p>
+        </div>
+        <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+            <select [(ngModel)]="filterStatus" class="form-select w-auto d-inline-block rounded-pill border shadow-sm fs-13">
+                <option value="ALL">Tous les statuts</option>
+                <option value="PENDING">En attente</option>
+                <option value="APPROVED">Approuvés</option>
+                <option value="REJECTED">Refusés</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+            <div *ngIf="isLoading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 text-muted">Chargement des demandes...</p>
+            </div>
+
+            <div *ngIf="!isLoading && filteredLeaves.length === 0" class="text-center py-5">
+                <img src="assets/assets/img/icons/elemnt-02.svg" alt="Empty" class="img-fluid mb-3 opacity-25" style="max-height: 100px;">
+                <p class="text-muted">Aucune demande de congé trouvée.</p>
+            </div>
+
+            <div class="table-responsive" *ngIf="!isLoading && filteredLeaves.length > 0">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 border-0 py-3 fs-13 text-muted fw-semibold">Collaborateur</th>
+                            <th class="border-0 py-3 fs-13 text-muted fw-semibold">Période</th>
+                            <th class="border-0 py-3 fs-13 text-muted fw-semibold text-center">Type</th>
+                            <th class="border-0 py-3 fs-13 text-muted fw-semibold text-center">Status</th>
+                            <th class="border-0 py-3 fs-13 text-muted fw-semibold">Raison</th>
+                            <th class="pe-4 border-0 py-3 fs-13 text-muted fw-semibold text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let leave of filteredLeaves">
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar avatar-sm bg-soft-info text-info rounded-circle me-3">
+                                        {{leave.user?.firstName?.charAt(0)}}{{leave.user?.lastName?.charAt(0)}}
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold fs-14">{{leave.user?.firstName}} {{leave.user?.lastName}}</h6>
+                                        <p class="mb-0 text-muted fs-11 text-truncate" style="max-width: 150px;">{{leave.user?.email}}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3">
+                                <div class="fs-13 text-dark fw-medium">Du {{leave.startDate | date:'dd/MM/yyyy'}}</div>
+                                <div class="fs-12 text-muted">Au {{leave.endDate | date:'dd/MM/yyyy'}}</div>
+                            </td>
+                            <td class="text-center py-3 fs-13">
+                                <span class="fw-medium">{{getTypeLabel(leave.type)}}</span>
+                            </td>
+                            <td class="text-center py-3">
+                                <span [class]="getStatusClass(leave.status)">{{leave.status}}</span>
+                            </td>
+                            <td class="py-3 text-muted fs-12 text-truncate" style="max-width: 200px;">
+                                {{leave.reason || '-'}}
+                            </td>
+                            <td class="pe-4 py-3 text-end">
+                                <div class="d-flex justify-content-end gap-2" *ngIf="leave.status === 'PENDING'">
+                                    <button (click)="processLeave(leave.id, 'REJECTED')" class="btn btn-soft-danger btn-icon btn-sm rounded-circle shadow-sm" title="Refuser">
+                                        <i class="ti ti-x"></i>
+                                    </button>
+                                    <button (click)="processLeave(leave.id, 'APPROVED')" class="btn btn-success btn-icon btn-sm rounded-circle shadow-sm" title="Approuver">
+                                        <i class="ti ti-check"></i>
+                                    </button>
+                                </div>
+                                <div class="fs-11 text-muted" *ngIf="leave.status !== 'PENDING'">
+                                    Traité le {{leave.processedAt | date:'dd/MM/yyyy'}}
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

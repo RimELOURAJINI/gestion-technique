@@ -41,10 +41,10 @@
 	<!-- Projects Grid -->
 	<div class="row g-3">
 		<div class="col-xl-4 col-md-6 col-sm-12" *ngFor="let project of (activeTab === 'ongoing' ? ongoingProjects : historicalProjects)">
-			<div class="card project-card flex-fill clickable-card" (click)="openProjectDetail(project)">
+			<div class="card project-card flex-fill clickable-card">
 				<div class="card-body">
 					<div class="d-flex align-items-start justify-content-between mb-3">
-						<div class="d-flex align-items-center">
+						<div class="d-flex align-items-center cursor-pointer" (click)="openProjectDetail(project)">
 							<div class="avatar avatar-md bg-primary-light border border-primary-low me-2 d-flex align-items-center justify-content-center">
 								<i class="ti ti-briefcase text-primary fs-18"></i>
 							</div>
@@ -60,9 +60,9 @@
 						}">{{project.status || 'En attente'}}</span>
 					</div>
 					
-					<p class="text-muted small text-truncate-2 mb-3" style="height: 40px;">{{project.description}}</p>
+					<p class="text-muted small text-truncate-2 mb-3 cursor-pointer" style="height: 40px;" (click)="openProjectDetail(project)">{{project.description}}</p>
 					
-					<div class="project-progress mb-3">
+					<div class="project-progress mb-3 cursor-pointer" (click)="openProjectDetail(project)">
 						<div class="d-flex justify-content-between align-items-center mb-1">
 							<span class="fs-12 text-muted">Progression</span>
 							<span class="fs-12 fw-bold text-dark">{{ project.progress || 0 }}%</span>
@@ -73,13 +73,18 @@
 					</div>
 
 					<div class="d-flex align-items-center justify-content-between pt-3 border-top mt-auto">
-						<div class="d-flex align-items-center text-muted fs-12">
+						<div class="d-flex align-items-center text-muted fs-12 cursor-pointer" (click)="openProjectDetail(project)">
 							<i class="ti ti-calendar-event me-1"></i> 
 							<span>Limite: {{ project.deadline | date:'dd MMM' }}</span>
 						</div>
-						<a [routerLink]="['/employee/tasks']" [queryParams]="{projectId: project.id}" class="btn btn-sm btn-soft-primary d-flex align-items-center" (click)="$event.stopPropagation()">
-							<i class="ti ti-list-check me-1"></i> Voir Tâches
-						</a>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-soft-primary d-flex align-items-center" (click)="openProjectSupport(project)">
+                                <i class="ti ti-headset me-1"></i> Tickets
+                            </button>
+                            <a [routerLink]="['/employee/tasks']" [queryParams]="{projectId: project.id}" class="btn btn-sm btn-outline-light d-flex align-items-center">
+                                <i class="ti ti-list-check me-1"></i> Tâches
+                            </a>
+                        </div>
 					</div>
 				</div>
 			</div>
@@ -97,6 +102,7 @@
 		</div>
 	</div>
 
+    <app-project-support-modal *ngIf="showSupportModal" [project]="selectedProjectForSupport" (onClose)="showSupportModal = false"></app-project-support-modal>
 </div>
 <!-- /Page Content -->
 

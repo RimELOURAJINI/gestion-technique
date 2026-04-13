@@ -1,17 +1,21 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TeamLeaderService } from '../../services/manager.service';
+import { StatsService } from '../../services/stats.service';
 import { AuthService } from '../../services/auth.service';
-import { Project, Task, User } from '../../models/models';
-import { RouterLink } from '@angular/router';
+import { Project, Task, User, Team } from '../../models/models';
+import { RouterModule, Router } from '@angular/router';
+import { AdminService } from '../../services/admin.service';
 import { AiService } from '../../services/ai.service';
+import { PersonalPointageComponent } from '../../shared/personal-pointage/personal-pointage.component';
+import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
 
 declare var initDashboardCharts: any;
 
 @Component({
   selector: 'app-manager-overview',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterModule, PersonalPointageComponent, ProjectSupportModalComponent],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.css'
 })
@@ -20,7 +24,13 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
     projects: 0,
     activeTasks: 0,
     completedTasks: 0,
-    teamMembers: 0
+    teamMembers: 0,
+    priorityLevel: '',
+    riskThreshold: 0,
+    teams: [] as Team[],
+    manager: {} as User,
+    client: {} as User,
+    commercial: {} as User
   };
   today: Date = new Date();
   myProjects: Project[] = [];
@@ -29,6 +39,9 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
 
   isAiLoading = false;
   aiMessage = '';
+  
+  showSupportModal = false;
+  selectedProject: any = null;
 
   // Nouveaux paramètres contextuels (Prévention & Goulots)
   workloadStr = '';
@@ -36,8 +49,10 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
 
   constructor(
     private teamLeaderService: TeamLeaderService,
+    private statsService: StatsService,
     private authService: AuthService,
-    private aiService: AiService
+    private aiService: AiService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -59,6 +74,28 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
     if (!userId) return;
 
     this.isLoading = true;
+
+    // Load Real Stats for Cards
+    this.statsService.getManagerDashboardStats(userId).subscribe({
+      next: (data) => {
+        this.stats.projects = data.projectCount;
+        this.stats.activeTasks = data.activeTaskCount;
+        this.stats.teamMembers = data.memberCount;
+        // The completed tasks can be inferred or left as 0 for now until we add it to the backend result
+      },
+      error: (err) => console.error('Error loading manager dashboard stats:', err)
+    });
+
+    // Load Manager's Team
+    this.teamLeaderService.getMyTeam(userId).subscribe({
+      next: (team) => {
+        if (team && team.users) {
+          // Fallback if the summary stat above is delayed
+          if (this.stats.teamMembers === 0) this.stats.teamMembers = team.users.length;
+        }
+      },
+      error: (err) => console.log('Manager has no direct team assigned:', err)
+    });
     
     // Load Projects
     this.teamLeaderService.getProjectsByUserId(userId).subscribe(projects => {
@@ -83,12 +120,15 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
             this.stats.completedTasks = allTasks.filter(t => t.status === 'DONE' || t.status === 'COMPLETED').length;
             this.recentTasks = allTasks.slice(-5).reverse();
             
-            // Unique team members across projects
-            const memberIds = new Set();
-            projects.forEach(proj => {
-              proj.team?.users?.forEach(u => memberIds.add(u.id));
-            });
-            this.stats.teamMembers = memberIds.size;
+            // member count handled by getMyTeam now
+            // fallback if not assigned a team but has projects:
+            if (this.stats.teamMembers === 0) {
+              const memberIds = new Set();
+              projects.forEach(proj => {
+                proj.teams?.[0]?.users?.forEach((u: any) => memberIds.add(u.id));
+              });
+              this.stats.teamMembers = memberIds.size;
+            }
 
             // IA Décisionnelle : Calcul de la surcharge ponctuelle et identification des blocages
             const workloadMap = new Map<string, number>();
@@ -100,7 +140,7 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
                         blockedTasks.push(`'${t.title}' (Raison: ${t.blockerReason || 'inconnue'})`);
                     }
                     if (t.users && t.users.length > 0) {
-                        t.users.forEach(u => {
+                        t.users.forEach((u: any) => {
                             const name = u.firstName;
                             const current = workloadMap.get(name) || 0;
                             workloadMap.set(name, current + (t.estimatedHours || 0));
@@ -143,5 +183,9 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
         this.isAiLoading = false;
       }
     });
+  }
+  openProjectTickets(project: any) {
+    this.selectedProject = project;
+    this.showSupportModal = true;
   }
 }

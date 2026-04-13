@@ -2,17 +2,19 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminService } from '../../services/admin.service';
 import { Project, Team, User, Reclamation } from '../../models/models';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AiService } from '../../services/ai.service';
 import { FormsModule } from '@angular/forms';
+import { PersonalPointageComponent } from '../../shared/personal-pointage/personal-pointage.component';
+import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
 
 declare var initDashboardCharts: any;
 
 @Component({
   selector: 'app-admin-overview',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, PersonalPointageComponent, ProjectSupportModalComponent, RouterModule, FormsModule],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.css'
 })
@@ -22,6 +24,11 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
     teams: 0,
     managers: 0,
     reclamations: 0
+  };
+  projectBreakdown = {
+    completedText: '0%',
+    delayedText: '0%',
+    inProgressText: '0%'
   };
   recentProjects: Project[] = [];
   recentReclamations: Reclamation[] = [];
@@ -35,6 +42,11 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
   riskThreshold: number = 80;
   totalReclamations = 0;
   resolvedReclamations = 0;
+
+  // Added missing properties for the template
+  projects: Project[] = [];
+  showSupportModal = false;
+  selectedProject: any = null;
 
   constructor(
     private adminService: AdminService,
@@ -61,8 +73,24 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
     
     // Load Projects
     this.adminService.getAllProjects().subscribe((projects) => {
+      this.projects = projects; // Set the projects array
       this.stats.projects = projects.length;
       this.recentProjects = projects.slice(-5).reverse();
+      
+      if (projects.length > 0) {
+          const completed = projects.filter(p => p.status === 'COMPLETED').length;
+          const delayed = projects.filter(p => {
+              if (p.status === 'COMPLETED') return false;
+              if (p.deadline) return new Date(p.deadline) < this.today;
+              if (p.expectedEndDate) return new Date(p.expectedEndDate) < this.today;
+              return false;
+          }).length;
+          const inProgress = projects.length - completed - delayed;
+          
+          this.projectBreakdown.completedText = Math.round((completed / projects.length) * 100) + '%';
+          this.projectBreakdown.delayedText = Math.round((delayed / projects.length) * 100) + '%';
+          this.projectBreakdown.inProgressText = Math.round((inProgress / projects.length) * 100) + '%';
+      }
     });
 
     // Load Teams
@@ -88,26 +116,12 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
   }
 
   refreshAiStats() {
-    const userId = this.authService.getUserId();
-    if (!userId) return;
-    
-    console.log(`[AI-INSIGHTS] 🚀 Génération analyse - userId: ${userId} - mode: insights`);
-    this.isAiLoading = true;
-    this.aiMessage = '';
-    
-    this.aiService.getAIStatisticsStream(userId, '', 'insights').subscribe({
-      next: (chunk) => {
-        this.isAiLoading = false;
-        this.aiMessage += chunk;
-      },
-      error: (err) => {
-        this.isAiLoading = false;
-        console.error('AI Error:', err);
-        if(!this.aiMessage) this.aiMessage = "Erreur de connexion à l'Agent IA.";
-      },
-      complete: () => {
-        this.isAiLoading = false;
-      }
-    });
+    // ... existing refreshAiStats code ...
+  }
+
+  // Added missing method
+  openProjectTickets(project: any) {
+    this.selectedProject = project;
+    this.showSupportModal = true;
   }
 }

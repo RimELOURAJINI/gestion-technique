@@ -131,6 +131,16 @@
         <div class="sidebar-inner" data-simplebar>                
             <div id="sidebar-menu" class="sidebar-menu text-uppercase fs-11 fw-bold">
                 <ul>
+                    <li class="menu-title"><span>Mon Espace Manager</span></li>
+                    <li>
+                        <ul>
+                            <li><a routerLink="/manager/overview" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"><i class="ti ti-dashboard"></i><span>Dashboard Perso</span></a></li>
+                            <li><a routerLink="/manager/my-attendance" routerLinkActive="active"><i class="ti ti-clock-user"></i><span>Ma Présence</span></a></li>
+                            <li><a routerLink="/manager/my-leaves" routerLinkActive="active"><i class="ti ti-calendar-event"></i><span>Mes Congés</span></a></li>
+                            <li><a routerLink="/manager/team-chat" routerLinkActive="active"><i class="ti ti-messages"></i><span>Team Chat</span></a></li>
+                        </ul>
+                    </li>
+
                     <li class="menu-title"><span>Gestion d'Équipe</span></li>
                     <li>
                         <ul>

@@ -33,11 +33,13 @@
                             <tr *ngFor="let team of teams">
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="avatar avatar-rounded bg-info-gradient-100 flex-shrink-0 me-2">
+                                        <a [routerLink]="['/admin/teams', team.id]" class="avatar avatar-rounded bg-info-gradient-100 flex-shrink-0 me-2 text-decoration-none">
                                             <i class="ti ti-users-group fs-18 text-info"></i>
-                                        </div>
+                                        </a>
                                         <div>
-                                            <h6 class="mb-0 fw-medium fs-14">{{team.name}}</h6>
+                                            <a [routerLink]="['/admin/teams', team.id]" class="text-dark text-decoration-none text-primary-hover">
+                                                <h6 class="mb-0 fw-medium fs-14">{{team.name}}</h6>
+                                            </a>
                                             <span class="fs-12 text-muted">{{team.description || 'Projet interne'}}</span>
                                         </div>
                                     </div>
@@ -54,10 +56,17 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge badge-soft-primary" *ngIf="team.users && team.users.length > 0">
-                                        {{team.users[0].firstName}} {{team.users[0].lastName}}
-                                    </span>
-                                    <span class="text-muted fs-12" *ngIf="!team.users || team.users.length === 0">Non défini</span>
+                                    <div class="d-flex align-items-center flex-wrap gap-2">
+                                        <ng-container *ngIf="team.manager">
+                                            <span class="badge badge-soft-primary d-flex align-items-center mb-1">
+                                                <i class="ti ti-user-star me-1"></i>{{team.manager.firstName}} {{team.manager.lastName}}
+                                            </span>
+                                            <a [href]="'mailto:' + team.manager.email" class="btn btn-icon btn-sm btn-outline-primary rounded-circle" title="Contacter le responsable">
+                                                <i class="ti ti-mail"></i>
+                                            </a>
+                                        </ng-container>
+                                        <span class="text-muted fs-12" *ngIf="!team.manager">Non défini</span>
+                                    </div>
                                 </td>
                                 <td class="text-end">
                                     <div class="dropdown">
@@ -66,13 +75,23 @@
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
                                             <li>
-                                                <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#assignModal" (click)="openAssignModal(team)">
+                                                <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#assignModal" (click)="openAssignModal(team, 'manager')">
+                                                    <i class="ti ti-user-star me-2"></i>Assigner un Responsable
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#assignModal" (click)="openAssignModal(team, 'user')">
                                                     <i class="ti ti-user-plus me-2"></i>Ajouter un Membre
                                                 </a>
                                             </li>
                                             <li>
                                                 <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#teamModal" (click)="openEditTeam(team)">
                                                     <i class="ti ti-edit me-2"></i>Modifier
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-primary" [routerLink]="['/admin/teams', team.id]">
+                                                    <i class="ti ti-eye me-2"></i>Détails Complet
                                                 </a>
                                             </li>
                                             <li><hr class="dropdown-divider"></li>
@@ -135,8 +154,9 @@
         <div class="modal-content border-0 shadow">
             <div class="modal-header bg-primary py-3">
                 <h5 class="modal-title fw-bold text-white">
-                    <i class="ti ti-user-plus me-2"></i>Assigner un Membre
-                </h5>
+                                    <i class="ti" [ngClass]="assignMode === 'manager' ? 'ti-user-star' : 'ti-user-plus'"></i>
+                                    <span class="ms-2">Assigner un {{assignMode === 'manager' ? 'Responsable' : 'Membre'}}</span>
+                                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">

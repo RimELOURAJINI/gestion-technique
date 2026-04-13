@@ -1,0 +1,73 @@
+<div class="container-fluid p-0">
+    <div class="row align-items-center mb-4">
+        <div class="col-sm-6">
+            <h4 class="fw-bold mb-1">Performance Équipe</h4>
+            <p class="text-muted small mb-0">KPI et suivi de la charge de travail des membres de votre équipe.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Workload Overview -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+                    <h6 class="mb-0 fw-bold"><i class="ti ti-chart-bar me-2 text-primary"></i> Analyse de la Charge de Travail (Workload)</h6>
+                    <span class="badge bg-soft-info text-info rounded-pill px-3">En temps réel</span>
+                </div>
+                <div class="card-body p-0">
+                    <div *ngIf="isLoading" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-2 text-muted">Analyse des données en cours...</p>
+                    </div>
+
+                    <div *ngIf="!isLoading && workloadData.length === 0" class="text-center py-5">
+                        <img src="assets/assets/img/icons/elemnt-02.svg" alt="Empty" class="img-fluid mb-3 opacity-25" style="max-height: 100px;">
+                        <p class="text-muted">Aucune donnée de charge disponible pour le moment.</p>
+                    </div>
+
+                    <div class="table-responsive" *ngIf="!isLoading && workloadData.length > 0">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 border-0 py-3 fs-13 text-muted fw-semibold">Membre</th>
+                                    <th class="border-0 py-3 fs-13 text-muted fw-semibold">Tâches Actives</th>
+                                    <th class="border-0 py-3 fs-13 text-muted fw-semibold">Heures Estimées</th>
+                                    <th class="border-0 py-3 fs-13 text-muted fw-semibold">Capacité Hebdo</th>
+                                    <th class="border-0 py-3 fs-13 text-muted fw-semibold">Taux d'Occupation</th>
+                                    <th class="pe-4 border-0 py-3 fs-13 text-muted fw-semibold">Progression</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of workloadData">
+                                    <td class="ps-4 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm bg-soft-primary text-primary rounded-circle me-3">
+                                                {{item.userName.charAt(0)}}
+                                            </div>
+                                            <div class="fw-bold text-dark fs-14">{{item.userName}}</div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 fs-13 fw-medium">{{item.activeTasks || 0}}</td>
+                                    <td class="py-3 fs-13">
+                                        <span class="text-primary fw-semibold">{{item.totalHours}}h</span>
+                                    </td>
+                                    <td class="py-3 fs-13 text-muted">{{item.capacity}}h</td>
+                                    <td class="py-3">
+                                        <span [class]="item.occupancyRate > 90 ? 'text-danger fw-bold' : 'text-dark fw-medium'">
+                                            {{item.occupancyRate | number:'1.0-1'}}%
+                                        </span>
+                                    </td>
+                                    <td class="pe-4 py-3">
+                                        <div class="progress rounded-pill shadow-none" style="height: 6px; width: 100px;">
+                                            <div [class]="getProgressBarClass(item.occupancyRate)" [style.width]="(item.occupancyRate > 100 ? 100 : item.occupancyRate) + '%'"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

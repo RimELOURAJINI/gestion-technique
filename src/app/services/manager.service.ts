@@ -87,6 +87,10 @@ export class TeamLeaderService {
   getTasksByUserId(userId: number): Observable<Task[]> {
     return this.http.get<Task[]>(`${this.baseUrl}/tasks/user/${userId}`);
   }
+
+  getMyTeam(managerId: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/teams/my-team/${managerId}`);
+  }
 }
 
 
