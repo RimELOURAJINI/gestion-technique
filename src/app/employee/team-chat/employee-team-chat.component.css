@@ -1,0 +1,3 @@
+.chat-wrapper { border-radius: 1rem; }
+.chat-sidebar { min-height: 0; }
+.list-group-item.active { background-color: #4e73df; border-color: #4e73df; }

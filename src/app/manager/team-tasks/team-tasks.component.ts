@@ -4,12 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { TeamLeaderService } from '../../services/manager.service';
 import { AuthService } from '../../services/auth.service';
-import { Task, User, Project } from '../../models/models';
+import { Task, User, Project, Ticket } from '../../models/models';
+import { TicketService } from '../../services/ticket.service';
+import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
 
 @Component({
     selector: 'app-team-tasks',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule],
+    imports: [CommonModule, FormsModule, RouterModule, ProjectSupportModalComponent],
     templateUrl: './team-tasks.component.html',
     styleUrl: './team-tasks.component.css'
 })
@@ -32,9 +34,15 @@ export class TeamTasksComponent implements OnInit {
     // Edit Task
     editingTask: Task | null = null;
 
+    // Support Modal
+    showSupportModal = false;
+    selectedSupportTask: Task | null = null;
+    currentProjectForSupport: Project | null = null;
+
     constructor(
         private teamLeaderService: TeamLeaderService,
         private authService: AuthService,
+        private ticketService: TicketService,
         private route: ActivatedRoute
     ) { }
 
@@ -58,9 +66,39 @@ export class TeamTasksComponent implements OnInit {
         if (!this.selectedProjectId) { this.isLoading = false; return; }
         this.isLoading = true;
         this.teamLeaderService.getTasksByProjectId(this.selectedProjectId).subscribe({
-            next: (res) => { this.tasks = res; this.organizeTasks(); this.isLoading = false; },
+            next: (res) => { 
+                this.tasks = res; 
+                this.loadTicketCounts();
+                this.organizeTasks(); 
+                this.isLoading = false; 
+            },
             error: () => this.isLoading = false
         });
+    }
+
+    loadTicketCounts() {
+        const userId = this.authService.getUserId();
+        if (!userId) return;
+        this.ticketService.getTicketsByManager(userId).subscribe({
+            next: (tickets: Ticket[]) => {
+                const openTickets = tickets.filter(t => t.status !== 'VALIDATED' && t.status !== 'fermé' && t.status !== 'CLOSED');
+                this.tasks.forEach(t => {
+                    t.openTicketsCount = openTickets.filter(ticket => ticket.task?.id === t.id).length;
+                });
+            }
+        });
+    }
+
+    openSupportModal(task: Task, event: Event) {
+        event.stopPropagation();
+        this.selectedSupportTask = task;
+        this.currentProjectForSupport = this.projects.find(p => p.id === this.selectedProjectId) || null;
+        this.showSupportModal = true;
+    }
+
+    closeSupportModal() {
+        this.showSupportModal = false;
+        this.selectedSupportTask = null;
     }
 
     organizeTasks() {

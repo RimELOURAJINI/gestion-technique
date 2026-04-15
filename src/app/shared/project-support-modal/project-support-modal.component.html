@@ -7,7 +7,7 @@
                     <i class="ti ti-headset fs-20"></i>
                 </div>
                 <div>
-                    <h6 class="mb-0 fw-bold">Support Hub : {{project?.name}}</h6>
+                    <h6 class="mb-0 fw-bold">Support Hub : {{task ? task.title : project?.name}}</h6>
                     <p class="mb-0 text-white-50 fs-11">Discussions techniques et tickets ouverts</p>
                 </div>
             </div>
@@ -69,11 +69,19 @@
                 </div>
 
                 <div *ngIf="selectedTicketId" class="h-100 d-flex flex-column overflow-hidden">
-                    <!-- Chat Header (Mobile back button) -->
-                    <div class="p-2 border-bottom d-md-none">
-                        <button class="btn btn-link btn-sm text-decoration-none" (click)="selectedTicketId = null">
-                            <i class="ti ti-chevron-left me-1"></i>Retour à la liste
-                        </button>
+                    <!-- Chat Header with Actions -->
+                    <div class="p-2 border-bottom d-flex justify-content-between align-items-center bg-white">
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-link btn-sm text-decoration-none d-md-none me-2 p-0" (click)="selectedTicketId = null">
+                                <i class="ti ti-chevron-left fs-16"></i>
+                            </button>
+                            <h6 class="mb-0 fw-bold fs-14 text-truncate" style="max-width: 250px;">{{ getSelectedTicket()?.subject }}</h6>
+                        </div>
+                        <div *ngIf="isCreator(getSelectedTicket()) && getSelectedTicket()?.status !== 'VALIDATED'">
+                            <button class="btn btn-sm btn-success rounded-pill px-3 shadow-sm d-flex align-items-center py-1" (click)="validateTicket(selectedTicketId)">
+                                <i class="ti ti-check me-1"></i> Valider
+                            </button>
+                        </div>
                     </div>
                     <app-ticket-chat [ticketId]="selectedTicketId" [showHeader]="false" class="h-100"></app-ticket-chat>
                 </div>

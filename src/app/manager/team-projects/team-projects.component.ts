@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TeamLeaderService } from '../../services/manager.service';
 import { AuthService } from '../../services/auth.service';
-import { Project } from '../../models/models';
+import { Project, Ticket } from '../../models/models';
+import { TicketService } from '../../services/ticket.service';
+import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
 
 @Component({
     selector: 'app-team-projects',
     standalone: true,
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, ProjectSupportModalComponent],
     templateUrl: './team-projects.component.html',
     styleUrl: './team-projects.component.css'
 })
@@ -16,10 +18,13 @@ export class TeamProjectsComponent implements OnInit {
     projects: Project[] = [];
     isLoading = true;
     selectedProject: Project | null = null;
+    showSupportModal = false;
+    selectedSupportProject: Project | null = null;
 
     constructor(
         private teamLeaderService: TeamLeaderService,
-        private authService: AuthService
+        private authService: AuthService,
+        private ticketService: TicketService
     ) { }
 
     ngOnInit() {
@@ -32,7 +37,7 @@ export class TeamProjectsComponent implements OnInit {
             this.teamLeaderService.getProjectsByUserId(userId).subscribe({
                 next: (res) => {
                     this.projects = res;
-                    this.isLoading = false;
+                    this.loadTicketCounts(userId);
                 },
                 error: (err) => {
                     console.error('Error loading projects:', err);
@@ -40,6 +45,30 @@ export class TeamProjectsComponent implements OnInit {
                 }
             });
         }
+    }
+
+    loadTicketCounts(userId: number) {
+        this.ticketService.getTicketsByManager(userId).subscribe({
+            next: (tickets: Ticket[]) => {
+                const openTickets = tickets.filter(t => t.status !== 'VALIDATED' && t.status !== 'fermé' && t.status !== 'CLOSED');
+                this.projects.forEach(p => {
+                    p.openTicketsCount = openTickets.filter(t => t.project?.id === p.id && !t.task).length;
+                });
+                this.isLoading = false;
+            },
+            error: () => this.isLoading = false
+        });
+    }
+
+    openSupportModal(project: Project, event: Event) {
+        event.stopPropagation();
+        this.selectedSupportProject = project;
+        this.showSupportModal = true;
+    }
+
+    closeSupportModal() {
+        this.showSupportModal = false;
+        this.selectedSupportProject = null;
     }
 
     openProject(project: Project) {

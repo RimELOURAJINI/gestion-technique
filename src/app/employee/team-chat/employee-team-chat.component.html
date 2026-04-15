@@ -1,0 +1,123 @@
+<div class="chat-wrapper d-flex shadow rounded-4 overflow-hidden bg-white mt-2" style="height: 75vh;">
+
+    <!-- Error -->
+    <div *ngIf="!isLoading && errorMessage" class="w-100 d-flex align-items-center justify-content-center">
+        <div class="text-center p-5">
+            <i class="ti ti-users-off fs-48 text-muted mb-3 d-block"></i>
+            <h5 class="fw-bold">Aucune équipe trouvée</h5>
+            <p class="text-muted">{{errorMessage}}</p>
+        </div>
+    </div>
+
+    <ng-container *ngIf="!isLoading && team">
+        <!-- Sidebar: Participants -->
+        <div class="chat-sidebar border-end bg-light" style="width: 300px;">
+            <div class="p-3 border-bottom bg-white d-flex align-items-center justify-content-between">
+                <h6 class="mb-0 fw-bold">Équipe : {{team.name}}</h6>
+                <i class="ti ti-users text-primary"></i>
+            </div>
+            <div class="list-group list-group-flush overflow-auto h-100">
+                <!-- Global Team Option -->
+                <a href="javascript:void(0);"
+                   (click)="selectContact(null)"
+                   class="list-group-item list-group-item-action p-3 border-0 border-bottom"
+                   [class.active]="!selectedParticipant">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar avatar-md bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center shadow-sm">
+                            <i class="ti ti-users-group fs-20"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold" [class.text-white]="!selectedParticipant">Toute l'Équipe</h6>
+                            <small [class.text-white-50]="!selectedParticipant">Chat Collectif</small>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Single Members -->
+                <div class="px-3 py-2 bg-white small text-muted text-uppercase fw-bold">Membres de l'équipe</div>
+                <a href="javascript:void(0);"
+                   *ngFor="let member of members"
+                   (click)="selectContact(member)"
+                   class="list-group-item list-group-item-action p-3 border-0 border-bottom"
+                   [class.active]="selectedParticipant?.id === member.id">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar avatar-md bg-soft-info text-info rounded-circle me-3 d-flex align-items-center justify-content-center">
+                            {{ member.firstName.charAt(0) }}{{ member.lastName.charAt(0) }}
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold" [class.text-white]="selectedParticipant?.id === member.id">{{ member.firstName }} {{ member.lastName }}</h6>
+                            <small [class.text-white-50]="selectedParticipant?.id === member.id">Membre</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="flex-grow-1 d-flex flex-column bg-white">
+            <!-- Header -->
+            <div class="p-3 border-bottom bg-white d-flex align-items-center justify-content-between shadow-sm">
+                <div class="d-flex align-items-center">
+                    <div class="avatar avatar-sm bg-soft-primary text-primary rounded-circle me-2 d-flex align-items-center justify-content-center" *ngIf="!selectedParticipant">
+                        <i class="ti ti-world"></i>
+                    </div>
+                    <div class="avatar avatar-sm bg-soft-info text-info rounded-circle me-2 d-flex align-items-center justify-content-center" *ngIf="selectedParticipant">
+                       {{ selectedParticipant.firstName.charAt(0) }}
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">{{ selectedParticipant ? selectedParticipant.firstName + ' ' + selectedParticipant.lastName : 'Discussion d\'Équipe (' + team?.name + ')' }}</h6>
+                        <small class="text-success"><span class="badge badge-dot bg-success me-1"></span>Canal Sécurisé</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Area -->
+            <div id="emp-chat-container" class="flex-grow-1 p-4 overflow-auto bg-light bg-opacity-25">
+                <div *ngIf="messages.length === 0" class="text-center mt-5">
+                    <div class="avatar avatar-xl bg-white shadow-sm rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center">
+                        <i class="ti ti-messages fs-32 text-muted"></i>
+                    </div>
+                    <p class="text-muted">Aucun message pour l'instant. Commencez la discussion !</p>
+                </div>
+
+                <div *ngFor="let msg of messages" class="mb-4 d-flex" [class.justify-content-end]="msg.sender?.id === currentUserId">
+                    <div class="max-w-75">
+                        <div class="d-flex align-items-center mb-1" [class.justify-content-end]="msg.sender?.id === currentUserId" *ngIf="!selectedParticipant">
+                            <small class="text-muted me-2" *ngIf="msg.sender?.id !== currentUserId">{{ msg.sender?.firstName }}</small>
+                            <small class="text-muted fs-10">{{ msg.timestamp | date:'shortTime' }}</small>
+                        </div>
+                        <div class="p-3 rounded-4 shadow-sm"
+                             [class.bg-primary]="msg.sender?.id === currentUserId"
+                             [class.text-white]="msg.sender?.id === currentUserId"
+                             [class.bg-white]="msg.sender?.id !== currentUserId"
+                             style="border-top-left-radius: 0 !important;"
+                             [style.border-top-right-radius]="msg.sender?.id === currentUserId ? '0' : '1.5rem'">
+                            {{ msg.content }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-3 border-top bg-white">
+                <div class="input-group">
+                    <input type="text"
+                           [(ngModel)]="newMessage"
+                           (keyup.enter)="sendMessage()"
+                           class="form-control border-0 bg-light rounded-pill px-4"
+                           placeholder="Écrivez votre message ici...">
+                    <button class="btn btn-primary rounded-circle ms-2 d-flex align-items-center justify-content-center"
+                            (click)="sendMessage()"
+                            style="width: 45px; height: 45px;">
+                        <i class="ti ti-send fs-20"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="w-100 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+</div>

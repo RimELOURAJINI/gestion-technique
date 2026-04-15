@@ -38,6 +38,11 @@
                             <span class="badge fs-10" [ngClass]="getStatusClass(project.status)">
                                 {{project.status || 'ACTIVE'}}
                             </span>
+                            <span class="badge bg-soft-info text-info fs-10 ms-1 cursor-pointer hover-effect" 
+                                  *ngIf="project.openTicketsCount !== undefined"
+                                  (click)="openSupportModal(project, $event)">
+                                <i class="ti ti-headset me-1"></i> {{project.openTicketsCount}} Tickets
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -188,3 +193,9 @@
         </div>
     </div>
 </div>
+
+<app-project-support-modal 
+    *ngIf="showSupportModal" 
+    [project]="selectedSupportProject" 
+    (onClose)="closeSupportModal()">
+</app-project-support-modal>

@@ -91,6 +91,10 @@ export class TeamLeaderService {
   getMyTeam(managerId: number): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/teams/my-team/${managerId}`);
   }
+
+  getTeamByMemberId(userId: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/teams/by-member/${userId}`);
+  }
 }
 
 

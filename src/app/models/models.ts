@@ -38,6 +38,7 @@ export interface Project {
   manager?: User;
   client?: User;
   commercial?: User;
+  openTicketsCount?: number; // UI Badge count
 }
 
 export interface SubTask {
@@ -68,6 +69,7 @@ export interface Task {
   createdBy?: User;
   subtasks?: SubTask[]; // frontend-only local subtasks
   reclamations?: Reclamation[]; // Added for detail views
+  openTicketsCount?: number; // UI Badge count
 }
 
 export interface Ticket {
@@ -80,6 +82,9 @@ export interface Ticket {
   createdAt?: string;
   type?: string;
   project?: Project;
+  task?: Task;
+  validatedAt?: string;
+  lastMessageAt?: string;
 }
 
 export interface Reclamation {

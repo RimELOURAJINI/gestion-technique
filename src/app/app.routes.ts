@@ -54,6 +54,7 @@ import { ManagerAttendanceComponent } from './manager/attendance/attendance.comp
 import { ManagerPerformanceComponent } from './manager/performance/performance.component';
 import { ManagerContactsComponent } from './manager/contacts/contacts.component';
 import { AttendancePersonalComponent } from './shared/attendance-personal/attendance-personal.component';
+import { EmployeeTeamChatComponent } from './employee/team-chat/employee-team-chat.component';
 
 import { SignupComponent } from './signup/signup.component';
 
@@ -130,6 +131,7 @@ export const routes: Routes = [
       { path: 'wellness', component: EmployeeWellnessComponent },
       { path: 'tasks/:id', component: TaskDetailComponent },
       { path: 'projects/:id', component: UnifiedProjectDetailComponent },
+      { path: 'team-chat', component: EmployeeTeamChatComponent },
       { path: '', redirectTo: 'home', pathMatch: 'full' }
     ]
   },

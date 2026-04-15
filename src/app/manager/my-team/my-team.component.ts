@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { TeamLeaderService } from '../../services/manager.service';
 import { AuthService } from '../../services/auth.service';
 import { Team } from '../../models/models';
@@ -7,7 +8,7 @@ import { Team } from '../../models/models';
 @Component({
   selector: 'app-my-team',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './my-team.component.html',
   styleUrl: './my-team.component.css'
 })

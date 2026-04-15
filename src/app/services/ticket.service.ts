@@ -45,6 +45,10 @@ export class TicketService {
     return this.http.patch<Ticket>(`${this.baseUrl}/${ticketId}/status`, `"${status}"`);
   }
 
+  validateTicket(ticketId: number, userId: number): Observable<Ticket> {
+    return this.http.patch<Ticket>(`${this.baseUrl}/${ticketId}/validate?userId=${userId}`, {});
+  }
+
   // Client Specific
   getClientProjects(clientId: number): Observable<any[]> {
     return this.http.get<any[]>(`http://localhost:8080/api/projects/user/${clientId}`);

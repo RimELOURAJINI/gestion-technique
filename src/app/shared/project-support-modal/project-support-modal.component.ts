@@ -4,7 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TicketService } from '../../services/ticket.service';
 import { AuthService } from '../../services/auth.service';
-import { Project, Ticket } from '../../models/models';
+import { Project, Task, Ticket } from '../../models/models';
 import { TicketChatComponent } from '../ticket-chat/ticket-chat.component';
 
 @Component({
@@ -16,6 +16,7 @@ import { TicketChatComponent } from '../ticket-chat/ticket-chat.component';
 })
 export class ProjectSupportModalComponent implements OnInit {
   @Input() project: Project | null = null;
+  @Input() task: Task | null = null;
   @Output() onClose = new EventEmitter<void>();
 
   tickets: any[] = [];
@@ -36,14 +37,17 @@ export class ProjectSupportModalComponent implements OnInit {
   }
 
   loadProjectTickets(): void {
-    if (!this.project) return;
+    if (!this.project && !this.task) return;
     this.isLoading = true;
     
-    // We fetch all tickets and filter by project locally for now
-    // as we don't have a direct /tickets/project/:id endpoint in TicketService yet.
+    // We fetch all tickets and filter locally for now
     this.ticketService.getAllTickets().subscribe({
       next: (res) => {
-        this.tickets = res.filter((t: any) => t.project?.id === this.project?.id);
+        if (this.task) {
+          this.tickets = res.filter((t: any) => t.task?.id === this.task?.id && t.status !== 'VALIDATED');
+        } else if (this.project) {
+          this.tickets = res.filter((t: any) => t.project?.id === this.project?.id && t.status !== 'VALIDATED');
+        }
         this.isLoading = false;
         
         // If there's only one ticket, select it automatically
@@ -62,20 +66,51 @@ export class ProjectSupportModalComponent implements OnInit {
     this.selectedTicketId = ticket.id;
   }
 
+  getSelectedTicket(): any {
+    return this.tickets.find(t => t.id === this.selectedTicketId);
+  }
+
+  isCreator(ticket: any): boolean {
+    return ticket && ticket.createdBy && ticket.createdBy.id === this.currentUserId;
+  }
+
+  validateTicket(ticketId: number) {
+    if (!ticketId || !this.currentUserId) return;
+    if (!confirm('Voulez-vous vraiment valider ce ticket comme résolu ?')) return;
+
+    this.ticketService.validateTicket(ticketId, this.currentUserId).subscribe({
+      next: (res) => {
+        // filter out if we want to hide it
+        this.tickets = this.tickets.filter((t: any) => t.id !== ticketId);
+        if (this.selectedTicketId === ticketId) {
+          this.selectedTicketId = null;
+        }
+      },
+      error: (err: any) => alert('Erreur lors de la validation: ' + err.message)
+    });
+  }
+
   createNewTicket(): void {
-    if (!this.project || !this.currentUserId) return;
+    if ((!this.project && !this.task) || !this.currentUserId) return;
     
     const subject = prompt('Sujet du ticket (ex: Problème de déploiement) :');
     if (!subject) return;
 
+    let targetName = this.task ? this.task.title : this.project?.name;
     const newTicket: any = {
       subject: subject,
-      description: `Ticket de support ouvert pour le projet ${this.project.name}`,
-      status: 'OPEN',
+      description: `Ticket de support ouvert pour ${this.task ? 'la tâche' : 'le projet'} : ${targetName}`,
+      status: 'en cours',
       priority: 'MEDIUM',
-      type: 'TECHNICAL_SUPPORT',
-      project: { id: this.project.id }
+      type: 'TECHNICAL_SUPPORT'
     };
+
+    if (this.project) {
+      newTicket.project = { id: this.project.id };
+    }
+    if (this.task) {
+      newTicket.task = { id: this.task.id };
+    }
 
     this.ticketService.createTicket(this.currentUserId, newTicket).subscribe({
       next: (res) => {
@@ -91,11 +126,15 @@ export class ProjectSupportModalComponent implements OnInit {
   }
 
   getStatusBadge(status: string): string {
-    switch(status?.toUpperCase()) {
-      case 'OPEN': return 'bg-soft-primary text-primary';
-      case 'IN_PROGRESS': return 'bg-soft-warning text-warning';
-      case 'RESOLVED': return 'bg-soft-success text-success';
-      case 'CLOSED': return 'bg-soft-secondary text-secondary';
+    switch(status?.toLowerCase()) {
+      case 'open':
+      case 'en cours': return 'bg-soft-primary text-primary';
+      case 'in_progress':
+      case 'en attente': return 'bg-soft-warning text-warning';
+      case 'resolved':
+      case 'validé': return 'bg-soft-success text-success';
+      case 'closed':
+      case 'fermé': return 'bg-soft-secondary text-secondary';
       default: return 'bg-soft-light text-dark';
     }
   }
