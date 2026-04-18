@@ -114,6 +114,18 @@ export class AdminService {
     return this.http.get<any>(`${this.baseUrl}/users/all`);
   }
 
+  createUser(user: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/users/create`, user);
+  }
+
+  updateUser(id: number, user: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/users/${id}`, user);
+  }
+
+  deleteUser(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/users/${id}`);
+  }
+
   updateUserRoles(userId: number, roleIds: number[]): Observable<any> {
     return this.http.put(`${this.baseUrl}/users/${userId}/roles`, roleIds);
   }

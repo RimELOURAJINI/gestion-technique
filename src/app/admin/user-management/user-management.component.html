@@ -4,17 +4,22 @@
         <h4 class="mb-1">Gestion des Utilisateurs</h4>
         <p class="mb-0 text-muted small">Consultez et gérez les permissions des membres de votre organisation.</p>
     </div>
+    <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-dark d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#userModal" (click)="openAddModal()">
+            <i class="ti ti-user-plus me-1"></i> Ajouter Utilisateur
+        </button>
+    </div>
 </div>
 
 <div class="row">
     <div class="col-md-12">
-        <div class="card main-card">
-            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <h5 class="mb-0 fs-16 fw-bold">Liste des Collaborateurs</h5>
+        <div class="card main-card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <h5 class="mb-0 fs-16 fw-bold text-dark">Liste des Collaborateurs</h5>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-nowrap mb-0">
+                    <table class="table table-nowrap table-hover mb-0">
                         <thead class="thead-light">
                             <tr>
                                 <th>Collaborateur</th>
@@ -27,13 +32,13 @@
                             <tr *ngFor="let user of users">
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="avatar avatar-md avatar-rounded bg-light flex-shrink-0 me-2 border">
-                                            <span class="fs-12 fw-bold text-primary">
+                                        <div class="avatar avatar-md avatar-rounded bg-soft-primary flex-shrink-0 me-2 border border-primary-subtle">
+                                            <span class="fs-12 fw-bold text-primary text-uppercase">
                                                 {{user?.firstName?.charAt(0) || 'U'}}{{user?.lastName?.charAt(0) || '?'}}
                                             </span>
                                         </div>
                                         <div>
-                                            <h6 class="mb-0 fw-medium fs-14">{{user?.firstName}} {{user?.lastName}}</h6>
+                                            <h6 class="mb-0 fw-medium fs-14 text-dark">{{user?.firstName}} {{user?.lastName}}</h6>
                                             <span class="fs-12 text-muted">ID: #{{user?.id}}</span>
                                         </div>
                                     </div>
@@ -50,11 +55,20 @@
                                     </div>
                                 </td>
                                 <td class="text-end">
-                                    <button class="btn btn-primary btn-sm d-inline-flex align-items-center px-3" 
-                                        data-bs-toggle="modal" data-bs-target="#rolesModal" (click)="openRoleModal(user)"
-                                        [disabled]="getRolesNames(user).includes('ADMIN')">
-                                        <i class="ti ti-settings-cog me-1"></i> Gérer
-                                    </button>
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <button class="btn btn-soft-primary btn-sm px-2" title="Modifier"
+                                            data-bs-toggle="modal" data-bs-target="#userModal" (click)="openEditModal(user)">
+                                            <i class="ti ti-edit fs-16"></i>
+                                        </button>
+                                        <button class="btn btn-soft-danger btn-sm px-2" title="Supprimer"
+                                            (click)="deleteUser(user.id)">
+                                            <i class="ti ti-trash fs-16"></i>
+                                        </button>
+                                        <button class="btn btn-dark btn-sm d-inline-flex align-items-center px-3 ms-1" 
+                                            data-bs-toggle="modal" data-bs-target="#rolesModal" (click)="openRoleModal(user)">
+                                            <i class="ti ti-settings-cog me-1"></i> Gérer
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr *ngIf="users.length === 0">
@@ -73,18 +87,83 @@
     </div>
 </div>
 
-<!-- Modal: Manage Roles -->
+<!-- Modal: Add/Edit User -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-dark py-3">
+                <h5 class="modal-title fw-bold text-white">
+                    <i class="ti" [class.ti-user-plus]="!isEditMode" [class.ti-user-edit]="isEditMode"></i> 
+                    {{ isEditMode ? 'Modifier Utilisateur' : 'Ajouter un Utilisateur' }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4 bg-white">
+                <form #userFormRef="ngForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted text-uppercase mb-1">Prénom</label>
+                            <input type="text" class="form-control" name="firstName" [(ngModel)]="userForm.firstName" placeholder="Ex: Jean" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted text-uppercase mb-1">Nom</label>
+                            <input type="text" class="form-control" name="lastName" [(ngModel)]="userForm.lastName" placeholder="Ex: Dupont" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted text-uppercase mb-1">Email</label>
+                            <input type="email" class="form-control" name="email" [(ngModel)]="userForm.email" placeholder="email@exemple.com" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted text-uppercase mb-1">{{ isEditMode ? 'Nouveau Mot de passe (optionnel)' : 'Mot de passe' }}</label>
+                            <input type="password" class="form-control" name="password" [(ngModel)]="userForm.password" [required]="!isEditMode">
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <label class="form-label fw-bold small text-muted text-uppercase mb-3">Rôles de l'utilisateur</label>
+                            <div class="row g-2">
+                                <div class="col-md-6" *ngFor="let role of filteredRoles">
+                                    <div class="card border mb-0 role-selector-card shadow-none" [class.border-primary]="isFormRoleSelected(role.id)">
+                                        <div class="card-body p-2">
+                                            <div class="form-check form-switch mb-0 d-flex align-items-center justify-content-between w-100 ps-0">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar avatar-xs avatar-rounded bg-soft-primary me-2">
+                                                        <i class="ti ti-key fs-14 text-primary"></i>
+                                                    </div>
+                                                    <span class="fw-bold fs-13">{{role?.name?.replace('ROLE_', '')}}</span>
+                                                </div>
+                                                <input class="form-check-input switch-primary m-0" type="checkbox" [id]="'modal-role-' + role?.id" 
+                                                    [checked]="isFormRoleSelected(role.id)" (change)="toggleFormRole(role.id)">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 bg-light-50">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-dark px-4" (click)="saveUser()" data-bs-dismiss="modal">
+                    <i class="ti ti-check me-1"></i>Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Manage Roles (Standalone Shortcut) -->
 <div class="modal fade" id="rolesModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header bg-dark py-3">
                 <h5 class="modal-title fw-bold text-white">
-                    <i class="ti ti-shield-lock me-2"></i>Permissions : {{selectedUser?.firstName}}
+                    <i class="ti ti-shield-lock me-2"></i>Rôles : {{selectedUser?.firstName}}
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4 bg-light-50">
-                <p class="text-muted fs-13 mb-4">Sélectionnez les niveaux d'accès à attribuer à cet utilisateur.</p>
+                <p class="text-muted fs-13 mb-4">Mise à jour rapide des rôles pour cet utilisateur.</p>
                 <div class="row g-3">
                     <div class="col-12" *ngFor="let role of filteredRoles">
                         <div class="card border mb-0 role-selector-card shadow-none" [class.border-primary]="isSelected(role.id)">
@@ -98,11 +177,11 @@
                                             <label class="form-check-label fw-bold d-block mb-0" [for]="'role-' + role?.id">
                                                 {{role?.name?.replace('ROLE_', '')}}
                                             </label>
-                                            <small class="text-muted fw-normal">{{role?.description || 'Gestion des accès standards'}}</small>
+                                            <small class="text-muted fw-normal">{{role?.description || 'Accès standards'}}</small>
                                         </div>
                                     </div>
                                     <input class="form-check-input switch-primary m-0" type="checkbox" [id]="'role-' + role?.id" 
-                                        [checked]="role?.id ? isSelected(role.id) : false" (change)="role?.id ? toggleRole(role.id) : null">
+                                        [checked]="isSelected(role.id)" (change)="toggleRole(role.id)">
                                 </div>
                             </div>
                         </div>

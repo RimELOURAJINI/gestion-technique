@@ -18,6 +18,9 @@ import { TeamChatService } from '../../services/team-chat.service';
 export class ManagerDashboardComponent implements OnInit {
     managerName: string = '';
     managerRole: string = 'Chef d\'Équipe';
+    basePath: string = '/manager';
+    spaceTitle: string = 'Espace Manager';
+    sidebarTitle: string = 'Mon Espace Manager';
     notifications: NotificationDTO[] = [];
     unreadCount: number = 0;
     unreadChatCount: number = 0;
@@ -38,7 +41,19 @@ export class ManagerDashboardComponent implements OnInit {
             const firstName = user.firstName || '';
             const lastName = user.lastName || '';
             this.managerName = `${firstName} ${lastName}`.trim() || 'Manager';
-            this.managerRole = user.roles ? user.roles[0] : 'Chef d\'Équipe';
+            
+            const roles = user.roles || [];
+            if (roles.includes('ROLE_TEAM_LEADER')) {
+                this.managerRole = 'Chef d\'Équipe';
+            } else if (roles.includes('ROLE_COMMERCIAL_LEADER')) {
+                this.managerRole = 'Commercial Leader';
+            } else {
+                this.managerRole = roles[0] || 'Responsable';
+            }
+
+            this.basePath = this.authService.isCommercialLeader() ? '/commercial-leader' : '/manager';
+            this.spaceTitle = this.authService.isCommercialLeader() ? 'Espace Commercial Leader' : 'Espace Manager';
+            this.sidebarTitle = this.authService.isCommercialLeader() ? 'Mon Espace Leader' : 'Mon Espace Manager';
 
             if (user.id) {
                 this.loadNotifications(user.id);

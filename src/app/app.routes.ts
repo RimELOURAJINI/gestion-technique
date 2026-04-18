@@ -114,6 +114,32 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'commercial-leader',
+    component: ManagerDashboardComponent,
+    canActivate: [AuthGuard],
+    data: { expectedRole: 'ROLE_COMMERCIAL_LEADER' },
+    children: [
+      { path: 'overview', component: ManagerOverviewComponent },
+      { path: 'projects', component: TeamProjectsComponent },
+      { path: 'projects/:id', component: UnifiedProjectDetailComponent },
+      { path: 'tasks', component: TeamTasksComponent },
+      { path: 'deals', component: DealsComponent },
+      { path: 'tickets', component: TicketsComponent },
+      { path: 'planning', component: ManagerPlanningComponent },
+      { path: 'approvals', component: ManagerApprovalsComponent },
+      { path: 'performance', component: ManagerPerformanceComponent },
+      { path: 'contacts', component: ManagerContactsComponent },
+      { path: 'attendance', component: ManagerAttendanceComponent },
+      { path: 'leaves', component: ManagerLeavesComponent },
+      { path: 'my-attendance', component: AttendancePersonalComponent },
+      { path: 'my-leaves', component: EmployeeLeavesComponent },
+      { path: 'team-chat', component: TeamChatComponent },
+      { path: 'team', loadComponent: () => import('./manager/my-team/my-team.component').then(m => m.MyTeamComponent) },
+      { path: 'settings', component: FeaturePlaceholderComponent, data: { title: 'Paramètres Leader Commercial', description: 'Préférences leader commercial et options de pilotage.' } },
+      { path: '', redirectTo: 'overview', pathMatch: 'full' }
+    ]
+  },
+  {
     path: 'employee',
     component: EmployeeDashboardComponent,
     canActivate: [AuthGuard],

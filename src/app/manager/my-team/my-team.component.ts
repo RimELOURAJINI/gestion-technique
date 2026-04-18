@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TeamLeaderService } from '../../services/manager.service';
 import { AuthService } from '../../services/auth.service';
-import { Team } from '../../models/models';
+import { AdminService } from '../../services/admin.service';
+import { Team, User } from '../../models/models';
 
 @Component({
   selector: 'app-my-team',
@@ -19,16 +20,22 @@ export class MyTeamComponent implements OnInit {
 
   constructor(
     private teamLeaderService: TeamLeaderService,
-    private authService: AuthService
+    private authService: AuthService,
+    private adminService: AdminService
   ) {}
 
   ngOnInit(): void {
     const userId = this.authService.getUserId();
-    if (userId) {
-      this.loadMyTeam(userId);
-    } else {
+    if (!userId) {
       this.isLoading = false;
       this.errorMessage = "Utilisateur non connecté.";
+      return;
+    }
+
+    if (this.authService.isCommercialLeader()) {
+      this.loadAllCommercials();
+    } else {
+      this.loadMyTeam(userId);
     }
   }
 
@@ -46,6 +53,27 @@ export class MyTeamComponent implements OnInit {
         } else {
              this.errorMessage = "Erreur lors du chargement de votre équipe.";
         }
+      }
+    });
+  }
+
+  loadAllCommercials() {
+    console.log('📊 Commercial Leader detected: Loading all commercial users...');
+    this.adminService.getUsersByRole('COMMERCIAL').subscribe({
+      next: (users: User[]) => {
+        // Create a virtual team object to reuse the template
+        this.team = {
+          id: 0,
+          name: 'Force de Vente Commerciale',
+          description: 'Tous les collaborateurs du département commercial.',
+          users: users
+        };
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading commercial users', err);
+        this.isLoading = false;
+        this.errorMessage = "Erreur lors du chargement des commerciaux.";
       }
     });
   }

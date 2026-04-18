@@ -161,6 +161,10 @@ export class AuthService {
     return this.hasRole('ROLE_CLIENT');
   }
 
+  isCommercialLeader(): boolean {
+    return this.hasRole('ROLE_COMMERCIAL_LEADER');
+  }
+
   /**
    * Check if user is authorized for a specific dashboard
    */
@@ -168,8 +172,9 @@ export class AuthService {
     if (expectedRole === 'ROLE_ADMIN') return this.isAdmin();
     if (expectedRole === 'ROLE_TEAM_LEADER') return this.isTeamLeader();
     if (expectedRole === 'ROLE_EMPLOYEE' || expectedRole === 'ROLE_Employee') return this.isEmployee();
-    if (expectedRole === 'ROLE_COMMERCIAL') return this.isCommercial();
+    if (expectedRole === 'ROLE_COMMERCIAL') return this.isCommercial() || this.isCommercialLeader();
     if (expectedRole === 'ROLE_CLIENT') return this.isClient();
+    if (expectedRole === 'ROLE_COMMERCIAL_LEADER') return this.isCommercialLeader();
     return this.hasRole(expectedRole);
   }
 

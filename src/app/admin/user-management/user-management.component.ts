@@ -17,6 +17,17 @@ export class UserManagementComponent implements OnInit {
   filteredRoles: Role[] = [];
   selectedUser: User | null = null;
   selectedRoleIds: number[] = [];
+  
+  // For User Form Modal
+  userForm = {
+    id: 0,
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    roleIds: [] as number[]
+  };
+  isEditMode = false;
 
   constructor(private adminService: AdminService) { }
 
@@ -56,10 +67,102 @@ export class UserManagementComponent implements OnInit {
     });
   }
 
+  resetForm() {
+    this.userForm = {
+      id: 0,
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      roleIds: []
+    };
+    this.isEditMode = false;
+  }
+
+  openAddModal() {
+    this.resetForm();
+    this.isEditMode = false;
+  }
+
+  openEditModal(user: User) {
+    this.isEditMode = true;
+    this.userForm = {
+      id: user.id as unknown as number,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      password: '', // Don't show password
+      roleIds: (user.roles || []).map(r => r.id as unknown as number)
+    };
+  }
+
+  toggleFormRole(roleId: number) {
+    const index = this.userForm.roleIds.indexOf(roleId);
+    if (index > -1) {
+      this.userForm.roleIds.splice(index, 1);
+    } else {
+      this.userForm.roleIds.push(roleId);
+    }
+  }
+
+  isFormRoleSelected(roleId: number): boolean {
+    return this.userForm.roleIds.includes(roleId);
+  }
+
+  saveUser() {
+    if (!this.userForm.firstName || !this.userForm.lastName || !this.userForm.email) {
+      alert('Veuillez remplir les champs obligatoires.');
+      return;
+    }
+
+    const rolesToSubmit = this.userForm.roleIds.map(id => ({ id }));
+    const payload = { ...this.userForm, roles: rolesToSubmit };
+
+    if (this.isEditMode) {
+      this.adminService.updateUser(this.userForm.id, payload).subscribe({
+        next: () => {
+          // If roles changed, update those separately to be sure
+          this.adminService.updateUserRoles(this.userForm.id, this.userForm.roleIds).subscribe({
+              next: () => {
+                  alert('Utilisateur mis à jour avec succès');
+                  this.loadUsers();
+                  this.closeModals();
+              }
+          });
+        },
+        error: (err) => alert('Erreur lors de la mise à jour : ' + (err.error?.message || err.message))
+      });
+    } else {
+      if (!this.userForm.password) {
+        alert('Le mot de passe est obligatoire pour la création.');
+        return;
+      }
+      this.adminService.createUser(payload).subscribe({
+        next: () => {
+          alert('Utilisateur créé avec succès');
+          this.loadUsers();
+          this.closeModals();
+        },
+        error: (err) => alert('Erreur lors de la création : ' + (err.error?.message || err.message))
+      });
+    }
+  }
+
+  deleteUser(userId: any) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
+      this.adminService.deleteUser(userId as unknown as number).subscribe({
+        next: () => {
+          alert('Utilisateur supprimé avec succès');
+          this.loadUsers();
+        },
+        error: (err) => alert('Erreur lors de la suppression')
+      });
+    }
+  }
+
   openRoleModal(user: User): void {
     this.selectedUser = user;
     this.selectedRoleIds = (user.roles || []).map(r => r.id as unknown as number);
-    // Open modal via Bootstrap JS if needed, but we'll use data-bs-toggle in HTML
   }
 
   isSelected(roleId: number): boolean {
@@ -90,5 +193,10 @@ export class UserManagementComponent implements OnInit {
 
   getRolesNames(user: User): string {
     return (user.roles || []).map(r => r.name.replace('ROLE_', '')).join(', ');
+  }
+
+  private closeModals() {
+    // Bootstrap close modal logic usually handled by data-bs-dismiss
+    // No specific JS needed if using purely data attributes in many cases
   }
 }

@@ -52,6 +52,7 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
     private statsService: StatsService,
     private authService: AuthService,
     private aiService: AiService,
+    private adminService: AdminService, // Correctly injected
     private router: Router
   ) {}
 
@@ -81,21 +82,36 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
         this.stats.projects = data.projectCount;
         this.stats.activeTasks = data.activeTaskCount;
         this.stats.teamMembers = data.memberCount;
-        // The completed tasks can be inferred or left as 0 for now until we add it to the backend result
+        
+        // Special logic for Commercial Leader: Team members count = total commercials
+        if (this.authService.isCommercialLeader()) {
+            this.adminService.getUsersByRole('COMMERCIAL').subscribe(users => {
+                this.stats.teamMembers = users.length;
+            });
+        }
       },
       error: (err) => console.error('Error loading manager dashboard stats:', err)
     });
 
-    // Load Manager's Team
-    this.teamLeaderService.getMyTeam(userId).subscribe({
-      next: (team) => {
-        if (team && team.users) {
-          // Fallback if the summary stat above is delayed
-          if (this.stats.teamMembers === 0) this.stats.teamMembers = team.users.length;
-        }
-      },
-      error: (err) => console.log('Manager has no direct team assigned:', err)
-    });
+    // Load Manager's Team / Commercial Force
+    if (this.authService.isCommercialLeader()) {
+        this.adminService.getUsersByRole('COMMERCIAL').subscribe({
+            next: (users) => {
+                // member count handled above but ensure it here too for consistency
+                this.stats.teamMembers = users.length;
+            },
+            error: (err) => console.log('Error loading commercials for leaderboard:', err)
+        });
+    } else {
+        this.teamLeaderService.getMyTeam(userId).subscribe({
+            next: (team) => {
+              if (team && team.users) {
+                if (this.stats.teamMembers === 0) this.stats.teamMembers = team.users.length;
+              }
+            },
+            error: (err) => console.log('Manager has no direct team assigned:', err)
+        });
+    }
     
     // Load Projects
     this.teamLeaderService.getProjectsByUserId(userId).subscribe(projects => {
@@ -120,9 +136,9 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
             this.stats.completedTasks = allTasks.filter(t => t.status === 'DONE' || t.status === 'COMPLETED').length;
             this.recentTasks = allTasks.slice(-5).reverse();
             
-            // member count handled by getMyTeam now
+            // member count handled by getMyTeam/isCommercialLeader logic above
             // fallback if not assigned a team but has projects:
-            if (this.stats.teamMembers === 0) {
+            if (this.stats.teamMembers === 0 && !this.authService.isCommercialLeader()) {
               const memberIds = new Set();
               projects.forEach(proj => {
                 proj.teams?.[0]?.users?.forEach((u: any) => memberIds.add(u.id));
