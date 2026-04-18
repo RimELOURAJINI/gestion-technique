@@ -137,7 +137,13 @@
                             <li><a routerLink="/manager/overview" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"><i class="ti ti-dashboard"></i><span>Dashboard Perso</span></a></li>
                             <li><a routerLink="/manager/my-attendance" routerLinkActive="active"><i class="ti ti-clock-user"></i><span>Ma Présence</span></a></li>
                             <li><a routerLink="/manager/my-leaves" routerLinkActive="active"><i class="ti ti-calendar-event"></i><span>Mes Congés</span></a></li>
-                            <li><a routerLink="/manager/team-chat" routerLinkActive="active"><i class="ti ti-messages"></i><span>Team Chat</span></a></li>
+                            <li>
+                                <a routerLink="/manager/team-chat" routerLinkActive="active">
+                                    <i class="ti ti-messages"></i>
+                                    <span>Team Chat</span>
+                                    <span class="badge rounded-pill bg-danger ms-auto" *ngIf="unreadChatCount > 0">{{ unreadChatCount }}</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class TeamChatService {
-  private apiUrl = 'http://localhost:8080/api/team-chat';
+  private apiUrl = 'http://localhost:8080/api/teams/chat';
 
   constructor(private http: HttpClient) {}
 
@@ -20,5 +20,14 @@ export class TeamChatService {
 
   sendMessage(payload: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/send`, payload);
+  }
+
+  getUnreadCount(userId: number): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/unread-count/${userId}`);
+  }
+
+  markAsRead(userId: number, senderId: number): Observable<any> {
+    const payload = { userId, senderId };
+    return this.http.post<any>(`${this.apiUrl}/mark-as-read`, payload);
   }
 }

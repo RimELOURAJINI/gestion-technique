@@ -85,6 +85,8 @@ export class TeamChatComponent implements OnInit, OnDestroy {
         next: (data) => {
           this.messages = data;
           this.scrollToBottom();
+          // Mark as read
+          this.teamChatService.markAsRead(this.currentUserId!, this.selectedParticipant.id).subscribe();
         }
       });
     } else {
@@ -111,11 +113,18 @@ export class TeamChatComponent implements OnInit, OnDestroy {
       payload.recipientId = this.selectedParticipant.id;
     }
 
+    console.log('DEBUG: Sending message payload:', payload);
+
     this.teamChatService.sendMessage(payload).subscribe({
       next: (msg) => {
+        console.log('DEBUG: Message sent successfully!', msg);
         this.messages.push(msg);
         this.newMessage = '';
         this.scrollToBottom();
+      },
+      error: (err) => {
+        console.error('DEBUG: Error sending message:', err);
+        alert('Erreur lors de l\'envois du message. Vérifiez la console (F12).');
       }
     });
   }

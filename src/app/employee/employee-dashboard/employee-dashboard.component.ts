@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { NotificationService, NotificationDTO } from '../../services/notification.service';
 import { AiChatbotComponent } from '../../shared/ai-chatbot/ai-chatbot.component';
 import { interval, Subscription } from 'rxjs';
+import { TeamChatService } from '../../services/team-chat.service';
 
 
 @Component({
@@ -20,15 +21,18 @@ export class EmployeeDashboardComponent implements OnInit {
   employeeInitials: string = '';
   notifications: NotificationDTO[] = [];
   unreadCount: number = 0;
+  unreadChatCount: number = 0;
   tasksMenuOpen: boolean = false;
   dashboardMenuOpen: boolean = false;
   private notificationSub?: Subscription;
+  private chatCountSub?: Subscription;
 
 
   constructor(
     public router: Router,
     public authService: AuthService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private teamChatService: TeamChatService
   ) {}
 
 
@@ -42,8 +46,12 @@ export class EmployeeDashboardComponent implements OnInit {
     this.employeeInitials = parts.map((p: string) => p[0]).join('').toUpperCase().substring(0, 2);
 
     this.loadNotifications();
-    // Poll for new notifications every 30 seconds
-    this.notificationSub = interval(30000).subscribe(() => this.loadNotifications());
+    this.loadUnreadChatCount();
+    // Poll every 30 seconds
+    this.notificationSub = interval(30000).subscribe(() => {
+      this.loadNotifications();
+      this.loadUnreadChatCount();
+    });
 
     // Auto-open menu if on tasks page
     if (this.router.url.includes('/employee/tasks')) {
@@ -56,9 +64,8 @@ export class EmployeeDashboardComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    if (this.notificationSub) {
-      this.notificationSub.unsubscribe();
-    }
+    if (this.notificationSub) this.notificationSub.unsubscribe();
+    if (this.chatCountSub) this.chatCountSub.unsubscribe();
   }
 
   loadNotifications(): void {
@@ -100,5 +107,15 @@ export class EmployeeDashboardComponent implements OnInit {
 
   logout(): void {
     this.authService.logout();
+  }
+
+  loadUnreadChatCount(): void {
+    const userId = this.authService.getUserId();
+    if (userId) {
+      this.teamChatService.getUnreadCount(userId).subscribe({
+        next: count => this.unreadChatCount = count,
+        error: err => console.error('Error loading chat count', err)
+      });
+    }
   }
 }

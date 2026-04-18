@@ -53,7 +53,11 @@ export class EmployeeTeamChatComponent implements OnInit, OnDestroy {
     this.teamLeaderService.getTeamByMemberId(this.currentUserId).subscribe({
       next: (res) => {
         this.team = res;
-        this.members = (res.users || []).filter((m: any) => m.id !== this.currentUserId);
+        let allMembers = [...(res.users || [])];
+        if (res.manager && !allMembers.find((m: any) => m.id === res.manager.id)) {
+          allMembers.push(res.manager);
+        }
+        this.members = allMembers.filter((m: any) => m.id !== this.currentUserId);
         this.isLoading = false;
         this.loadMessages();
         if (this.initialMemberId) {
@@ -79,7 +83,12 @@ export class EmployeeTeamChatComponent implements OnInit, OnDestroy {
     if (!this.team) return;
     if (this.selectedParticipant) {
       this.teamChatService.getPrivateMessages(this.team.id, this.currentUserId!, this.selectedParticipant.id).subscribe({
-        next: (data) => { this.messages = data; this.scrollToBottom(); }
+        next: (data) => { 
+          this.messages = data; 
+          this.scrollToBottom();
+          // Mark as read
+          this.teamChatService.markAsRead(this.currentUserId!, this.selectedParticipant.id).subscribe();
+        }
       });
     } else {
       this.teamChatService.getGlobalMessages(this.team.id).subscribe({
@@ -92,8 +101,20 @@ export class EmployeeTeamChatComponent implements OnInit, OnDestroy {
     if (!this.newMessage.trim() || !this.team || !this.currentUserId) return;
     const payload: any = { senderId: this.currentUserId, teamId: this.team.id, content: this.newMessage };
     if (this.selectedParticipant) payload.recipientId = this.selectedParticipant.id;
+    
+    console.log('DEBUG: Employee sending message:', payload);
+    
     this.teamChatService.sendMessage(payload).subscribe({
-      next: (msg) => { this.messages.push(msg); this.newMessage = ''; this.scrollToBottom(); }
+      next: (msg) => {
+        console.log('DEBUG: Message sent successfully!', msg);
+        this.messages.push(msg);
+        this.newMessage = '';
+        this.scrollToBottom();
+      },
+      error: (err) => {
+        console.error('DEBUG: Error sending message:', err);
+        alert('Erreur lors de l\'envois du message. Vérifiez la console (F12).');
+      }
     });
   }
 

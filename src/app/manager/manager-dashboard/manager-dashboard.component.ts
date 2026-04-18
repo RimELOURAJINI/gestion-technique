@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { NotificationService, NotificationDTO } from '../../services/notification.service';
 import { AiChatbotComponent } from '../../shared/ai-chatbot/ai-chatbot.component';
 import { interval, Subscription } from 'rxjs';
+import { TeamChatService } from '../../services/team-chat.service';
 
 
 @Component({
@@ -19,12 +20,15 @@ export class ManagerDashboardComponent implements OnInit {
     managerRole: string = 'Chef d\'Équipe';
     notifications: NotificationDTO[] = [];
     unreadCount: number = 0;
+    unreadChatCount: number = 0;
     private notificationSub?: Subscription;
+    private chatCountSub?: Subscription;
 
 
     constructor(
         public authService: AuthService,
-        private notificationService: NotificationService
+        private notificationService: NotificationService,
+        private teamChatService: TeamChatService
     ) { }
 
 
@@ -41,16 +45,19 @@ export class ManagerDashboardComponent implements OnInit {
                 // Poll for new notifications every 30 seconds
                 this.notificationSub = interval(30000).subscribe(() => {
                     const currentId = this.authService.getUserId();
-                    if (currentId) this.loadNotifications(currentId);
+                    if (currentId) {
+                        this.loadNotifications(currentId);
+                        this.loadUnreadChatCount(currentId);
+                    }
                 });
+                this.loadUnreadChatCount(user.id);
             }
         }
     }
 
     ngOnDestroy(): void {
-        if (this.notificationSub) {
-            this.notificationSub.unsubscribe();
-        }
+        if (this.notificationSub) this.notificationSub.unsubscribe();
+        if (this.chatCountSub) this.chatCountSub.unsubscribe();
     }
 
     loadNotifications(userId: number) {
@@ -82,5 +89,12 @@ export class ManagerDashboardComponent implements OnInit {
 
     logout() {
         this.authService.logout();
+    }
+
+    loadUnreadChatCount(userId: number) {
+        this.teamChatService.getUnreadCount(userId).subscribe({
+            next: (count) => this.unreadChatCount = count,
+            error: (err) => console.error('Erreur unread chat count', err)
+        });
     }
 }
