@@ -100,3 +100,25 @@ export interface Reclamation {
   createdAt?: Date;
 }
 
+export interface DailyReport {
+  id?: number;
+  userId?: number;
+  user?: User;
+  date?: string;
+  tasksAccomplished: string;    // [TÂCHES ACCOMPLIES]
+  problemsEncountered: string;  // [PROBLÈMES RENCONTRÉS]
+  victories: string;            // [VICTOIRES DU JOUR]
+  notes: string;                // [NOTES / REMARQUES]
+  submittedAt?: string;
+}
+
+export interface DailyReportSummary {
+  userId: number;
+  userName: string;
+  userRole: string;
+  submitted: boolean;
+  hasProblems: boolean;
+  reportId?: number;
+  submittedAt?: string;
+}
+

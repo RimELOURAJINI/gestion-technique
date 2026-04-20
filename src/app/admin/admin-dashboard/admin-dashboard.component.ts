@@ -4,7 +4,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/rou
 import { AuthService } from '../../services/auth.service';
 import { NotificationService, NotificationDTO } from '../../services/notification.service';
 import { AiChatbotComponent } from '../../shared/ai-chatbot/ai-chatbot.component';
-
+import { DailyReportService } from '../../services/daily-report.service';
 import { interval, Subscription } from 'rxjs';
 
 @Component({
@@ -19,6 +19,7 @@ export class AdminDashboardComponent implements OnInit {
     adminRole: string = 'Administrateur';
     notifications: NotificationDTO[] = [];
     unreadCount: number = 0;
+    unsubmittedReportCount: number = 0;
     dashboardMenuOpen: boolean = false;
     usersMenuOpen: boolean = false;
     configMenuOpen: boolean = false;
@@ -27,6 +28,7 @@ export class AdminDashboardComponent implements OnInit {
     constructor(
         public authService: AuthService,
         private notificationService: NotificationService,
+        private dailyReportService: DailyReportService,
         public router: Router
     ) { }
 
@@ -40,10 +42,12 @@ export class AdminDashboardComponent implements OnInit {
             
             if (user.id) {
                 this.loadNotifications(user.id);
+                this.loadUnsubmittedCount();
                 // Poll for new notifications every 30 seconds
                 this.notificationSub = interval(30000).subscribe(() => {
                     const currentId = this.authService.getUserId();
                     if (currentId) this.loadNotifications(currentId);
+                    this.loadUnsubmittedCount();
                 });
             }
 
@@ -66,6 +70,13 @@ export class AdminDashboardComponent implements OnInit {
                 this.unreadCount = data.length;
             },
             error: (err) => console.error('Erreur chargement notifications', err)
+        });
+    }
+
+    loadUnsubmittedCount(): void {
+        this.dailyReportService.getUnsubmittedCount().subscribe({
+            next: (count) => this.unsubmittedReportCount = count,
+            error: () => {}
         });
     }
 

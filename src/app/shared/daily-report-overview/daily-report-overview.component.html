@@ -1,0 +1,231 @@
+<div class="daily-report-overview">
+
+  <!-- ── LOADING ── -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="text-muted mt-2 fs-13">Chargement des rapports...</p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- MODE ADMIN : Tableau synthétique                          -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div *ngIf="!isLoading && mode === 'admin'">
+
+    <!-- Stats KPIs -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="report-stat-card border-start border-3 border-success">
+          <div class="stat-number text-success">{{ submittedCount }}</div>
+          <div class="stat-label"><i class="ti ti-circle-check me-1"></i>Rapports rédigés</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="report-stat-card border-start border-3 border-warning">
+          <div class="stat-number text-warning">{{ notSubmittedCount }}</div>
+          <div class="stat-label"><i class="ti ti-clock me-1"></i>Non soumis</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="report-stat-card border-start border-3 border-danger">
+          <div class="stat-number text-danger">{{ problemCount }}</div>
+          <div class="stat-label"><i class="ti ti-alert-triangle me-1"></i>Avec problèmes</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-bottom d-flex align-items-center justify-content-between py-3">
+        <h6 class="mb-0 fw-bold"><i class="ti ti-report-analytics me-2 text-primary"></i>Rapports du {{ today | date:'dd/MM/yyyy' }}</h6>
+        <span class="badge bg-soft-primary text-primary rounded-pill">{{ summaries.length }} utilisateurs</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light fs-12 text-uppercase fw-bold text-muted">
+            <tr>
+              <th>Collaborateur</th>
+              <th>Rôle</th>
+              <th>Statut</th>
+              <th>Problèmes</th>
+              <th>Heure soumission</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="summaries.length === 0">
+              <td colspan="6" class="text-center text-muted py-4 fs-13">Aucun rapport pour aujourd'hui</td>
+            </tr>
+            <tr *ngFor="let s of summaries">
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="avatar avatar-xs rounded-circle text-white fw-bold fs-11 d-flex align-items-center justify-content-center"
+                       [class.bg-primary]="s.submitted" [class.bg-secondary]="!s.submitted">
+                    {{ s.userName.charAt(0).toUpperCase() }}
+                  </div>
+                  <span class="fw-medium fs-13">{{ s.userName }}</span>
+                </div>
+              </td>
+              <td><span class="badge bg-soft-info text-info rounded-pill">{{ getRoleLabel(s.userRole) }}</span></td>
+              <td>
+                <span *ngIf="s.submitted" class="badge bg-soft-success text-success rounded-pill">
+                  <i class="ti ti-circle-check me-1"></i>Rédigé
+                </span>
+                <span *ngIf="!s.submitted" class="badge bg-soft-warning text-warning rounded-pill">
+                  <i class="ti ti-clock me-1"></i>Non rédigé
+                </span>
+              </td>
+              <td>
+                <span *ngIf="s.hasProblems" class="badge bg-soft-danger text-danger rounded-pill">
+                  <i class="ti ti-alert-triangle me-1"></i>Oui
+                </span>
+                <span *ngIf="!s.hasProblems" class="text-muted fs-12">—</span>
+              </td>
+              <td class="fs-12 text-muted">{{ s.submittedAt ? (s.submittedAt | date:'HH:mm') : '—' }}</td>
+              <td>
+                <button *ngIf="s.submitted && s.reportId"
+                        class="btn btn-xs btn-soft-primary rounded-pill"
+                        (click)="openDetail(s.reportId!)">
+                  <i class="ti ti-eye me-1"></i>Voir
+                </button>
+                <span *ngIf="!s.submitted" class="text-muted fs-12">—</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- MODE TEAM : Cards équipe + propre rapport                 -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div *ngIf="!isLoading && mode === 'team'">
+
+    <!-- Mon rapport du jour -->
+    <div class="mb-4">
+      <h6 class="fw-bold mb-3"><i class="ti ti-user me-2 text-primary"></i>Mon Rapport du Jour</h6>
+      <div class="my-report-card" [class.submitted]="myReport">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-3">
+            <div class="report-icon-circle" [class.done]="myReport" [class.pending]="!myReport">
+              <i class="ti" [class.ti-circle-check]="myReport" [class.ti-pencil]="!myReport"></i>
+            </div>
+            <div>
+              <p class="fw-semibold mb-0 fs-14">{{ today | date:'EEEE d MMMM' }}</p>
+              <small class="text-muted fs-12">
+                {{ myReport ? ('Soumis à ' + (myReport.submittedAt | date:'HH:mm')) : 'Rapport non rédigé' }}
+              </small>
+            </div>
+          </div>
+          <button *ngIf="!myReport" class="btn btn-sm btn-primary rounded-pill" (click)="openReportForm()">
+            <i class="ti ti-pencil me-1"></i>Rédiger
+          </button>
+          <span *ngIf="myReport" class="badge bg-soft-success text-success rounded-pill px-3 py-2">✓ Rédigé</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team reports -->
+    <h6 class="fw-bold mb-3"><i class="ti ti-users me-2 text-info"></i>Rapports de l'Équipe</h6>
+    <div class="row g-3">
+      <div *ngIf="summaries.length === 0" class="col-12">
+        <p class="text-muted fs-13 text-center py-3">Aucun membre d'équipe trouvé.</p>
+      </div>
+      <div class="col-md-6" *ngFor="let s of summaries">
+        <div class="team-report-card" [class.submitted]="s.submitted">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center gap-2">
+              <div class="avatar avatar-sm rounded-circle text-white fw-bold fs-12 d-flex align-items-center justify-content-center"
+                   [class.bg-success]="s.submitted" [class.bg-secondary]="!s.submitted">
+                {{ s.userName.charAt(0).toUpperCase() }}
+              </div>
+              <div>
+                <p class="fw-medium fs-13 mb-0">{{ s.userName }}</p>
+                <small class="text-muted fs-11">{{ getRoleLabel(s.userRole) }}</small>
+              </div>
+            </div>
+            <span *ngIf="s.submitted" class="badge bg-soft-success text-success rounded-pill">✓ Rédigé</span>
+            <span *ngIf="!s.submitted" class="badge bg-soft-warning text-warning rounded-pill">⏳ En attente</span>
+          </div>
+          <div *ngIf="s.hasProblems" class="alert alert-danger py-1 px-2 mb-2 fs-11 rounded-2">
+            <i class="ti ti-alert-triangle me-1"></i>Problèmes signalés
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted fs-11">{{ s.submittedAt ? (s.submittedAt | date:'HH:mm') : '—' }}</small>
+            <button *ngIf="s.submitted && s.reportId" class="btn btn-xs btn-soft-primary rounded-pill" (click)="openDetail(s.reportId!)">
+              <i class="ti ti-eye me-1"></i>Voir
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- MODE SELF: Card rapport personnel                         -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div *ngIf="!isLoading && mode === 'self'">
+    <div class="my-report-card" [class.submitted]="myReport">
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <div class="report-icon-circle" [class.done]="myReport" [class.pending]="!myReport">
+            <i class="ti fs-20" [class.ti-circle-check]="myReport" [class.ti-pencil]="!myReport"></i>
+          </div>
+          <div>
+            <p class="fw-bold mb-1 fs-15">Rapport du {{ today | date:'d MMMM yyyy' }}</p>
+            <small *ngIf="myReport" class="text-success fw-medium fs-12">
+              <i class="ti ti-circle-check me-1"></i>Soumis à {{ myReport.submittedAt | date:'HH:mm' }}
+            </small>
+            <small *ngIf="!myReport" class="text-warning fw-medium fs-12">
+              <i class="ti ti-clock me-1"></i>Non rédigé — N'oubliez pas votre rapport !
+            </small>
+          </div>
+        </div>
+        <button *ngIf="!myReport" class="btn btn-primary rounded-pill fw-semibold" (click)="openReportForm()">
+          <i class="ti ti-pencil me-2"></i>Rédiger mon rapport
+        </button>
+        <button *ngIf="myReport" class="btn btn-soft-primary rounded-pill" (click)="openReportForm()">
+          <i class="ti ti-eye me-2"></i>Voir mon rapport
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Detail Modal (read-only) ─── -->
+  <div class="modal-backdrop-custom" *ngIf="showDetail" (click)="closeDetail()"></div>
+  <div class="detail-modal" *ngIf="showDetail && selectedReport">
+    <div class="detail-modal-header d-flex align-items-center justify-content-between p-4">
+      <h6 class="mb-0 fw-bold"><i class="ti ti-report-analytics me-2 text-primary"></i>Détail du Rapport</h6>
+      <button class="btn btn-icon btn-sm btn-light rounded-circle" (click)="closeDetail()">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <div class="detail-modal-body p-4">
+      <div class="report-section mb-3">
+        <div class="section-label"><i class="ti ti-checkbox me-2 text-success"></i>TÂCHES ACCOMPLIES</div>
+        <div class="section-content">{{ selectedReport.tasksAccomplished || '—' }}</div>
+      </div>
+      <div class="report-section mb-3">
+        <div class="section-label"><i class="ti ti-alert-triangle me-2 text-warning"></i>PROBLÈMES RENCONTRÉS</div>
+        <div class="section-content">{{ selectedReport.problemsEncountered || '—' }}</div>
+      </div>
+      <div class="report-section mb-3">
+        <div class="section-label"><i class="ti ti-trophy me-2 text-info"></i>VICTOIRES DU JOUR</div>
+        <div class="section-content">{{ selectedReport.victories || '—' }}</div>
+      </div>
+      <div class="report-section mb-3">
+        <div class="section-label"><i class="ti ti-notes me-2 text-secondary"></i>NOTES / REMARQUES</div>
+        <div class="section-content">{{ selectedReport.notes || '—' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Form Panel -->
+  <app-daily-report-form
+    [userId]="userId"
+    [isOpen]="showReportForm"
+    (closed)="showReportForm = false"
+    (submitted)="onReportSubmitted($event)">
+  </app-daily-report-form>
+
+</div>

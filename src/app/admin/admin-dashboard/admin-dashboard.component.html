@@ -181,6 +181,13 @@
                     <li><a routerLink="/admin/teams" routerLinkActive="active"><i class="ti ti-users-group"></i><span>Équipes & Membres</span></a></li>
                     <li><a routerLink="/admin/attendance" routerLinkActive="active"><i class="ti ti-clock-check"></i><span>Suivi Présences</span></a></li>
                     <li><a routerLink="/admin/tickets" routerLinkActive="active"><i class="ti ti-messages"></i><span>Tickets / Discussions Clients</span></a></li>
+                    <li>
+                        <a routerLink="/admin/daily-reports" routerLinkActive="active">
+                            <i class="ti ti-report-analytics"></i>
+                            <span>Rapports Journaliers</span>
+                            <span class="badge rounded-pill bg-danger ms-auto" *ngIf="unsubmittedReportCount > 0">{{ unsubmittedReportCount }}</span>
+                        </a>
+                    </li>
                     <li><a routerLink="/admin/audit" routerLinkActive="active"><i class="ti ti-shield-lock"></i><span>Audit Système</span></a></li>
 
                     <li class="menu-title"><span>Paramètres</span></li>

@@ -1,0 +1,24 @@
+<div class="content-page">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h4 class="fw-bold mb-1"><i class="ti ti-report-analytics me-2 text-primary"></i>Rapports Journaliers</h4>
+      <p class="text-muted fs-13 mb-0">Vue d'ensemble des rapports du jour — {{ today | date:'EEEE d MMMM yyyy' }}</p>
+    </div>
+    <button class="btn btn-soft-primary rounded-pill fw-semibold" (click)="showMyReportForm = true">
+      <i class="ti ti-pencil me-2"></i>Mon Rapport
+    </button>
+  </div>
+
+  <!-- Admin Table via shared component -->
+  <app-daily-report-overview
+    mode="admin"
+    [userId]="userId">
+  </app-daily-report-overview>
+
+  <!-- Admin's own report form -->
+  <app-daily-report-form
+    [userId]="userId"
+    [isOpen]="showMyReportForm"
+    (closed)="showMyReportForm = false">
+  </app-daily-report-form>
+</div>

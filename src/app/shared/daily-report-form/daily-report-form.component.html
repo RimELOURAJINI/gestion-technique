@@ -1,0 +1,156 @@
+<!-- Overlay -->
+<div class="report-overlay" [class.open]="isOpen" (click)="close()"></div>
+
+<!-- Slide-in Panel -->
+<div class="report-panel" [class.open]="isOpen">
+
+  <!-- Header -->
+  <div class="report-panel-header d-flex align-items-center justify-content-between p-4">
+    <div class="d-flex align-items-center gap-2">
+      <div class="icon-circle bg-soft-primary text-primary">
+        <i class="ti ti-report-analytics fs-18"></i>
+      </div>
+      <div>
+        <h5 class="mb-0 fw-bold">Rapport du Jour</h5>
+        <small class="text-muted">{{ today | date:'EEEE d MMMM yyyy' }}</small>
+      </div>
+    </div>
+    <button class="btn btn-icon btn-sm btn-light rounded-circle" (click)="close()">
+      <i class="ti ti-x fs-16"></i>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <div class="report-panel-body px-4 pb-4">
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-muted mt-2 fs-13">Chargement du rapport...</p>
+    </div>
+
+    <!-- Submitted: Read-only View -->
+    <div *ngIf="!isLoading && isSubmitted" class="submitted-view">
+      <div class="alert alert-success d-flex align-items-center gap-2 mb-4 rounded-3">
+        <i class="ti ti-circle-check fs-18"></i>
+        <div>
+          <strong>Rapport soumis</strong>
+          <span class="d-block fs-12">Soumis le {{ existingReport?.submittedAt | date:'HH:mm' }}</span>
+        </div>
+      </div>
+
+      <div class="report-section mb-3">
+        <div class="section-label"><i class="ti ti-checkbox me-2 text-success"></i>TÂCHES ACCOMPLIES</div>
+        <div class="section-content">{{ existingReport?.tasksAccomplished || '—' }}</div>
+      </div>
+      <div class="report-section mb-3">
+        <div class="section-label"><i class="ti ti-alert-triangle me-2 text-warning"></i>PROBLÈMES RENCONTRÉS</div>
+        <div class="section-content">{{ existingReport?.problemsEncountered || '—' }}</div>
+      </div>
+      <div class="report-section mb-3">
+        <div class="section-label"><i class="ti ti-trophy me-2 text-info"></i>VICTOIRES DU JOUR</div>
+        <div class="section-content">{{ existingReport?.victories || '—' }}</div>
+      </div>
+      <div class="report-section mb-3">
+        <div class="section-label"><i class="ti ti-notes me-2 text-secondary"></i>NOTES / REMARQUES</div>
+        <div class="section-content">{{ existingReport?.notes || '—' }}</div>
+      </div>
+
+      <div class="mt-4 p-3 bg-soft-info rounded-3 fs-12 text-info">
+        <i class="ti ti-info-circle me-1"></i>
+        Ce rapport a été soumis et transmis à l'IA. Il n'est plus modifiable.
+      </div>
+    </div>
+
+    <!-- Form: Not yet submitted -->
+    <div *ngIf="!isLoading && !isSubmitted">
+      <p class="text-muted fs-13 mb-4">
+        <i class="ti ti-info-circle me-1 text-primary"></i>
+        Renseignez chaque section. Ces données seront analysées par l'IA pour aider à la prise de décision.
+      </p>
+
+      <!-- [TÂCHES ACCOMPLIES] -->
+      <div class="mb-4">
+        <label class="form-label fw-semibold fs-13 d-flex align-items-center gap-2">
+          <span class="badge bg-soft-success text-success rounded-pill px-2 py-1">
+            <i class="ti ti-checkbox me-1"></i>TÂCHES ACCOMPLIES
+          </span>
+        </label>
+        <textarea
+          class="form-control report-textarea"
+          rows="4"
+          placeholder="Ex: Finalisation du module auth, revue de PR, réunion client projet Alpha..."
+          [(ngModel)]="report.tasksAccomplished"
+          [disabled]="isSubmitting">
+        </textarea>
+      </div>
+
+      <!-- [PROBLÈMES RENCONTRÉS] -->
+      <div class="mb-4">
+        <label class="form-label fw-semibold fs-13 d-flex align-items-center gap-2">
+          <span class="badge bg-soft-warning text-warning rounded-pill px-2 py-1">
+            <i class="ti ti-alert-triangle me-1"></i>PROBLÈMES RENCONTRÉS
+          </span>
+        </label>
+        <textarea
+          class="form-control report-textarea"
+          rows="3"
+          placeholder="Ex: Bug de déploiement sur l'env staging, blocage en attente d'accès BDD..."
+          [(ngModel)]="report.problemsEncountered"
+          [disabled]="isSubmitting">
+        </textarea>
+      </div>
+
+      <!-- [VICTOIRES DU JOUR] -->
+      <div class="mb-4">
+        <label class="form-label fw-semibold fs-13 d-flex align-items-center gap-2">
+          <span class="badge bg-soft-info text-info rounded-pill px-2 py-1">
+            <i class="ti ti-trophy me-1"></i>VICTOIRES DU JOUR
+          </span>
+        </label>
+        <textarea
+          class="form-control report-textarea"
+          rows="3"
+          placeholder="Ex: Livraison feature X avant deadline, feedback positif du client Y..."
+          [(ngModel)]="report.victories"
+          [disabled]="isSubmitting">
+        </textarea>
+      </div>
+
+      <!-- [NOTES / REMARQUES] -->
+      <div class="mb-4">
+        <label class="form-label fw-semibold fs-13 d-flex align-items-center gap-2">
+          <span class="badge bg-soft-secondary text-secondary rounded-pill px-2 py-1">
+            <i class="ti ti-notes me-1"></i>NOTES / REMARQUES
+          </span>
+        </label>
+        <textarea
+          class="form-control report-textarea"
+          rows="3"
+          placeholder="Ex: Penser à planifier la session X demain, note pour le manager..."
+          [(ngModel)]="report.notes"
+          [disabled]="isSubmitting">
+        </textarea>
+      </div>
+
+      <!-- Alerts -->
+      <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center gap-2 fs-13 py-2">
+        <i class="ti ti-alert-circle"></i> {{ errorMessage }}
+      </div>
+      <div *ngIf="successMessage" class="alert alert-success d-flex align-items-center gap-2 fs-13 py-2">
+        <i class="ti ti-circle-check"></i> {{ successMessage }}
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        class="btn btn-primary w-100 fw-semibold py-2 mt-2"
+        (click)="submitReport()"
+        [disabled]="isSubmitting">
+        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+        <i *ngIf="!isSubmitting" class="ti ti-send me-2"></i>
+        {{ isSubmitting ? 'Soumission en cours...' : 'Soumettre mon rapport' }}
+      </button>
+    </div>
+
+  </div>
+</div>

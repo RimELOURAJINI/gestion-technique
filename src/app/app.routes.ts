@@ -55,6 +55,10 @@ import { ManagerPerformanceComponent } from './manager/performance/performance.c
 import { ManagerContactsComponent } from './manager/contacts/contacts.component';
 import { AttendancePersonalComponent } from './shared/attendance-personal/attendance-personal.component';
 import { EmployeeTeamChatComponent } from './employee/team-chat/employee-team-chat.component';
+import { AdminDailyReportsComponent } from './admin/daily-reports/daily-reports.component';
+import { ManagerDailyReportComponent } from './manager/daily-report/daily-report.component';
+import { EmployeeDailyReportComponent } from './employee/daily-report/daily-report.component';
+import { CommercialDailyReportComponent } from './commercial/daily-report/daily-report.component';
 
 import { SignupComponent } from './signup/signup.component';
 
@@ -78,6 +82,7 @@ export const routes: Routes = [
       { path: 'users', component: UserManagementComponent },
       { path: 'finance', component: AdminFinanceComponent },
       { path: 'audit', component: AdminAuditComponent },
+      { path: 'daily-reports', component: AdminDailyReportsComponent },
       { path: 'role-permissions', component: FeaturePlaceholderComponent, data: { title: 'Rôles & Permissions', description: 'Configuration des rôles et droits d\'accès.' } },
       { path: 'settings', component: FeaturePlaceholderComponent, data: { title: 'Paramètres Admin', description: 'Paramètres généraux, logs et sauvegardes.' } },
       { path: 'deals', component: AdminDealsComponent },
@@ -108,6 +113,7 @@ export const routes: Routes = [
       { path: 'my-attendance', component: AttendancePersonalComponent },
       { path: 'my-leaves', component: EmployeeLeavesComponent },
       { path: 'team-chat', component: TeamChatComponent },
+      { path: 'daily-report', component: ManagerDailyReportComponent },
       { path: 'team', loadComponent: () => import('./manager/my-team/my-team.component').then(m => m.MyTeamComponent) },
       { path: 'settings', component: FeaturePlaceholderComponent, data: { title: 'Paramètres Manager', description: 'Préférences manager et options de pilotage.' } },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }
@@ -134,6 +140,7 @@ export const routes: Routes = [
       { path: 'my-attendance', component: AttendancePersonalComponent },
       { path: 'my-leaves', component: EmployeeLeavesComponent },
       { path: 'team-chat', component: TeamChatComponent },
+      { path: 'daily-report', component: ManagerDailyReportComponent },
       { path: 'team', loadComponent: () => import('./manager/my-team/my-team.component').then(m => m.MyTeamComponent) },
       { path: 'settings', component: FeaturePlaceholderComponent, data: { title: 'Paramètres Leader Commercial', description: 'Préférences leader commercial et options de pilotage.' } },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }
@@ -158,6 +165,7 @@ export const routes: Routes = [
       { path: 'tasks/:id', component: TaskDetailComponent },
       { path: 'projects/:id', component: UnifiedProjectDetailComponent },
       { path: 'team-chat', component: EmployeeTeamChatComponent },
+      { path: 'daily-report', component: EmployeeDailyReportComponent },
       { path: '', redirectTo: 'home', pathMatch: 'full' }
     ]
   },
@@ -174,6 +182,8 @@ export const routes: Routes = [
       { path: 'tickets', component: CommercialTicketsComponent },
       { path: 'my-attendance', component: AttendancePersonalComponent },
       { path: 'my-leaves', component: EmployeeLeavesComponent },
+      { path: 'team-chat', component: EmployeeTeamChatComponent },
+      { path: 'daily-report', component: CommercialDailyReportComponent },
       { path: '', redirectTo: 'projects', pathMatch: 'full' }
     ]
   },

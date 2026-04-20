@@ -139,6 +139,20 @@
                     <li><a routerLink="/commercial/my-leaves" routerLinkActive="active"><i class="ti ti-calendar-event"></i><span>Mes Congés</span></a></li>
                     <li><a routerLink="/commercial/tickets" routerLinkActive="active"><i class="ti ti-messages"></i><span>Tickets / Discussions Clients</span></a></li>
                     <li><a routerLink="/commercial/deals" routerLinkActive="active"><i class="ti ti-medal"></i><span>Mes Deals</span></a></li>
+                    <li>
+                      <a routerLink="/commercial/team-chat" routerLinkActive="active">
+                        <i class="ti ti-messages-2"></i>
+                        <span>Team Chat</span>
+                        <span class="badge rounded-pill bg-danger ms-auto" *ngIf="unreadChatCount > 0">{{ unreadChatCount }}</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a routerLink="/commercial/daily-report" routerLinkActive="active">
+                        <i class="ti ti-report-analytics"></i>
+                        <span>Mon Rapport</span>
+                        <span class="badge rounded-pill bg-warning ms-auto fs-9" *ngIf="!reportSubmitted">!</span>
+                      </a>
+                    </li>
                     <li><a routerLink="/commercial/settings" routerLinkActive="active"><i class="ti ti-settings"></i><span>Paramètres</span></a></li>
 
                     <li class="menu-title"><span>Compte</span></li>

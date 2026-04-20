@@ -6,6 +6,7 @@ import { NotificationService, NotificationDTO } from '../../services/notificatio
 import { AiChatbotComponent } from '../../shared/ai-chatbot/ai-chatbot.component';
 import { interval, Subscription } from 'rxjs';
 import { TeamChatService } from '../../services/team-chat.service';
+import { DailyReportService } from '../../services/daily-report.service';
 
 
 @Component({
@@ -24,6 +25,7 @@ export class ManagerDashboardComponent implements OnInit {
     notifications: NotificationDTO[] = [];
     unreadCount: number = 0;
     unreadChatCount: number = 0;
+    reportSubmitted: boolean = true; // true = no warning dot shown
     private notificationSub?: Subscription;
     private chatCountSub?: Subscription;
 
@@ -31,7 +33,8 @@ export class ManagerDashboardComponent implements OnInit {
     constructor(
         public authService: AuthService,
         private notificationService: NotificationService,
-        private teamChatService: TeamChatService
+        private teamChatService: TeamChatService,
+        private dailyReportService: DailyReportService
     ) { }
 
 
@@ -57,6 +60,7 @@ export class ManagerDashboardComponent implements OnInit {
 
             if (user.id) {
                 this.loadNotifications(user.id);
+                this.loadReportStatus(user.id);
                 // Poll for new notifications every 30 seconds
                 this.notificationSub = interval(30000).subscribe(() => {
                     const currentId = this.authService.getUserId();
@@ -110,6 +114,13 @@ export class ManagerDashboardComponent implements OnInit {
         this.teamChatService.getUnreadCount(userId).subscribe({
             next: (count) => this.unreadChatCount = count,
             error: (err) => console.error('Erreur unread chat count', err)
+        });
+    }
+
+    loadReportStatus(userId: number): void {
+        this.dailyReportService.getMyReport(userId).subscribe({
+            next: (report) => this.reportSubmitted = !!report,
+            error: () => this.reportSubmitted = true
         });
     }
 }

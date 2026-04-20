@@ -4,6 +4,8 @@ import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/rou
 import { AuthService } from '../../services/auth.service';
 import { NotificationService, NotificationDTO } from '../../services/notification.service';
 import { AiChatbotComponent } from '../../shared/ai-chatbot/ai-chatbot.component';
+import { TeamChatService } from '../../services/team-chat.service';
+import { DailyReportService } from '../../services/daily-report.service';
 import { interval, Subscription } from 'rxjs';
 
 @Component({
@@ -18,12 +20,17 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
   commercialRole: string = 'Commercial';
   notifications: NotificationDTO[] = [];
   unreadCount: number = 0;
+  unreadChatCount: number = 0;
+  reportSubmitted: boolean = true;
   projectsMenuOpen: boolean = true;
   private notificationSub?: Subscription;
+  private chatCountSub?: Subscription;
 
   constructor(
     public authService: AuthService,
     private notificationService: NotificationService,
+    private teamChatService: TeamChatService,
+    private dailyReportService: DailyReportService,
     public router: Router
   ) { }
 
@@ -37,9 +44,14 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
 
       if (user.id) {
         this.loadNotifications(user.id);
+        this.loadUnreadChatCount(user.id);
+        this.loadReportStatus(user.id);
         this.notificationSub = interval(30000).subscribe(() => {
           const currentId = this.authService.getUserId();
-          if (currentId) this.loadNotifications(currentId);
+          if (currentId) {
+            this.loadNotifications(currentId);
+            this.loadUnreadChatCount(currentId);
+          }
         });
       }
     }
@@ -48,6 +60,9 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.notificationSub) {
       this.notificationSub.unsubscribe();
+    }
+    if (this.chatCountSub) {
+      this.chatCountSub.unsubscribe();
     }
   }
 
@@ -58,6 +73,13 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
         this.unreadCount = data.length;
       },
       error: (err) => console.error('Erreur chargement notifications', err)
+    });
+  }
+
+  loadUnreadChatCount(userId: number): void {
+    this.teamChatService.getUnreadCount(userId).subscribe({
+      next: count => this.unreadChatCount = count,
+      error: err => console.error('Error loading chat count', err)
     });
   }
 
@@ -83,5 +105,12 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
 
   toggleProjectsMenu() {
     this.projectsMenuOpen = !this.projectsMenuOpen;
+  }
+
+  loadReportStatus(userId: number): void {
+    this.dailyReportService.getMyReport(userId).subscribe({
+      next: (report) => this.reportSubmitted = !!report,
+      error: () => this.reportSubmitted = true
+    });
   }
 }
