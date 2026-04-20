@@ -7,6 +7,7 @@ import { AiChatbotComponent } from '../../shared/ai-chatbot/ai-chatbot.component
 import { interval, Subscription } from 'rxjs';
 import { TeamChatService } from '../../services/team-chat.service';
 import { DailyReportService } from '../../services/daily-report.service';
+import { PrimeService } from '../../services/prime.service';
 
 
 @Component({
@@ -24,6 +25,7 @@ export class EmployeeDashboardComponent implements OnInit {
   unreadCount: number = 0;
   unreadChatCount: number = 0;
   reportSubmitted: boolean = true;
+  newPrimesCount: number = 0;
   tasksMenuOpen: boolean = false;
   dashboardMenuOpen: boolean = false;
   private notificationSub?: Subscription;
@@ -35,7 +37,8 @@ export class EmployeeDashboardComponent implements OnInit {
     public authService: AuthService,
     private notificationService: NotificationService,
     private teamChatService: TeamChatService,
-    private dailyReportService: DailyReportService
+    private dailyReportService: DailyReportService,
+    private primeService: PrimeService
   ) {}
 
 
@@ -51,10 +54,12 @@ export class EmployeeDashboardComponent implements OnInit {
     this.loadNotifications();
     this.loadUnreadChatCount();
     this.loadReportStatus();
+    this.loadPrimes();
     // Poll every 30 seconds
     this.notificationSub = interval(30000).subscribe(() => {
       this.loadNotifications();
       this.loadUnreadChatCount();
+      this.loadPrimes();
     });
 
     // Auto-open menu if on tasks page
@@ -129,6 +134,15 @@ export class EmployeeDashboardComponent implements OnInit {
       this.dailyReportService.getMyReport(userId).subscribe({
         next: (report) => this.reportSubmitted = !!report,
         error: () => this.reportSubmitted = true
+      });
+    }
+  }
+
+  loadPrimes(): void {
+    const userId = this.authService.getUserId();
+    if (userId) {
+      this.primeService.getMyAffectations(userId).subscribe(data => {
+        this.newPrimesCount = data.filter(a => a.status === 'VALIDÉE').length;
       });
     }
   }

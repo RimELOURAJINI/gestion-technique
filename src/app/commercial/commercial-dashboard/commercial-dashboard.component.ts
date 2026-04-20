@@ -6,6 +6,7 @@ import { NotificationService, NotificationDTO } from '../../services/notificatio
 import { AiChatbotComponent } from '../../shared/ai-chatbot/ai-chatbot.component';
 import { TeamChatService } from '../../services/team-chat.service';
 import { DailyReportService } from '../../services/daily-report.service';
+import { PrimeService } from '../../services/prime.service';
 import { interval, Subscription } from 'rxjs';
 
 @Component({
@@ -22,6 +23,7 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
   unreadCount: number = 0;
   unreadChatCount: number = 0;
   reportSubmitted: boolean = true;
+  newPrimesCount: number = 0;
   projectsMenuOpen: boolean = true;
   private notificationSub?: Subscription;
   private chatCountSub?: Subscription;
@@ -31,6 +33,7 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
     private notificationService: NotificationService,
     private teamChatService: TeamChatService,
     private dailyReportService: DailyReportService,
+    private primeService: PrimeService,
     public router: Router
   ) { }
 
@@ -46,11 +49,13 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
         this.loadNotifications(user.id);
         this.loadUnreadChatCount(user.id);
         this.loadReportStatus(user.id);
+        this.loadPrimes(user.id);
         this.notificationSub = interval(30000).subscribe(() => {
           const currentId = this.authService.getUserId();
           if (currentId) {
             this.loadNotifications(currentId);
             this.loadUnreadChatCount(currentId);
+            this.loadPrimes(currentId);
           }
         });
       }
@@ -111,6 +116,12 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
     this.dailyReportService.getMyReport(userId).subscribe({
       next: (report) => this.reportSubmitted = !!report,
       error: () => this.reportSubmitted = true
+    });
+  }
+
+  loadPrimes(userId: number): void {
+    this.primeService.getMyAffectations(userId).subscribe(data => {
+      this.newPrimesCount = data.filter(a => a.status === 'VALIDÉE').length;
     });
   }
 }

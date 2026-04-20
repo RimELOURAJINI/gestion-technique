@@ -182,6 +182,13 @@
                     <li><a routerLink="/admin/attendance" routerLinkActive="active"><i class="ti ti-clock-check"></i><span>Suivi Présences</span></a></li>
                     <li><a routerLink="/admin/tickets" routerLinkActive="active"><i class="ti ti-messages"></i><span>Tickets / Discussions Clients</span></a></li>
                     <li>
+                        <a routerLink="/admin/primes" routerLinkActive="active">
+                            <i class="ti ti-medal"></i>
+                            <span>Gestion des Primes</span>
+                            <span class="badge rounded-pill bg-warning ms-auto" *ngIf="pendingPrimesCount > 0">{{ pendingPrimesCount }}</span>
+                        </a>
+                    </li>
+                    <li>
                         <a routerLink="/admin/daily-reports" routerLinkActive="active">
                             <i class="ti ti-report-analytics"></i>
                             <span>Rapports Journaliers</span>

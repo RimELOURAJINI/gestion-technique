@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { NotificationService, NotificationDTO } from '../../services/notification.service';
 import { AiChatbotComponent } from '../../shared/ai-chatbot/ai-chatbot.component';
 import { DailyReportService } from '../../services/daily-report.service';
+import { PrimeService } from '../../services/prime.service';
 import { interval, Subscription } from 'rxjs';
 
 @Component({
@@ -20,6 +21,7 @@ export class AdminDashboardComponent implements OnInit {
     notifications: NotificationDTO[] = [];
     unreadCount: number = 0;
     unsubmittedReportCount: number = 0;
+    pendingPrimesCount: number = 0;
     dashboardMenuOpen: boolean = false;
     usersMenuOpen: boolean = false;
     configMenuOpen: boolean = false;
@@ -29,6 +31,7 @@ export class AdminDashboardComponent implements OnInit {
         public authService: AuthService,
         private notificationService: NotificationService,
         private dailyReportService: DailyReportService,
+        public primeService: PrimeService,
         public router: Router
     ) { }
 
@@ -43,11 +46,13 @@ export class AdminDashboardComponent implements OnInit {
             if (user.id) {
                 this.loadNotifications(user.id);
                 this.loadUnsubmittedCount();
+                this.loadPendingPrimesCount();
                 // Poll for new notifications every 30 seconds
                 this.notificationSub = interval(30000).subscribe(() => {
                     const currentId = this.authService.getUserId();
                     if (currentId) this.loadNotifications(currentId);
                     this.loadUnsubmittedCount();
+                    this.loadPendingPrimesCount();
                 });
             }
 
@@ -77,6 +82,13 @@ export class AdminDashboardComponent implements OnInit {
         this.dailyReportService.getUnsubmittedCount().subscribe({
             next: (count) => this.unsubmittedReportCount = count,
             error: () => {}
+        });
+    }
+
+    loadPendingPrimesCount(): void {
+        this.primeService.refreshPendingCount();
+        this.primeService.pendingCount$.subscribe(count => {
+            this.pendingPrimesCount = count;
         });
     }
 

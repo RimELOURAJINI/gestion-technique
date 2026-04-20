@@ -1,0 +1,44 @@
+.bonus-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-left: 4px solid #ff9f43; /* default warning for pending */
+}
+
+.bonus-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.bonus-card.paid {
+    border-left-color: #28c76f;
+}
+
+.bg-primary-transparent {
+    background-color: rgba(0, 82, 234, 0.1);
+}
+
+.bg-warning-light {
+    background-color: #fff3e0;
+    color: #ff9800;
+}
+
+.bg-info-light {
+    background-color: #e3f2fd;
+    color: #2196f3;
+}
+
+.bg-success-light {
+    background-color: #e8f5e9;
+    color: #4caf50;
+}
+
+.justification-box {
+    border-left: 2px dashed #0052ea;
+}
+
+.amount-badge h4 {
+    letter-spacing: -1px;
+}
+
+.page-title {
+    font-weight: 800;
+}

@@ -59,6 +59,8 @@ import { AdminDailyReportsComponent } from './admin/daily-reports/daily-reports.
 import { ManagerDailyReportComponent } from './manager/daily-report/daily-report.component';
 import { EmployeeDailyReportComponent } from './employee/daily-report/daily-report.component';
 import { CommercialDailyReportComponent } from './commercial/daily-report/daily-report.component';
+import { AdminPrimesComponent } from './admin/primes/primes.component';
+import { MyPrimesComponent } from './shared/my-primes/my-primes.component';
 
 import { SignupComponent } from './signup/signup.component';
 
@@ -89,6 +91,7 @@ export const routes: Routes = [
       { path: 'attendance', component: AdminAttendanceComponent },
       { path: 'my-attendance', component: AttendancePersonalComponent },
       { path: 'my-leaves', component: EmployeeLeavesComponent },
+      { path: 'primes', component: AdminPrimesComponent },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }
     ]
   },
@@ -112,6 +115,7 @@ export const routes: Routes = [
       { path: 'leaves', component: ManagerLeavesComponent },
       { path: 'my-attendance', component: AttendancePersonalComponent },
       { path: 'my-leaves', component: EmployeeLeavesComponent },
+      { path: 'primes', component: MyPrimesComponent },
       { path: 'team-chat', component: TeamChatComponent },
       { path: 'daily-report', component: ManagerDailyReportComponent },
       { path: 'team', loadComponent: () => import('./manager/my-team/my-team.component').then(m => m.MyTeamComponent) },
@@ -139,6 +143,7 @@ export const routes: Routes = [
       { path: 'leaves', component: ManagerLeavesComponent },
       { path: 'my-attendance', component: AttendancePersonalComponent },
       { path: 'my-leaves', component: EmployeeLeavesComponent },
+      { path: 'primes', component: MyPrimesComponent },
       { path: 'team-chat', component: TeamChatComponent },
       { path: 'daily-report', component: ManagerDailyReportComponent },
       { path: 'team', loadComponent: () => import('./manager/my-team/my-team.component').then(m => m.MyTeamComponent) },
@@ -159,6 +164,7 @@ export const routes: Routes = [
       { path: 'calendar', component: CalendarComponent },
       { path: 'timesheets', component: TimesheetsComponent },
       { path: 'leaves', component: EmployeeLeavesComponent },
+      { path: 'primes', component: MyPrimesComponent },
       { path: 'settings', component: EmployeeSettingsComponent },
       { path: 'performance', component: EmployeePerformanceComponent },
       { path: 'wellness', component: EmployeeWellnessComponent },
@@ -182,6 +188,7 @@ export const routes: Routes = [
       { path: 'tickets', component: CommercialTicketsComponent },
       { path: 'my-attendance', component: AttendancePersonalComponent },
       { path: 'my-leaves', component: EmployeeLeavesComponent },
+      { path: 'primes', component: MyPrimesComponent },
       { path: 'team-chat', component: EmployeeTeamChatComponent },
       { path: 'daily-report', component: CommercialDailyReportComponent },
       { path: '', redirectTo: 'projects', pathMatch: 'full' }

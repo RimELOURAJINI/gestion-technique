@@ -1,0 +1,276 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body p-0">
+        <ul class="nav nav-tabs nav-tabs-solid nav-justified border-bottom-0">
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab === 'manage'" (click)="activeTab = 'manage'" href="javascript:void(0);">
+              <i class="ti ti-settings-cog me-2"></i>Gestion des Primes
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab === 'affect'" (click)="activeTab = 'affect'" href="javascript:void(0);">
+              <i class="ti ti-user-plus me-2"></i>Affecter une Prime
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab === 'history'" (click)="activeTab = 'history'" href="javascript:void(0);">
+              <i class="ti ti-history me-2"></i>Historique & Validation
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tab Content -->
+<div [ngSwitch]="activeTab">
+  
+  <!-- MANAGE TAB -->
+  <div *ngSwitchCase="'manage'">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-transparent border-bottom">
+            <h5 class="card-title mb-0">{{ isEditingPrime ? 'Modifier la Prime' : 'Créer une Nouvelle Prime' }}</h5>
+          </div>
+          <div class="card-body">
+            <form (ngSubmit)="savePrime()">
+              <div class="mb-3">
+                <label class="form-label">Nom de la Prime</label>
+                <input type="text" class="form-control" [(ngModel)]="newPrime.name" name="name" placeholder="Ex: Performance Q2" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" [(ngModel)]="newPrime.description" name="description" rows="3"></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Montant (TND)</label>
+                <input type="number" class="form-control" [(ngModel)]="newPrime.amount" name="amount" required>
+              </div>
+              <div class="row">
+                <div class="col-6 mb-3">
+                  <label class="form-label">Type</label>
+                  <select class="form-select" [(ngModel)]="newPrime.type" name="type">
+                    <option value="PERFORMANCE">Performance</option>
+                    <option value="ASSIDUITÉ">Assiduité</option>
+                    <option value="OBJECTIF">Objectif</option>
+                    <option value="EXCEPTIONNELLE">Exceptionnelle</option>
+                  </select>
+                </div>
+                <div class="col-6 mb-3">
+                  <label class="form-label">Période</label>
+                  <select class="form-select" [(ngModel)]="newPrime.period" name="period">
+                    <option value="MENSUELLE">Mensuelle</option>
+                    <option value="TRIMESTRIELLE">Trimestrielle</option>
+                    <option value="ANNUELLE">Annuelle</option>
+                    <option value="PONCTUELLE">Ponctuelle</option>
+                  </select>
+                </div>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100">{{ isEditingPrime ? 'Mettre à jour' : 'Créer' }}</button>
+                <button *ngIf="isEditingPrime" type="button" class="btn btn-light w-100" (click)="resetPrimeForm()">Annuler</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="bg-light">
+                  <tr>
+                    <th>Nom</th>
+                    <th>Type / Période</th>
+                    <th>Montant</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let p of primes">
+                    <td>
+                      <span class="fw-bold">{{ p.name }}</span><br>
+                      <small class="text-muted">{{ p.description }}</small>
+                    </td>
+                    <td>
+                      <span class="badge bg-outline-primary">{{ p.type }}</span><br>
+                      <small class="text-muted">{{ p.period }}</small>
+                    </td>
+                    <td><span class="fw-bold text-success">{{ p.amount | number }} TND</span></td>
+                    <td>
+                      <span class="badge" [ngClass]="p.status === 'ACTIVE' ? 'bg-success-transparent' : 'bg-secondary-transparent'">
+                        {{ p.status }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-info" (click)="editPrime(p)"><i class="ti ti-edit"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" (click)="deletePrime(p.id!)"><i class="ti ti-trash"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AFFECT TAB -->
+  <div *ngSwitchCase="'affect'">
+    <div class="row">
+      <div class="col-md-7">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Formulaire d'Affectation</h5>
+            <button class="btn btn-warning btn-sm" (click)="askAi()" [disabled]="isAskingAi">
+              <i class="ti ti-sparkles me-1"></i>
+              {{ isAskingAi ? 'IA en cours...' : 'Demander à l\'IA' }}
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label">Utilisateur</label>
+              <select class="form-select" [(ngModel)]="newAffectation.userId">
+                <option value="">Sélectionner un collaborateur...</option>
+                <option *ngFor="let u of users" [value]="u.id">{{ u.firstName }} {{ u.lastName }} ({{ u.roles[0].name }})</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Prime à affecter</label>
+              <select class="form-select" [(ngModel)]="newAffectation.primeId">
+                <option value="">Sélectionner une prime active...</option>
+                <option *ngFor="let p of activePrimes" [value]="p.id">{{ p.name }} - {{ p.amount | number }} TND</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Justification / Motif</label>
+              <textarea class="form-control" rows="4" [(ngModel)]="newAffectation.justification" placeholder="Rédigez le motif de cette prime..."></textarea>
+            </div>
+            <button class="btn btn-primary w-100" (click)="submitAffectation()" [disabled]="!newAffectation.userId || !newAffectation.primeId">
+              Confirmer l'affectation
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-5">
+        <div class="card border-0 shadow-sm bg-light-transparent">
+          <div class="card-header bg-transparent">
+            <h5 class="card-title mb-0 text-primary"><i class="ti ti-bulb me-2"></i>Suggestions IA</h5>
+          </div>
+          <div class="card-body">
+            <div *ngIf="!aiSuggestions.length && !isAskingAi" class="text-center py-4 text-muted">
+              <i class="ti ti-robot fs-1 mb-2"></i>
+              <p>Cliquez sur "Demander à l'IA" pour analyser les rapports de performance.</p>
+            </div>
+            <div *ngIf="isAskingAi" class="text-center py-4">
+              <div class="spinner-border text-primary mb-2" role="status"></div>
+              <p>L'IA analyse le contexte...</p>
+            </div>
+            <div class="list-group list-group-flush" *ngIf="aiSuggestions.length">
+              <div *ngFor="let s of aiSuggestions" class="list-group-item list-group-item-action border-0 mb-2 rounded shadow-sm bg-white p-3">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <span class="fw-bold">{{ s.userName }}</span>
+                  <span class="badge bg-info-transparent">Score IA: {{ s.score | percent }}</span>
+                </div>
+                <p class="small text-muted mb-2 italic">" {{ s.justification }} "</p>
+                <button class="btn btn-sm btn-outline-primary" (click)="selectSuggestedUser(s.userId, s.justification)">
+                  Sélect. cet utilisateur
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div *ngSwitchCase="'history'">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header border-bottom py-3">
+        <div class="row g-2 align-items-center">
+          <div class="col-md-3">
+            <input type="text" class="form-control form-control-sm" [(ngModel)]="filters.user" placeholder="Filtrer par nom...">
+          </div>
+          <div class="col-md-3">
+            <select class="form-select form-select-sm" [(ngModel)]="filters.role">
+              <option value="">Tous les rôles</option>
+              <option value="ROLE_TEAM_LEADER">Manager</option>
+              <option value="ROLE_Employee">Employé</option>
+              <option value="ROLE_COMMERCIAL">Commercial</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <select class="form-select form-select-sm" [(ngModel)]="filters.status">
+              <option value="">Tous les statuts</option>
+              <option value="EN_ATTENTE">En attente</option>
+              <option value="VALIDÉE">Validée</option>
+              <option value="PAYÉE">Payée</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light text-nowrap">
+              <tr>
+                <th>Bénéficiaire</th>
+                <th>Prime</th>
+                <th>Date / Justif</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let a of filteredAffectations">
+                <td>
+                  <span class="fw-bold">{{ a.user.firstName }} {{ a.user.lastName }}</span><br>
+                  <small class="badge bg-secondary-transparent">{{ a.user.roles[0].name }}</small>
+                </td>
+                <td>
+                  <span class="fw-semibold">{{ a.prime.name }}</span><br>
+                  <span class="text-success fw-bold">{{ a.prime.amount | number }} TND</span>
+                </td>
+                <td>
+                  <small>{{ a.dateAffectation | date:'shortDate' }}</small><br>
+                  <small class="text-muted text-wrap d-inline-block" style="max-width: 250px;">{{ a.justification }}</small>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="{
+                    'bg-warning': a.status === 'EN_ATTENTE',
+                    'bg-info': a.status === 'VALIDÉE',
+                    'bg-success': a.status === 'PAYÉE'
+                  }">{{ a.status }}</span>
+                </td>
+                <td>
+                  <div class="btn-group" *ngIf="a.status !== 'PAYÉE'">
+                    <button class="btn btn-sm btn-outline-info" *ngIf="a.status === 'EN_ATTENTE'" title="Valider" (click)="updateStatus(a.id!, 'VALIDÉE')">
+                      <i class="ti ti-check"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" *ngIf="a.status === 'VALIDÉE'" title="Marquer comme payée" (click)="updateStatus(a.id!, 'PAYÉE')">
+                      <i class="ti ti-cash"></i>
+                    </button>
+                  </div>
+                  <span *ngIf="a.status === 'PAYÉE'" class="text-muted fs-12"><i class="ti ti-circle-check-filled text-success"></i> Payée</span>
+                </td>
+              </tr>
+              <tr *ngIf="!filteredAffectations.length">
+                <td colspan="5" class="text-center py-5 text-muted">Aucun historique trouvé.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

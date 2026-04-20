@@ -122,3 +122,31 @@ export interface DailyReportSummary {
   submittedAt?: string;
 }
 
+export interface Prime {
+  id?: number;
+  name: string;
+  description: string;
+  amount: number;
+  type: string;     // PERFORMANCE, ASSIDUITÉ, OBJECTIF, EXCEPTIONNELLE
+  period: string;   // MENSUELLE, TRIMESTRIELLE, ANNUELLE, PONCTUELLE
+  status?: string;  // ACTIVE, ARCHIVÉE
+  createdAt?: string;
+}
+
+export interface PrimeAffectation {
+  id?: number;
+  user: User;
+  prime: Prime;
+  dateAffectation?: string;
+  justification: string;
+  status: string;   // EN_ATTENTE, VALIDÉE, PAYÉE
+}
+
+export interface AiBonusSuggestion {
+  userId: number;
+  userName: string;
+  justification: string;
+  score: number;
+}
+
+

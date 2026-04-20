@@ -1,0 +1,64 @@
+<div class="row">
+  <div class="col-12">
+    <div class="page-header mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h3 class="page-title">Mes Primes & Gratifications</h3>
+          <p class="text-muted mb-0">Retrouvez l'historique de vos récompenses et primes de performance.</p>
+        </div>
+        <div class="stats-icon p-3 bg-primary-transparent rounded-circle">
+          <i class="ti ti-medal fs-1 text-primary"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div *ngIf="loading" class="col-12 text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-muted">Chargement de vos primes...</p>
+  </div>
+
+  <div *ngIf="!loading && !affectations.length" class="col-12">
+    <div class="card border-0 shadow-sm py-5 text-center">
+      <div class="card-body">
+        <i class="ti ti-gift-off fs-1 text-light mb-3"></i>
+        <h5>Aucune prime pour le moment</h5>
+        <p class="text-muted">Continuez vos efforts, vos victoires journalières sont analysées régulièrement !</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngFor="let a of affectations" class="col-md-6 col-xl-4 mb-4">
+    <div class="card border-0 shadow-sm h-100 bonus-card" [class.paid]="a.status === 'PAYÉE'">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <span class="badge mb-2" [ngClass]="getStatusBadgeClass(a.status)">{{ a.status }}</span>
+            <h5 class="card-title mb-0">{{ a.prime.name }}</h5>
+            <small class="text-muted">{{ a.prime.type }} • {{ a.prime.period }}</small>
+          </div>
+          <div class="amount-badge p-2 text-end">
+            <h4 class="mb-0 text-success fw-bold">{{ a.prime.amount | number }}</h4>
+            <small class="text-success fw-bold">TND</small>
+          </div>
+        </div>
+        
+        <div class="justification-box p-3 rounded mb-3 bg-light">
+          <p class="small mb-0 text-dark"><i class="ti ti-quote me-1 text-primary"></i> {{ a.justification }}</p>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+          <div class="d-flex align-items-center">
+            <i class="ti ti-calendar-event me-1 text-muted"></i>
+            <small class="text-muted">{{ a.dateAffectation | date:'dd MMM yyyy' }}</small>
+          </div>
+          <div *ngIf="a.status === 'PAYÉE'" class="text-success small fw-bold">
+            <i class="ti ti-circle-check"></i> Règlement effectué
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

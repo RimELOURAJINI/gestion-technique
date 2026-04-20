@@ -138,10 +138,15 @@
                             <li><a [routerLink]="basePath + '/my-attendance'" routerLinkActive="active"><i class="ti ti-clock-user"></i><span>Ma Présence</span></a></li>
                             <li><a [routerLink]="basePath + '/my-leaves'" routerLinkActive="active"><i class="ti ti-calendar-event"></i><span>Mes Congés</span></a></li>
                             <li>
-                                <a [routerLink]="basePath + '/daily-report'" routerLinkActive="active">
-                                    <i class="ti ti-report-analytics"></i>
-                                    <span>Rapport du Jour</span>
-                                    <span class="badge rounded-pill bg-warning ms-auto fs-9" *ngIf="!reportSubmitted">!</span>
+                                <a [routerLink]="[basePath, 'daily-report']" routerLinkActive="active">
+                                    <i class="ti ti-checklist text-primary"></i><span>Rapport du Jour</span>
+                                    <span class="badge rounded-pill bg-warning ms-1" *ngIf="!reportSubmitted">!</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="[basePath, 'primes']" routerLinkActive="active">
+                                    <i class="ti ti-medal"></i><span>Mes Primes</span>
+                                    <span class="badge rounded-pill bg-danger ms-auto" *ngIf="newPrimesCount > 0">{{ newPrimesCount }}</span>
                                 </a>
                             </li>
                             <li>
