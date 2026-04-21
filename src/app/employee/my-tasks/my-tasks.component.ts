@@ -5,11 +5,12 @@ import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { EmployeeService } from '../../services/employee.service';
 import { AuthService } from '../../services/auth.service';
 import { Project, Task, Reclamation, SubTask } from '../../models/models';
+import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-my-tasks',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, DragDropModule],
   templateUrl: './my-tasks.component.html',
   styleUrl: './my-tasks.component.css'
 })
@@ -20,7 +21,44 @@ export class MyTasksComponent implements OnInit {
   currentFilter: string = '';
   allProjects: Project[] = [];
   viewMode: 'table' | 'kanban' = 'kanban';
-  kanbanColumns = ['TODO', 'IN_PROGRESS', 'REVIEW', 'DONE'];
+  kanbanColumns = ['TODO', 'IN_PROGRESS', 'TEST', 'DONE'];
+
+  todoTasks: Task[] = [];
+  inProgressTasks: Task[] = [];
+  testTasks: Task[] = [];
+  doneTasks: Task[] = [];
+
+  onDrop(event: CdkDragDrop<Task[]>, newStatus: string) {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      const task = event.previousContainer.data[event.previousIndex];
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+      if (task.id) {
+        this.employeeService.updateTaskStatus(task.id, newStatus).subscribe(() => this.loadTasks());
+      }
+    }
+  }
+
+  getDuration(task: Task): string {
+    if (!task.actualStartTime) return '';
+    const end = task.actualEndTime ? new Date(task.actualEndTime) : new Date();
+    const start = new Date(task.actualStartTime);
+    const diffMs = end.getTime() - start.getTime();
+    if (diffMs < 0) return '0m';
+    const diffMins = Math.floor(diffMs / 60000);
+    const hours = Math.floor(diffMins / 60);
+    const mins = diffMins % 60;
+    const days = Math.floor(hours / 24);
+    if (days > 0) return `${days}j ${hours % 24}h`;
+    if (hours > 0) return `${hours}h ${mins}m`;
+    return `${mins}m`;
+  }
 
   // Create/Edit Task
   taskForm: any = {
@@ -118,6 +156,12 @@ export class MyTasksComponent implements OnInit {
       this.groupedTasks[projectName].push(task);
     });
     this.projectNames = Object.keys(this.groupedTasks);
+
+    // populate kanban arrays for CDK DND
+    this.todoTasks = filteredTasks.filter(t => t.status === 'TODO' || t.status === 'NEW' || t.status === 'PENDING' || !t.status);
+    this.inProgressTasks = filteredTasks.filter(t => t.status === 'IN_PROGRESS' || t.status === 'DOING');
+    this.testTasks = filteredTasks.filter(t => t.status === 'TEST' || t.status === 'REVIEW');
+    this.doneTasks = filteredTasks.filter(t => t.status === 'DONE' || t.status === 'COMPLETED' || t.status === 'FINISHED');
   }
 
   // ===== DETAIL MODAL =====
@@ -125,10 +169,6 @@ export class MyTasksComponent implements OnInit {
     if (task.id) {
       this.router.navigate(['/employee/tasks', task.id]);
     }
-  }
-
-  getTasksByStatus(status: string): Task[] {
-    return this.tasks.filter(t => t.status === status);
   }
 
   toggleView(mode: 'table' | 'kanban'): void {

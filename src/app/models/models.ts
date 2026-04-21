@@ -61,6 +61,7 @@ export interface Task {
   actualHours?: number;    // Added for AI statistics
   type?: string;           // Added for AI statistics (e.g., BUG, FEATURE)
   qualityScore?: number;   // Added for AI statistics (e.g., 1 to 5)
+  createdAt?: Date;
   storyPoints?: number;    // Complexity 1-8
   isBlocked?: boolean;     // Blocker indicator
   blockerReason?: string;  // Reason for being blocked

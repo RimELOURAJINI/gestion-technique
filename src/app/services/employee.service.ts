@@ -61,6 +61,10 @@ export class EmployeeService {
     return this.http.put(`${this.baseUrl}/tasks/${taskId}/dates`, { actualStartTime, actualEndTime });
   }
 
+  updateTaskStatus(taskId: number, status: string): Observable<Task> {
+    return this.http.put<Task>(`${this.baseUrl}/tasks/${taskId}/status?status=${status}`, {});
+  }
+
   createTask(userId: number, task: Task): Observable<Task> {
     return this.http.post<Task>(`${this.baseUrl}/tasks/user/${userId}`, task);
   }

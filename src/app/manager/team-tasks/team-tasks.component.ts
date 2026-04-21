@@ -8,10 +8,12 @@ import { Task, User, Project, Ticket } from '../../models/models';
 import { TicketService } from '../../services/ticket.service';
 import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
 
+import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+
 @Component({
     selector: 'app-team-tasks',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule, ProjectSupportModalComponent],
+    imports: [CommonModule, FormsModule, RouterModule, ProjectSupportModalComponent, DragDropModule],
     templateUrl: './team-tasks.component.html',
     styleUrl: './team-tasks.component.css'
 })
@@ -25,6 +27,7 @@ export class TeamTasksComponent implements OnInit {
 
     todoTasks: Task[] = [];
     inProgressTasks: Task[] = [];
+    testTasks: Task[] = [];
     doneTasks: Task[] = [];
 
     // Create Task form
@@ -102,10 +105,45 @@ export class TeamTasksComponent implements OnInit {
     }
 
     organizeTasks() {
-        // TODO: Map more statuses if needed
-        this.todoTasks = this.tasks.filter(t => t.status === 'TODO' || t.status === 'NEW' || t.status === 'PENDING');
+        this.todoTasks = this.tasks.filter(t => t.status === 'TODO' || t.status === 'NEW' || t.status === 'PENDING' || !t.status);
         this.inProgressTasks = this.tasks.filter(t => t.status === 'IN_PROGRESS' || t.status === 'DOING');
+        this.testTasks = this.tasks.filter(t => t.status === 'TEST' || t.status === 'REVIEW');
         this.doneTasks = this.tasks.filter(t => t.status === 'DONE' || t.status === 'COMPLETED' || t.status === 'FINISHED');
+    }
+
+    onDrop(event: CdkDragDrop<Task[]>, newStatus: string) {
+        if (event.previousContainer === event.container) {
+            moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+        } else {
+            const task = event.previousContainer.data[event.previousIndex];
+            transferArrayItem(
+                event.previousContainer.data,
+                event.container.data,
+                event.previousIndex,
+                event.currentIndex
+            );
+            if (task.id) {
+                this.updateStatus(task.id, newStatus);
+            }
+        }
+    }
+
+    getDuration(task: Task): string {
+        if (!task.actualStartTime) return '';
+        const end = task.actualEndTime ? new Date(task.actualEndTime) : new Date();
+        const start = new Date(task.actualStartTime);
+        const diffMs = end.getTime() - start.getTime();
+        
+        if (diffMs < 0) return '0m';
+        
+        const diffMins = Math.floor(diffMs / 60000);
+        const hours = Math.floor(diffMins / 60);
+        const mins = diffMins % 60;
+        const days = Math.floor(hours / 24);
+        
+        if (days > 0) return `${days}j ${hours % 24}h`;
+        if (hours > 0) return `${hours}h ${mins}m`;
+        return `${mins}m`;
     }
 
     createTask() {

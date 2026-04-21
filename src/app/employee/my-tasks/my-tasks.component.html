@@ -132,32 +132,134 @@
       </div> <!-- /Table View -->
 
       <!-- Kanban View -->
-      <div *ngIf="viewMode === 'kanban'" class="kanban-wrapper h-100">
-        <div class="kanban-container">
-          <div class="kanban-column" *ngFor="let status of kanbanColumns">
-            <div class="kanban-header d-flex align-items-center justify-content-between mb-3" [ngClass]="'status-' + status.toLowerCase()">
-              <h6 class="mb-0 fw-bold text-white">{{ status === 'TODO' ? 'À FAIRE' : status === 'IN_PROGRESS' ? 'EN COURS' : status === 'REVIEW' ? 'À TESTER' : 'TERMINÉ' }}</h6>
-              <span class="badge rounded-pill bg-white text-dark fs-10">{{ getTasksByStatus(status).length }}</span>
-            </div>
-            <div class="kanban-cards-list">
-              <div class="kanban-card card mb-3 border-0 shadow-sm" *ngFor="let task of getTasksByStatus(status)" (click)="openTaskDetail(task)">
-                <div class="card-body p-3">
-                  <div class="d-flex justify-content-between mb-2">
-                    <span class="badge fs-9" [ngClass]="getPriorityClass(task.priority)">{{ task.priority }}</span>
-                    <span class="text-muted fs-10"><i class="ti ti-calendar me-1"></i>{{ task.deadline | date:'dd MMM' }}</span>
+      <div *ngIf="viewMode === 'kanban'" class="kanban-wrapper h-100" cdkDropListGroup>
+          <div class="d-flex align-items-start gap-3" style="min-width: 1200px; padding-bottom: 2rem;">
+              
+              <!-- TODO Column -->
+              <div class="kanban-column flex-fill bg-light-50 rounded border p-2">
+                  <div class="kanban-header d-flex align-items-center justify-content-between mb-3 status-todo">
+                      <h6 class="mb-0 fw-bold text-white">À FAIRE</h6>
+                      <span class="badge rounded-pill bg-white text-dark fs-10">{{todoTasks.length}}</span>
                   </div>
-                  <h6 class="task-title mb-2 fs-14 fw-bold">{{ task.title }}</h6>
-                  <p class="project-name text-muted fs-11 mb-2">{{ task.project?.name || 'Sans projet' }}</p>
-                  <div class="d-flex align-items-center justify-content-between mt-auto">
-                    <span class="fs-10 text-muted me-2"><i class="ti ti-checklist me-1"></i>{{ task.subtasks?.length || 0 }}</span>
-                    <span class="fs-10 text-muted"><i class="ti ti-alert-triangle me-1"></i>{{ task.reclamations?.length || 0 }}</span>
+                  <div class="kanban-cards-list" style="min-height: 400px;" cdkDropList [cdkDropListData]="todoTasks" (cdkDropListDropped)="onDrop($event, 'TODO')">
+                      <div class="kanban-card card mb-3 border-0 shadow-sm" *ngFor="let task of todoTasks" cdkDrag (click)="openTaskDetail(task)">
+                          <div class="card-body p-3">
+                              <div class="d-flex justify-content-between mb-2">
+                                  <span class="badge fs-9" [ngClass]="getPriorityClass(task.priority)">{{ task.priority }}</span>
+                                  <span class="text-muted fs-10"><i class="ti ti-calendar me-1"></i>{{ task.deadline | date:'dd MMM' }}</span>
+                              </div>
+                              <h6 class="task-title mb-2 fs-14 fw-bold">{{ task.title }}</h6>
+                              <p class="project-name text-muted fs-11 mb-2">{{ task.project?.name || 'Sans projet' }}</p>
+                              
+                              <div class="mb-2">
+                                  <span class="text-muted fs-9"><i class="ti ti-calendar-plus me-1"></i>Créé le: {{task.createdAt | date:'dd/MM HH:mm'}}</span>
+                              </div>
+                              
+                              <div class="d-flex align-items-center justify-content-between mt-auto pt-2 border-top">
+                                  <span class="fs-10 text-muted me-2"><i class="ti ti-checklist me-1"></i>{{ task.subtasks?.length || 0 }}</span>
+                                  <span class="fs-10 text-muted"><i class="ti ti-alert-triangle me-1"></i>{{ task.reclamations?.length || 0 }}</span>
+                              </div>
+                          </div>
+                      </div>
                   </div>
-                </div>
-              </div> <!-- kanban-card -->
-            </div> <!-- kanban-cards-list -->
-          </div> <!-- kanban-column -->
-        </div> <!-- kanban-container -->
-      </div> <!-- kanban-wrapper -->
+              </div>
+              
+              <!-- IN PROGRESS Column -->
+              <div class="kanban-column flex-fill bg-light-50 rounded border p-2">
+                  <div class="kanban-header d-flex align-items-center justify-content-between mb-3 status-in_progress">
+                      <h6 class="mb-0 fw-bold text-white">EN COURS</h6>
+                      <span class="badge rounded-pill bg-white text-dark fs-10">{{inProgressTasks.length}}</span>
+                  </div>
+                  <div class="kanban-cards-list" style="min-height: 400px;" cdkDropList [cdkDropListData]="inProgressTasks" (cdkDropListDropped)="onDrop($event, 'IN_PROGRESS')">
+                      <div class="kanban-card card mb-3 border-0 shadow-sm border-top border-3 border-primary" *ngFor="let task of inProgressTasks" cdkDrag (click)="openTaskDetail(task)">
+                          <div class="card-body p-3">
+                              <div class="d-flex justify-content-between mb-2">
+                                  <span class="badge fs-9" [ngClass]="getPriorityClass(task.priority)">{{ task.priority }}</span>
+                                  <span class="text-danger fw-bold fs-10"><i class="ti ti-calendar me-1"></i>{{ task.deadline | date:'dd MMM' }}</span>
+                              </div>
+                              <h6 class="task-title mb-2 fs-14 fw-bold text-primary">{{ task.title }}</h6>
+                              <p class="project-name text-muted fs-11 mb-2">{{ task.project?.name || 'Sans projet' }}</p>
+                              
+                              <div class="mb-2 d-flex flex-column gap-1">
+                                  <span class="text-muted fs-9"><i class="ti ti-calendar-plus me-1"></i>Créé: {{task.createdAt | date:'dd/MM HH:mm'}}</span>
+                                  <span class="badge badge-soft-primary fs-9 py-1 px-2 align-self-start">
+                                      <i class="ti ti-clock-play me-1"></i>Début: {{task.actualStartTime | date:'dd/MM HH:mm'}}
+                                  </span>
+                                  <span class="badge badge-soft-warning fs-9 py-1 px-2 align-self-start" *ngIf="getDuration(task)">
+                                      <i class="ti ti-hourglass me-1 text-warning"></i>Durée: {{getDuration(task)}}
+                                  </span>
+                              </div>
+
+                              <div class="d-flex align-items-center justify-content-between mt-auto pt-2 border-top">
+                                  <span class="fs-10 text-muted me-2"><i class="ti ti-checklist me-1"></i>{{ task.subtasks?.length || 0 }}</span>
+                                  <span class="fs-10 text-muted"><i class="ti ti-alert-triangle me-1"></i>{{ task.reclamations?.length || 0 }}</span>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              
+              <!-- TEST Column -->
+              <div class="kanban-column flex-fill bg-light-50 rounded border p-2">
+                  <div class="kanban-header d-flex align-items-center justify-content-between mb-3 bg-indigo text-white p-2 rounded shadow-xs" style="background-color: #6610f2 !important;">
+                      <h6 class="mb-0 fw-bold text-white">TEST</h6>
+                      <span class="badge rounded-pill bg-white text-dark fs-10">{{testTasks.length}}</span>
+                  </div>
+                  <div class="kanban-cards-list" style="min-height: 400px;" cdkDropList [cdkDropListData]="testTasks" (cdkDropListDropped)="onDrop($event, 'TEST')">
+                      <div class="kanban-card card mb-3 border-0 shadow-sm border-top border-3 border-indigo" *ngFor="let task of testTasks" cdkDrag (click)="openTaskDetail(task)">
+                          <div class="card-body p-3">
+                              <div class="d-flex justify-content-between mb-2">
+                                  <span class="badge fs-9" [ngClass]="getPriorityClass(task.priority)">{{ task.priority }}</span>
+                                  <span class="badge bg-soft-indigo text-indigo fs-9"><i class="ti ti-flask"></i> TEST</span>
+                              </div>
+                              <h6 class="task-title mb-2 fs-14 fw-bold" style="color: #6610f2;">{{ task.title }}</h6>
+                              <p class="project-name text-muted fs-11 mb-2">{{ task.project?.name || 'Sans projet' }}</p>
+                              
+                              <div class="mb-2 d-flex flex-column gap-1">
+                                  <span class="badge badge-soft-warning fs-9 py-1 px-2 align-self-start" *ngIf="getDuration(task)">
+                                      <i class="ti ti-hourglass me-1"></i>Durée: {{getDuration(task)}}
+                                  </span>
+                              </div>
+
+                              <div class="d-flex align-items-center justify-content-between mt-auto pt-2 border-top">
+                                  <span class="fs-10 text-muted me-2"><i class="ti ti-checklist me-1"></i>{{ task.subtasks?.length || 0 }}</span>
+                                  <span class="fs-10 text-muted"><i class="ti ti-alert-triangle me-1"></i>{{ task.reclamations?.length || 0 }}</span>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- DONE Column -->
+              <div class="kanban-column flex-fill bg-light-50 rounded border p-2">
+                  <div class="kanban-header d-flex align-items-center justify-content-between mb-3 status-done">
+                      <h6 class="mb-0 fw-bold text-white">TERMINÉ</h6>
+                      <span class="badge rounded-pill bg-white text-dark fs-10">{{doneTasks.length}}</span>
+                  </div>
+                  <div class="kanban-cards-list" style="min-height: 400px;" cdkDropList [cdkDropListData]="doneTasks" (cdkDropListDropped)="onDrop($event, 'DONE')">
+                      <div class="kanban-card card mb-3 border-0 shadow-sm border-top border-3 border-success opacity-85" *ngFor="let task of doneTasks" cdkDrag (click)="openTaskDetail(task)">
+                          <div class="card-body p-3">
+                              <div class="d-flex justify-content-between mb-2">
+                                  <span class="badge badge-soft-success badge-xs fs-9"><i class="ti ti-check fs-10 me-1"></i>Fait</span>
+                              </div>
+                              <h6 class="task-title mb-2 fs-14 fw-bold text-decoration-line-through text-muted">{{ task.title }}</h6>
+                              <p class="project-name text-muted fs-11 mb-2">{{ task.project?.name || 'Sans projet' }}</p>
+                              
+                              <div class="mt-2 pt-2 border-top d-flex flex-column gap-1">
+                                  <small class="text-success fs-10 fw-medium">
+                                      <i class="ti ti-calendar-check me-1"></i>Fini le: {{task.actualEndTime | date:'dd MMM, HH:mm'}}
+                                  </small>
+                                  <small class="text-primary fs-10 fw-bold" *ngIf="getDuration(task)">
+                                      <i class="ti ti-sum me-1"></i>Temps total: {{getDuration(task)}}
+                                  </small>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+          </div> <!-- /d-flex gap-3 -->
+      </div> <!-- /kanban-wrapper -->
     </div> <!-- /Task List Column (md-12) -->
   </div> <!-- /row g-3 mb-3 -->
 
