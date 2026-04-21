@@ -8,11 +8,11 @@
                 <!-- Logo -->
                 <a routerLink="/commercial" class="logo">
                     <span class="logo-light">
-                        <span class="logo-lg"><img src="assets/assets/img/logo.svg" alt="logo"></span>
-                        <span class="logo-sm"><img src="assets/assets/img/logo-small.svg" alt="small logo"></span>
+                        <span class="logo-lg"><img src="assets/images/logo.svg" alt="logo"></span>
+                        <span class="logo-sm"><img src="assets/images/logo.svg" alt="small logo"></span>
                     </span>
                     <span class="logo-dark">
-                        <span class="logo-lg"><img src="assets/assets/img/logo-white.svg" alt="dark logo"></span>
+                        <span class="logo-lg"><img src="assets/images/logo.svg" alt="dark logo"></span>
                     </span>
                 </a>
 
@@ -111,61 +111,108 @@
     <!-- Topbar End -->
         
     <!-- Sidenav Menu Start -->
-    <div class="sidebar" id="sidebar">
-        
-        <div class="sidebar-logo">
-            <div>
-                <a routerLink="/commercial" class="logo logo-normal">
-                    <img src="assets/assets/img/logo.svg" alt="Logo">
-                </a>
-                <a routerLink="/commercial" class="logo-small">
-                    <img src="assets/assets/img/logo-small.svg" alt="Logo">
-                </a>
-            </div>
-            <button class="sidenav-toggle-btn btn border-0 p-0 active" id="toggle_btn"> 
-                <i class="ti ti-arrow-bar-to-left"></i>
-            </button>
-            <button class="sidebar-close">
-                <i class="ti ti-x align-middle"></i>
-            </button>                
+    <aside class="sidebar" id="sidebar">
+        <!-- HEADER : logo + nom application -->
+        <div class="sidebar-header">
+            <a routerLink="/commercial" class="sidebar-logo">
+                <img src="assets/images/logo.svg" alt="Educanet" />
+                <span class="sidebar-app-name">Educanet</span>
+            </a>
         </div>
 
-        <div class="sidebar-inner" data-simplebar>                
-            <div id="sidebar-menu" class="sidebar-menu text-uppercase fs-11 fw-bold">
-                <ul class="sidebar-list">
-                    <li class="menu-title"><span>Espace Commercial</span></li>
-                    <li><a routerLink="/commercial/projects" routerLinkActive="active"><i class="ti ti-atom-2"></i><span>Mes Projets</span></a></li>
-                    <li><a routerLink="/commercial/my-attendance" routerLinkActive="active"><i class="ti ti-clock-user"></i><span>Ma Présence</span></a></li>
-                    <li><a routerLink="/commercial/my-leaves" routerLinkActive="active"><i class="ti ti-calendar-event"></i><span>Mes Congés</span></a></li>
-                    <li><a routerLink="/commercial/tickets" routerLinkActive="active"><i class="ti ti-messages"></i><span>Tickets / Discussions Clients</span></a></li>
-                    <li><a routerLink="/commercial/deals" routerLinkActive="active"><i class="ti ti-medal"></i><span>Mes Deals</span></a></li>
-                    <li>
-                      <a routerLink="/commercial/team-chat" routerLinkActive="active">
-                        <i class="ti ti-messages-2"></i>
-                        <span>Team Chat</span>
-                        <span class="badge rounded-pill bg-danger ms-auto" *ngIf="unreadChatCount > 0">{{ unreadChatCount }}</span>
-                      </a>
-                    </li>
-                    <li>
-                        <a routerLink="/commercial/daily-report" routerLinkActive="active">
-                            <i class="ti ti-checklist text-primary"></i><span>Mon Rapport Journalier</span>
-                            <span class="badge rounded-pill bg-warning ms-1" *ngIf="!reportSubmitted">!</span>
+        <!-- NAVIGATION PRINCIPALE -->
+        <nav class="sidebar-nav" data-simplebar>
+            <!-- ESPACE COMMERCIAL -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">Espace Commercial</span>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/projects" routerLinkActive="active">
+                            <i class="ti ti-atom-2 sidebar-icon"></i>
+                            <span class="sidebar-text">Mes Projets</span>
                         </a>
                     </li>
-                    <li>
-                        <a routerLink="/commercial/primes" routerLinkActive="active">
-                            <i class="ti ti-medal"></i><span>Mes Primes</span>
-                            <span class="badge rounded-pill bg-danger ms-auto" *ngIf="newPrimesCount > 0">{{ newPrimesCount }}</span>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/my-attendance" routerLinkActive="active">
+                            <i class="ti ti-clock-user sidebar-icon"></i>
+                            <span class="sidebar-text">Ma Présence</span>
                         </a>
                     </li>
-                    <li><a routerLink="/commercial/settings" routerLinkActive="active"><i class="ti ti-settings"></i><span>Paramètres</span></a></li>
-
-                    <li class="menu-title"><span>Compte</span></li>
-                    <li><a href="javascript:void(0)" (click)="logout()" class="text-danger"><i class="ti ti-logout"></i><span>Déconnexion</span></a></li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/my-leaves" routerLinkActive="active">
+                            <i class="ti ti-calendar-event sidebar-icon"></i>
+                            <span class="sidebar-text">Mes Congés</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/tickets" routerLinkActive="active">
+                            <i class="ti ti-messages sidebar-icon"></i>
+                            <span class="sidebar-text">Tickets Clients</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/deals" routerLinkActive="active">
+                            <i class="ti ti-medal sidebar-icon"></i>
+                            <span class="sidebar-text">Mes Deals</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/team-chat" routerLinkActive="active">
+                            <i class="ti ti-messages-2 sidebar-icon"></i>
+                            <span class="sidebar-text">Team Chat</span>
+                            <span class="sidebar-badge" *ngIf="unreadChatCount > 0">{{unreadChatCount}}</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/daily-report" routerLinkActive="active">
+                            <i class="ti ti-checklist sidebar-icon"></i>
+                            <span class="sidebar-text">Rapport Journalier</span>
+                            <span class="sidebar-badge" *ngIf="!reportSubmitted">!</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/primes" routerLinkActive="active">
+                            <i class="ti ti-medal sidebar-icon"></i>
+                            <span class="sidebar-text">Mes Primes</span>
+                            <span class="sidebar-badge" *ngIf="newPrimesCount > 0">{{newPrimesCount}}</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- COMPTE -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">Compte</span>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/settings" routerLinkActive="active">
+                            <i class="ti ti-settings sidebar-icon"></i>
+                            <span class="sidebar-text">Paramètres</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- FOOTER : profil utilisateur connecté -->
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-user-avatar">
+                    <img src="assets/assets/img/profiles/avatar-05.jpg" alt="Commercial">
+                </div>
+                <div class="sidebar-user-info">
+                    <span class="sidebar-user-name">{{ commercialName }}</span>
+                    <span class="sidebar-user-role">{{ commercialRole }}</span>
+                </div>
+                <button class="sidebar-logout-btn" (click)="logout()">
+                    <i class="ti ti-logout sidebar-icon"></i>
+                </button>
+            </div>
         </div>
-    </div>
+    </aside>
+    <!-- Sidenav Menu End -->
     <!-- Sidenav Menu End -->
 
     <!-- Page Wrapper -->

@@ -8,11 +8,11 @@
                 <!-- Logo -->
                 <a routerLink="/admin" class="logo">
                     <span class="logo-light">
-                        <span class="logo-lg"><img src="assets/assets/img/logo.svg" alt="logo"></span>
-                        <span class="logo-sm"><img src="assets/assets/img/logo-small.svg" alt="small logo"></span>
+                        <span class="logo-lg"><img src="assets/images/logo.svg" alt="logo"></span>
+                        <span class="logo-sm"><img src="assets/images/logo.svg" alt="small logo"></span>
                     </span>
                     <span class="logo-dark">
-                        <span class="logo-lg"><img src="assets/assets/img/logo-white.svg" alt="dark logo"></span>
+                        <span class="logo-lg"><img src="assets/images/logo.svg" alt="dark logo"></span>
                     </span>
                 </a>
 
@@ -119,122 +119,134 @@
     <!-- Topbar End -->
         
     <!-- Sidenav Menu Start -->
-    <div class="sidebar" id="sidebar">
-        
-        <!-- Sidebar Logo -->
-        <div class="sidebar-logo">
-            <div>
-                <a routerLink="/admin" class="logo logo-normal">
-                    <img src="assets/assets/img/logo.svg" alt="Logo">
-                </a>
-                <a routerLink="/admin" class="logo-small">
-                    <img src="assets/assets/img/logo-small.svg" alt="Logo">
-                </a>
-            </div>
-            <button class="sidenav-toggle-btn btn border-0 p-0 active" id="toggle_btn"> 
-                <i class="ti ti-arrow-bar-to-left"></i>
-            </button>
-            <button class="sidebar-close">
-                <i class="ti ti-x align-middle"></i>
-            </button>                
+    <aside class="sidebar" id="sidebar">
+        <!-- HEADER : logo + nom application -->
+        <div class="sidebar-header">
+            <a routerLink="/admin/overview" class="sidebar-logo">
+                <img src="assets/images/logo.svg" alt="Educanet" />
+                <span class="sidebar-app-name">Educanet</span>
+            </a>
         </div>
 
-        <!-- Sidenav Menu -->
-        <div class="sidebar-inner" data-simplebar>                
-            <div id="sidebar-menu" class="sidebar-menu text-uppercase fs-11 fw-bold">
-                <ul>
-                    <li class="menu-title"><span>Mon Espace</span></li>
-                    <li>
-                        <ul>
-                            <li><a routerLink="/admin/overview" routerLinkActive="active"><i class="ti ti-dashboard"></i><span>Dashboard</span></a></li>
-                            <li><a routerLink="/admin/my-attendance" routerLinkActive="active"><i class="ti ti-clock-user"></i><span>Ma Présence</span></a></li>
-                            <li><a routerLink="/admin/my-leaves" routerLinkActive="active"><i class="ti ti-calendar-event"></i><span>Mes Congés</span></a></li>
-                        </ul>
-                    </li>
-
-                    <li class="menu-title"><span>Menu Principal</span></li>
-                    <li>
-                        <ul>
-                            <li class="submenu">
-                                <a href="javascript:void(0);" (click)="toggleDashboardMenu()" [ngClass]="{'active': router.url.includes('/admin/overview'), 'subdrop': dashboardMenuOpen}">
-                                    <i class="ti ti-dashboard"></i><span>Dashboard</span><span class="menu-arrow"></span>
-                                </a>
-                                <ul [style.display]="dashboardMenuOpen ? 'block' : 'none'">
-                                    <li><a routerLink="/admin/overview" routerLinkActive="active">Vue d'ensemble</a></li>
-                                    <li><a routerLink="/admin/finance" routerLinkActive="active">Flux Financier</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <li class="menu-title"><span>Projets & Travail</span></li>
-                    <li>
-                        <ul>
-                            <li><a routerLink="/admin/projects" routerLinkActive="active"><i class="ti ti-atom-2"></i><span>Gestion Projets</span></a></li>
-                            <li><a routerLink="/admin/deals" routerLinkActive="active"><i class="ti ti-medal"></i><span>Revue des Deals</span></a></li>
-                            <li><a routerLink="/admin/tasks" routerLinkActive="active"><i class="ti ti-list-check"></i><span>Tâches Système</span></a></li>
-                        </ul>
-                    </li>
-
-                    <li class="menu-title"><span>Administration</span></li>
-                    <li><a routerLink="/admin/users" routerLinkActive="active"><i class="ti ti-users"></i><span>Gestion Utilisateurs</span></a></li>
-                    <li><a routerLink="/admin/teams" routerLinkActive="active"><i class="ti ti-users-group"></i><span>Équipes & Membres</span></a></li>
-                    <li><a routerLink="/admin/attendance" routerLinkActive="active"><i class="ti ti-clock-check"></i><span>Suivi Présences</span></a></li>
-                    <li><a routerLink="/admin/tickets" routerLinkActive="active"><i class="ti ti-messages"></i><span>Tickets / Discussions Clients</span></a></li>
-                    <li>
-                        <a routerLink="/admin/primes" routerLinkActive="active">
-                            <i class="ti ti-medal"></i>
-                            <span>Gestion des Primes</span>
-                            <span class="badge rounded-pill bg-warning ms-auto" *ngIf="pendingPrimesCount > 0">{{ pendingPrimesCount }}</span>
+        <!-- NAVIGATION PRINCIPALE -->
+        <nav class="sidebar-nav" data-simplebar>
+            <!-- MON ESPACE -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">Mon Espace</span>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/overview" routerLinkActive="active">
+                            <i class="ti ti-dashboard sidebar-icon"></i>
+                            <span class="sidebar-text">Dashboard</span>
                         </a>
                     </li>
-                    <li>
-                        <a routerLink="/admin/daily-reports" routerLinkActive="active">
-                            <i class="ti ti-report-analytics"></i>
-                            <span>Rapports Journaliers</span>
-                            <span class="badge rounded-pill bg-danger ms-auto" *ngIf="unsubmittedReportCount > 0">{{ unsubmittedReportCount }}</span>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/my-attendance" routerLinkActive="active">
+                            <i class="ti ti-clock-user sidebar-icon"></i>
+                            <span class="sidebar-text">Ma Présence</span>
                         </a>
                     </li>
-                    <li><a routerLink="/admin/audit" routerLinkActive="active"><i class="ti ti-shield-lock"></i><span>Audit Système</span></a></li>
-
-                    <li class="menu-title"><span>Paramètres</span></li>
-                    <li>
-                        <ul>
-                            <li class="submenu">
-                                <a href="javascript:void(0);" (click)="toggleConfigMenu()" [class.subdrop]="configMenuOpen">
-                                    <i class="ti ti-settings-cog"></i><span>Configuration</span><span class="menu-arrow"></span>
-                                </a>
-                                <ul [style.display]="configMenuOpen ? 'block' : 'none'">
-                                    <li><a routerLink="/admin/settings" routerLinkActive="active">Paramètres Généraux</a></li>
-                                    <li><a routerLink="/admin/settings" routerLinkActive="active">Logs Système</a></li>
-                                    <li><a routerLink="/admin/settings" routerLinkActive="active">Sauvegardes</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="javascript:void(0)" (click)="logout()" class="text-danger"><i class="ti ti-logout"></i><span>Déconnexion</span></a></li>
-                        </ul>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/my-leaves" routerLinkActive="active">
+                            <i class="ti ti-calendar-event sidebar-icon"></i>
+                            <span class="sidebar-text">Mes Congés</span>
+                        </a>
                     </li>
                 </ul>
             </div>
-            
-            <!-- Sidebar Widget -->
-            <div class="sidebar-widget mt-4 mx-3 p-3 bg-soft-primary rounded-3 d-none d-lg-block">
-                <div class="d-flex align-items-center mb-2">
-                    <div class="avatar-xs bg-primary text-white rounded-circle me-2 d-flex align-items-center justify-content-center">
-                        <i class="ti ti-activity fs-12"></i>
-                    </div>
-                    <span class="fs-11 fw-bold text-uppercase">Santé Système</span>
-                </div>
-                <div class="d-flex justify-content-between mb-1">
-                    <span class="fs-10 text-muted">Serveur</span>
-                    <span class="fs-10 fw-bold text-success">99.9% Up</span>
-                </div>
-                <div class="progress rounded-pill" style="height: 3px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
-                </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- ADMINISTRATION -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">Administration</span>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/users" routerLinkActive="active">
+                            <i class="ti ti-users sidebar-icon"></i>
+                            <span class="sidebar-text">Utilisateurs</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/teams" routerLinkActive="active">
+                            <i class="ti ti-users-group sidebar-icon"></i>
+                            <span class="sidebar-text">Équipes</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/projects" routerLinkActive="active">
+                            <i class="ti ti-atom-2 sidebar-icon"></i>
+                            <span class="sidebar-text">Projets</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/attendance" routerLinkActive="active">
+                            <i class="ti ti-clock-check sidebar-icon"></i>
+                            <span class="sidebar-text">Présences</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/tickets" routerLinkActive="active">
+                            <i class="ti ti-messages sidebar-icon"></i>
+                            <span class="sidebar-text">Tickets</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/primes" routerLinkActive="active">
+                            <i class="ti ti-medal sidebar-icon"></i>
+                            <span class="sidebar-text">Primes</span>
+                            <span class="sidebar-badge" *ngIf="pendingPrimesCount > 0">{{pendingPrimesCount}}</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/daily-reports" routerLinkActive="active">
+                            <i class="ti ti-report-analytics sidebar-icon"></i>
+                            <span class="sidebar-text">Rapports</span>
+                            <span class="sidebar-badge" *ngIf="unsubmittedReportCount > 0">{{unsubmittedReportCount}}</span>
+                        </a>
+                    </li>
+                </ul>
             </div>
 
+            <div class="sidebar-divider"></div>
+
+            <!-- SYSTEME -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">Système</span>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/audit" routerLinkActive="active">
+                            <i class="ti ti-shield-lock sidebar-icon"></i>
+                            <span class="sidebar-text">Audit</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/finance" routerLinkActive="active">
+                            <i class="ti ti-database sidebar-icon"></i>
+                            <span class="sidebar-text">Finance</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- FOOTER : profil utilisateur connecté -->
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-user-avatar">
+                    <img src="assets/assets/img/profiles/avatar-01.jpg" alt="Admin">
+                </div>
+                <div class="sidebar-user-info">
+                    <span class="sidebar-user-name">{{ adminName }}</span>
+                    <span class="sidebar-user-role">{{ adminRole }}</span>
+                </div>
+                <button class="sidebar-logout-btn" (click)="logout()">
+                    <i class="ti ti-logout sidebar-icon"></i>
+                </button>
+            </div>
         </div>
-    </div>
+    </aside>
+    <!-- Sidenav Menu End -->
     <!-- Sidenav Menu End -->
 
     <!-- Page Wrapper -->

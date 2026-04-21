@@ -8,11 +8,11 @@
                 <!-- Logo -->
                 <a [routerLink]="basePath" class="logo">
                     <span class="logo-light">
-                        <span class="logo-lg"><img src="assets/assets/img/logo.svg" alt="logo"></span>
-                        <span class="logo-sm"><img src="assets/assets/img/logo-small.svg" alt="small logo"></span>
+                        <span class="logo-lg"><img src="assets/images/logo.svg" alt="logo"></span>
+                        <span class="logo-sm"><img src="assets/images/logo.svg" alt="small logo"></span>
                     </span>
                     <span class="logo-dark">
-                        <span class="logo-lg"><img src="assets/assets/img/logo-white.svg" alt="dark logo"></span>
+                        <span class="logo-lg"><img src="assets/images/logo.svg" alt="dark logo"></span>
                     </span>
                 </a>
 
@@ -110,113 +110,174 @@
     <!-- Topbar End -->
         
     <!-- Sidenav Menu Start -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-logo">
-            <div>
-                <a [routerLink]="basePath" class="logo logo-normal">
-                    <img src="assets/assets/img/logo.svg" alt="Logo">
-                </a>
-                <a [routerLink]="basePath" class="logo-small">
-                    <img src="assets/assets/img/logo-small.svg" alt="Logo">
-                </a>
-            </div>
-            <button class="sidenav-toggle-btn btn border-0 p-0 active" id="toggle_btn"> 
-                <i class="ti ti-arrow-bar-to-left"></i>
-            </button>
-            <button class="sidebar-close">
-                <i class="ti ti-x align-middle"></i>
-            </button>                
+    <aside class="sidebar" id="sidebar">
+        <!-- HEADER : logo + nom application -->
+        <div class="sidebar-header">
+            <a [routerLink]="basePath" class="sidebar-logo">
+                <img src="assets/images/logo.svg" alt="Educanet" />
+                <span class="sidebar-app-name">Educanet</span>
+            </a>
         </div>
 
-        <div class="sidebar-inner" data-simplebar>                
-            <div id="sidebar-menu" class="sidebar-menu text-uppercase fs-11 fw-bold">
-                <ul>
-                    <li class="menu-title"><span>{{ sidebarTitle }}</span></li>
-                    <li>
-                        <ul>
-                            <li><a [routerLink]="basePath + '/overview'" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"><i class="ti ti-dashboard"></i><span>Dashboard Perso</span></a></li>
-                            <li><a [routerLink]="basePath + '/my-attendance'" routerLinkActive="active"><i class="ti ti-clock-user"></i><span>Ma Présence</span></a></li>
-                            <li><a [routerLink]="basePath + '/my-leaves'" routerLinkActive="active"><i class="ti ti-calendar-event"></i><span>Mes Congés</span></a></li>
-                            <li>
-                                <a [routerLink]="[basePath, 'daily-report']" routerLinkActive="active">
-                                    <i class="ti ti-checklist text-primary"></i><span>Rapport du Jour</span>
-                                    <span class="badge rounded-pill bg-warning ms-1" *ngIf="!reportSubmitted">!</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a [routerLink]="[basePath, 'primes']" routerLinkActive="active">
-                                    <i class="ti ti-medal"></i><span>Mes Primes</span>
-                                    <span class="badge rounded-pill bg-danger ms-auto" *ngIf="newPrimesCount > 0">{{ newPrimesCount }}</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a [routerLink]="basePath + '/team-chat'" routerLinkActive="active">
-                                    <i class="ti ti-messages"></i>
-                                    <span>Team Chat</span>
-                                    <span class="badge rounded-pill bg-danger ms-auto" *ngIf="unreadChatCount > 0">{{ unreadChatCount }}</span>
-                                </a>
-                            </li>
-                        </ul>
+        <!-- NAVIGATION PRINCIPALE -->
+        <nav class="sidebar-nav" data-simplebar>
+            <!-- MON ESPACE -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">{{ sidebarTitle }}</span>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/overview'" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                            <i class="ti ti-dashboard sidebar-icon"></i>
+                            <span class="sidebar-text">Dashboard Perso</span>
+                        </a>
                     </li>
-
-                    <li class="menu-title"><span>Gestion d'Équipe</span></li>
-                    <li>
-                        <ul>
-                            <li class="submenu">
-                                <a href="javascript:void(0);" class="active subdrop">
-                                    <i class="ti ti-dashboard"></i><span>Dashboards</span><span class="menu-arrow"></span>
-                                </a>
-                                <ul>
-                                    <li><a [routerLink]="basePath + '/overview'" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Équipe Overview</a></li>
-                                    <li><a [routerLink]="basePath + '/planning'" routerLinkActive="active">Planification Charge</a></li>
-                                    <li><a [routerLink]="basePath + '/performance'" routerLinkActive="active">Performance</a></li>
-                                </ul>
-                            </li>
-                        </ul>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/my-attendance'" routerLinkActive="active">
+                            <i class="ti ti-clock-user sidebar-icon"></i>
+                            <span class="sidebar-text">Ma Présence</span>
+                        </a>
                     </li>
-
-                    <li class="menu-title"><span>CRM Ventes</span></li>
-                    <li>
-                        <ul>
-                            <li><a [routerLink]="basePath + '/deals'" routerLinkActive="active"><i class="ti ti-medal"></i><span>Deals & Clients</span></a></li>
-                            <li><a [routerLink]="basePath + '/contacts'" routerLinkActive="active"><i class="ti ti-user-up"></i><span>Contacts</span></a></li>
-                        </ul>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/my-leaves'" routerLinkActive="active">
+                            <i class="ti ti-calendar-event sidebar-icon"></i>
+                            <span class="sidebar-text">Mes Congés</span>
+                        </a>
                     </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="[basePath, 'daily-report']" routerLinkActive="active">
+                            <i class="ti ti-checklist sidebar-icon"></i>
+                            <span class="sidebar-text">Rapport du Jour</span>
+                            <span class="sidebar-badge" *ngIf="!reportSubmitted">!</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="[basePath, 'primes']" routerLinkActive="active">
+                            <i class="ti ti-medal sidebar-icon"></i>
+                            <span class="sidebar-text">Mes Primes</span>
+                            <span class="sidebar-badge" *ngIf="newPrimesCount > 0">{{newPrimesCount}}</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/team-chat'" routerLinkActive="active">
+                            <i class="ti ti-messages sidebar-icon"></i>
+                            <span class="sidebar-text">Team Chat</span>
+                            <span class="sidebar-badge" *ngIf="unreadChatCount > 0">{{unreadChatCount}}</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-                    <li class="menu-title"><span>Projets & Livraison</span></li>
-                    <li><a [routerLink]="basePath + '/projects'" routerLinkActive="active"><i class="ti ti-atom-2"></i><span>Team Projects</span></a></li>
-                    <li><a [routerLink]="basePath + '/tasks'" routerLinkActive="active"><i class="ti ti-list-check"></i><span>Team Tasks</span></a></li>
-                    <li><a [routerLink]="basePath + '/tickets'" routerLinkActive="active"><i class="ti ti-messages"></i><span>Tickets / Discussions Clients</span></a></li>
+            <div class="sidebar-divider"></div>
 
-                    <li class="menu-title"><span>Ressources Humaines</span></li>
-                    <li><a [routerLink]="basePath + '/approvals'" routerLinkActive="active"><i class="ti ti-checklist text-success"></i><span>Centre Approbation</span></a></li>
-                    <li><a [routerLink]="basePath + '/attendance'" routerLinkActive="active"><i class="ti ti-article"></i><span>Présences</span></a></li>
-                    <li><a [routerLink]="basePath + '/leaves'" routerLinkActive="active"><i class="ti ti-message-star"></i><span>Congés</span></a></li>
+            <!-- GESTION D'EQUIPE -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">Gestion d'Équipe</span>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/overview'" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                            <i class="ti ti-users sidebar-icon"></i>
+                            <span class="sidebar-text">Équipe Overview</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/planning'" routerLinkActive="active">
+                            <i class="ti ti-calendar-stats sidebar-icon"></i>
+                            <span class="sidebar-text">Planification</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/performance'" routerLinkActive="active">
+                            <i class="ti ti-chart-bar sidebar-icon"></i>
+                            <span class="sidebar-text">Performance</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/team'" routerLinkActive="active">
+                            <i class="ti ti-users-group sidebar-icon"></i>
+                            <span class="sidebar-text">Mon Équipe</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-                    <li class="menu-title"><span>Compte</span></li>
-                    <li><a [routerLink]="basePath + '/team'" routerLinkActive="active"><i class="ti ti-users-group"></i><span>Mon Équipe</span></a></li>
-                    <li><a [routerLink]="basePath + '/settings'" routerLinkActive="active"><i class="ti ti-settings-cog"></i><span>Paramètres</span></a></li>
-                    <li><a href="javascript:void(0)" (click)="logout()" class="text-danger"><i class="ti ti-logout"></i><span>Déconnexion</span></a></li>
+            <div class="sidebar-divider"></div>
+
+            <!-- PROJETS & CRM -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">Projets & CRM</span>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/projects'" routerLinkActive="active">
+                            <i class="ti ti-atom-2 sidebar-icon"></i>
+                            <span class="sidebar-text">Team Projects</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/tasks'" routerLinkActive="active">
+                            <i class="ti ti-list-check sidebar-icon"></i>
+                            <span class="sidebar-text">Team Tasks</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/deals'" routerLinkActive="active">
+                            <i class="ti ti-medal sidebar-icon"></i>
+                            <span class="sidebar-text">Deals & Clients</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/tickets'" routerLinkActive="active">
+                            <i class="ti ti-messages sidebar-icon"></i>
+                            <span class="sidebar-text">Tickets</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
             
-            <!-- Risk Alert Widget -->
-            <div class="sidebar-widget mt-4 mx-3 p-3 bg-soft-danger rounded-3 d-none d-lg-block border-start border-3 border-danger">
-                <div class="d-flex align-items-center mb-2">
-                    <div class="avatar-xs bg-danger text-white rounded-circle me-2 d-flex align-items-center justify-content-center">
-                        <i class="ti ti-alert-triangle fs-12"></i>
-                    </div>
-                    <span class="fs-11 fw-bold text-uppercase text-danger">Alerte de Risques</span>
-                </div>
-                <div class="d-flex justify-content-between mb-1">
-                    <span class="fs-10 text-muted">Projets Critiques</span>
-                    <span class="badge bg-danger rounded-pill fs-9">2</span>
-                </div>
-                <p class="fs-10 text-muted mb-0">Retard détecté sur projet <span class="fw-bold">ERP Cloud</span>.</p>
+            <div class="sidebar-divider"></div>
+
+            <!-- RH -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">Ressources Humaines</span>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/approvals'" routerLinkActive="active">
+                            <i class="ti ti-checklist sidebar-icon"></i>
+                            <span class="sidebar-text">Approbations</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/attendance'" routerLinkActive="active">
+                            <i class="ti ti-article sidebar-icon"></i>
+                            <span class="sidebar-text">Présences</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/leaves'" routerLinkActive="active">
+                            <i class="ti ti-calendar-user sidebar-icon"></i>
+                            <span class="sidebar-text">Congés</span>
+                        </a>
+                    </li>
+                </ul>
             </div>
-            
+        </nav>
+
+        <!-- FOOTER : profil utilisateur connecté -->
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-user-avatar">
+                   <img src="assets/assets/img/profiles/avatar-02.jpg" alt="Manager">
+                </div>
+                <div class="sidebar-user-info">
+                    <span class="sidebar-user-name">{{ managerName }}</span>
+                    <span class="sidebar-user-role">{{ managerRole }}</span>
+                </div>
+                <button class="sidebar-logout-btn" (click)="logout()">
+                    <i class="ti ti-logout sidebar-icon"></i>
+                </button>
+            </div>
         </div>
-    </div>
+    </aside>
+    <!-- Sidenav Menu End -->
     <!-- Sidenav Menu End -->
 
     <!-- Page Wrapper -->
