@@ -45,4 +45,10 @@ export class ManagerPerformanceComponent implements OnInit {
     if (percent > 70) return 'progress-bar bg-warning';
     return 'progress-bar bg-success';
   }
+
+  getProgressColor(percent: number): string {
+    if (percent > 80) return 'progress-bar bg-success';
+    if (percent > 40) return 'progress-bar bg-primary';
+    return 'progress-bar bg-warning';
+  }
 }

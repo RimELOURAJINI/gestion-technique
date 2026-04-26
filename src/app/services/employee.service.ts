@@ -106,5 +106,14 @@ export class EmployeeService {
   deleteSubtask(subtaskId: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/subtasks/${subtaskId}`);
   }
+
+  // === Calendar Notes ===
+  getCalendarNotes(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/calendar-notes/user/${userId}`);
+  }
+
+  saveCalendarNote(note: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/calendar-notes`, note);
+  }
 }
 

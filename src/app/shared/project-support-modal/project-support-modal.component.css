@@ -84,11 +84,31 @@
 
 .cursor-pointer { cursor: pointer; }
 
+.bg-soft-success { background-color: rgba(28, 200, 138, 0.08); }
+
+.ticket-item.historical {
+    opacity: 0.8;
+}
+
+.ticket-item.historical:hover {
+    opacity: 1;
+}
+
+.upload-box {
+    border: 2px dashed #cbd5e1 !important;
+    transition: all 0.2s ease;
+}
+
+.upload-box:hover {
+    border-color: #4e73df !important;
+    background-color: #f8f9fc;
+}
+
 /* Custom Scrollbar */
-.ticket-scroll-area::-webkit-scrollbar {
+.ticket-scroll-area::-webkit-scrollbar, .overflow-auto::-webkit-scrollbar {
     width: 4px;
 }
-.ticket-scroll-area::-webkit-scrollbar-thumb {
+.ticket-scroll-area::-webkit-scrollbar-thumb, .overflow-auto::-webkit-scrollbar-thumb {
     background: #cbd5e1;
     border-radius: 10px;
 }

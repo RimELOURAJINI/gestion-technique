@@ -17,7 +17,6 @@ import { ProjectSupportModalComponent } from '../../shared/project-support-modal
 export class TeamProjectsComponent implements OnInit {
     projects: Project[] = [];
     isLoading = true;
-    selectedProject: Project | null = null;
     showSupportModal = false;
     selectedSupportProject: Project | null = null;
 
@@ -69,14 +68,6 @@ export class TeamProjectsComponent implements OnInit {
     closeSupportModal() {
         this.showSupportModal = false;
         this.selectedSupportProject = null;
-    }
-
-    openProject(project: Project) {
-        this.selectedProject = project;
-    }
-
-    closeProject() {
-        this.selectedProject = null;
     }
 
     getProgress(project: Project): number {

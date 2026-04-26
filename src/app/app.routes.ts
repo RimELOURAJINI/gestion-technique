@@ -20,7 +20,7 @@ import { EmployeeDashboardComponent } from './employee/employee-dashboard/employ
 import { EmployeeHomeComponent } from './employee/employee-home/employee-home.component';
 import { MyTasksComponent } from './employee/my-tasks/my-tasks.component';
 import { MyProjectsComponent } from './employee/my-projects/my-projects.component';
-import { AdminReclamationsComponent } from './admin/reclamations/reclamations.component';
+import { ReclamationHubComponent } from './shared/reclamations/reclamations.component';
 import { AdminTicketsComponent } from './admin/tickets/tickets.component';
 import { AdminOverviewComponent } from './admin/overview/overview.component';
 import { UserManagementComponent } from './admin/user-management/user-management.component';
@@ -79,7 +79,7 @@ export const routes: Routes = [
       { path: 'projects', component: ProjectManagementComponent },
       { path: 'projects/:id', component: UnifiedProjectDetailComponent },
       { path: 'tasks', component: TaskManagementComponent },
-      { path: 'reclamations', component: AdminReclamationsComponent },
+      { path: 'reclamations', component: ReclamationHubComponent },
       { path: 'tickets', component: AdminTicketsComponent },
       { path: 'users', component: UserManagementComponent },
       { path: 'finance', component: AdminFinanceComponent },
@@ -107,6 +107,7 @@ export const routes: Routes = [
       { path: 'tasks', component: TeamTasksComponent },
       { path: 'deals', component: DealsComponent },
       { path: 'tickets', component: TicketsComponent },
+      { path: 'reclamations', component: ReclamationHubComponent },
       { path: 'planning', component: ManagerPlanningComponent },
       { path: 'approvals', component: ManagerApprovalsComponent },
       { path: 'performance', component: ManagerPerformanceComponent },
@@ -135,6 +136,7 @@ export const routes: Routes = [
       { path: 'tasks', component: TeamTasksComponent },
       { path: 'deals', component: DealsComponent },
       { path: 'tickets', component: TicketsComponent },
+      { path: 'reclamations', component: ReclamationHubComponent },
       { path: 'planning', component: ManagerPlanningComponent },
       { path: 'approvals', component: ManagerApprovalsComponent },
       { path: 'performance', component: ManagerPerformanceComponent },
@@ -161,6 +163,7 @@ export const routes: Routes = [
       { path: 'tasks', component: MyTasksComponent },
       { path: 'projects', component: MyProjectsComponent },
       { path: 'tickets', component: EmployeeTicketsComponent },
+      { path: 'reclamations', component: ReclamationHubComponent },
       { path: 'calendar', component: CalendarComponent },
       { path: 'timesheets', component: TimesheetsComponent },
       { path: 'leaves', component: EmployeeLeavesComponent },
@@ -186,6 +189,7 @@ export const routes: Routes = [
       { path: 'settings', component: FeaturePlaceholderComponent, data: { title: 'Paramètres Commercial', description: 'Préférences commercial et options de suivi.' } },
       { path: 'deals', component: CommercialDealsComponent },
       { path: 'tickets', component: CommercialTicketsComponent },
+      { path: 'reclamations', component: ReclamationHubComponent },
       { path: 'my-attendance', component: AttendancePersonalComponent },
       { path: 'my-leaves', component: EmployeeLeavesComponent },
       { path: 'primes', component: MyPrimesComponent },
@@ -203,6 +207,7 @@ export const routes: Routes = [
       { path: 'overview', component: ClientProjectsComponent },
       { path: 'projects/:id', component: UnifiedProjectDetailComponent },
       { path: 'tickets', component: ClientTicketsComponent },
+      { path: 'reclamations', component: ReclamationHubComponent },
       { path: 'deals', component: ClientDealsComponent },
       { path: 'my-attendance', component: AttendancePersonalComponent },
       { path: 'my-leaves', component: EmployeeLeavesComponent },

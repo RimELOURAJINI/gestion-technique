@@ -8,6 +8,7 @@ import { interval, Subscription } from 'rxjs';
 import { TeamChatService } from '../../services/team-chat.service';
 import { DailyReportService } from '../../services/daily-report.service';
 import { PrimeService } from '../../services/prime.service';
+import { TicketService } from '../../services/ticket.service';
 
 
 @Component({
@@ -28,6 +29,7 @@ export class ManagerDashboardComponent implements OnInit {
     unreadChatCount: number = 0;
     reportSubmitted: boolean = true; // true = no warning dot shown
     newPrimesCount: number = 0;
+    activeTicketsCount: number = 0;
     private notificationSub?: Subscription;
     private chatCountSub?: Subscription;
 
@@ -37,7 +39,8 @@ export class ManagerDashboardComponent implements OnInit {
         private notificationService: NotificationService,
         private teamChatService: TeamChatService,
         private dailyReportService: DailyReportService,
-        private primeService: PrimeService
+        private primeService: PrimeService,
+        private ticketService: TicketService
     ) { }
 
 
@@ -65,6 +68,7 @@ export class ManagerDashboardComponent implements OnInit {
                 this.loadNotifications(user.id);
                 this.loadReportStatus(user.id);
                 this.loadPrimes(user.id);
+                this.loadActiveTicketsCount(user.id);
                 // Poll for new notifications every 30 seconds
                 this.notificationSub = interval(30000).subscribe(() => {
                     const currentId = this.authService.getUserId();
@@ -72,6 +76,7 @@ export class ManagerDashboardComponent implements OnInit {
                         this.loadNotifications(currentId);
                         this.loadUnreadChatCount(currentId);
                         this.loadPrimes(currentId);
+                        this.loadActiveTicketsCount(currentId);
                     }
                 });
                 this.loadUnreadChatCount(user.id);
@@ -132,6 +137,12 @@ export class ManagerDashboardComponent implements OnInit {
     loadPrimes(userId: number): void {
         this.primeService.getMyAffectations(userId).subscribe(data => {
             this.newPrimesCount = data.filter(a => a.status === 'VALIDÉE').length;
+        });
+    }
+
+    loadActiveTicketsCount(userId: number): void {
+        this.ticketService.getTicketsByManager(userId).subscribe(data => {
+            this.activeTicketsCount = data.filter(t => t.status !== 'RESOLVED' && t.status !== 'CLOSED').length;
         });
     }
 }

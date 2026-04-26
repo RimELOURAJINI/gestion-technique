@@ -63,18 +63,17 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
         this.stats.activeTasks = tasks.filter(t => t.status !== 'COMPLETED' && t.status !== 'DONE').length;
         this.stats.completedTasks = tasks.filter(t => t.status === 'COMPLETED' || t.status === 'DONE').length;
         
-        // Today's tasks
+        // Today's tasks (All uncompleted tasks)
         const todayStr = this.today.toDateString();
         let ctx = '';
         this.todayTasks = tasks.filter(t => {
-          if (!t.deadline) return false;
-          const isToday = new Date(t.deadline).toDateString() === todayStr;
-          if (isToday) {
-             ctx += `- ${t.title} (Complexité technique: ${t.storyPoints || 3}/8 points)\n`;
+          const isUncompleted = t.status !== 'COMPLETED' && t.status !== 'DONE';
+          if (isUncompleted) {
+             ctx += `- ${t.title} (Priorité: ${t.priority}, Deadline: ${t.deadline ? new Date(t.deadline).toLocaleDateString() : 'Non fixée'})\n`;
           }
-          return isToday;
+          return isUncompleted;
         });
-        this.tasksContextStr = ctx ? ctx : 'Aucune tâche précise deadline aujourd\'hui.';
+        this.tasksContextStr = ctx ? ctx : 'Félicitations, vous n\'avez aucune tâche en cours !';
 
         // Upcoming (non-today, non-completed)
         this.upcomingTasks = tasks

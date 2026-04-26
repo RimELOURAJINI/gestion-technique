@@ -16,29 +16,22 @@
             </button>
         </div>
 
-        <div class="modal-body-custom d-flex overflow-hidden" style="height: 550px;">
+        <div class="modal-body-custom d-flex overflow-hidden" style="height: 600px;">
             <!-- Ticket List Sidebar -->
-            <div class="ticket-sidebar bg-light border-end" [ngClass]="{'d-none d-md-block': selectedTicketId, 'w-100': !selectedTicketId}">
+            <div class="ticket-sidebar bg-light border-end" [ngClass]="{'d-none d-md-block': (selectedTicketId || isCreating), 'w-100': (!selectedTicketId && !isCreating)}">
                 <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-white sticky-top">
-                    <h6 class="mb-0 fw-bold fs-13">Tickets du Projet</h6>
-                    <button class="btn btn-primary btn-xs rounded-pill px-2 py-1 fs-11" (click)="createNewTicket()">
+                    <h6 class="mb-0 fw-bold fs-13">Tickets Actifs</h6>
+                    <button class="btn btn-primary btn-xs rounded-pill px-2 py-1 fs-11" (click)="createNewTicketMode()">
                         <i class="ti ti-plus me-1"></i>NOUVEAU
                     </button>
                 </div>
 
-                <div class="ticket-scroll-area p-2 overflow-auto h-100">
+                <div class="ticket-scroll-area p-2 overflow-auto" style="height: calc(100% - 100px);">
                     <div *ngIf="isLoading" class="text-center py-4">
                         <div class="spinner-border spinner-border-sm text-primary"></div>
                     </div>
 
-                    <div *ngIf="!isLoading && tickets.length === 0" class="text-center py-5 px-3">
-                        <i class="ti ti-mood-empty fs-1 text-muted-50 mb-2 d-block"></i>
-                        <p class="text-muted small">Aucun ticket actif. Besoin d'aide technique ?</p>
-                        <button class="btn btn-outline-primary btn-sm rounded-pill mt-2" (click)="createNewTicket()">
-                            Ouvrir un ticket
-                        </button>
-                    </div>
-
+                    <!-- Active Tickets -->
                     <div *ngFor="let t of tickets" 
                          class="ticket-item p-3 mb-2 rounded-3 border bg-white shadow-sm cursor-pointer border-start"
                          [ngClass]="{'selected border-primary border-4': selectedTicketId === t.id}"
@@ -47,43 +40,147 @@
                             <span class="fs-10 text-muted-50">#{{t.id}}</span>
                             <span class="badge rounded-pill fs-9" [ngClass]="getStatusBadge(t.status)">{{t.status}}</span>
                         </div>
-                        <h6 class="mb-1 fw-bold fs-13 text-truncate">{{t.subject}}</h6>
+                        <h6 class="mb-1 fw-bold fs-13 text-truncate">{{t.title || t.subject}}</h6>
                         <div class="d-flex align-items-center justify-content-between">
                             <span class="fs-11 text-muted"><i class="ti ti-clock me-1"></i>{{t.createdAt | date:'dd MMM'}}</span>
-                            <div class="avatar-group" *ngIf="t.participantsCount > 0">
-                                <span class="avatar-xs rounded-circle bg-soft-primary text-primary fs-9 d-flex align-items-center justify-content-center">
-                                    +{{t.participantsCount}}
-                                </span>
-                            </div>
                         </div>
+                    </div>
+
+                    <!-- Historical Tickets -->
+                    <div *ngIf="historicalTickets.length > 0" class="mt-4">
+                        <h6 class="fs-11 text-uppercase text-muted fw-bold px-2 mb-2">Historique (Validés)</h6>
+                        <div *ngFor="let t of historicalTickets" 
+                             class="ticket-item historical p-2 mb-2 rounded-3 border bg-soft-light cursor-pointer"
+                             [ngClass]="{'selected border-success': selectedTicketId === t.id}"
+                             (click)="selectTicket(t)">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fs-9 text-muted">#{{t.id}}</span>
+                                <span class="badge bg-success text-white rounded-pill fs-8">VALIDÉ</span>
+                            </div>
+                            <h6 class="mb-0 fw-bold fs-12 text-truncate text-muted">{{t.title || t.subject}}</h6>
+                        </div>
+                    </div>
+
+                    <div *ngIf="!isLoading && tickets.length === 0 && historicalTickets.length === 0" class="text-center py-5 px-3">
+                        <i class="ti ti-mood-empty fs-1 text-muted-50 mb-2 d-block"></i>
+                        <p class="text-muted small">Aucun ticket. Besoin d'aide technique ?</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Ticket Details / Chat View -->
-            <div class="chat-area flex-grow-1 d-flex flex-column bg-white position-relative" [ngClass]="{'d-block': selectedTicketId, 'd-none d-md-flex': true}">
-                <div *ngIf="!selectedTicketId" class="h-100 d-flex flex-column align-items-center justify-content-center text-center p-5">
+            <!-- Content Area (Chat or Creation or Validation) -->
+            <div class="chat-area flex-grow-1 d-flex flex-column bg-white position-relative" [ngClass]="{'d-block': (selectedTicketId || isCreating), 'd-none d-md-flex': true}">
+                
+                <!-- Welcome View -->
+                <div *ngIf="!selectedTicketId && !isCreating" class="h-100 d-flex flex-column align-items-center justify-content-center text-center p-5">
                     <img src="assets/assets/img/icons/elemnt-01.svg" class="img-fluid mb-4 opacity-25" style="max-height: 120px;">
-                    <h5 class="fw-bold">Bienvenue au Support Hub</h5>
-                    <p class="text-muted small px-4">Sélectionnez un ticket à gauche pour voir les messages ou créez-en un nouveau pour discuter avec l'équipe Admin et Technique.</p>
+                    <h5 class="fw-bold">Support Hub</h5>
+                    <p class="text-muted small px-4">Sélectionnez un ticket ou créez-en un nouveau.</p>
                 </div>
 
-                <div *ngIf="selectedTicketId" class="h-100 d-flex flex-column overflow-hidden">
-                    <!-- Chat Header with Actions -->
+                <!-- Creation Form View -->
+                <div *ngIf="isCreating" class="h-100 d-flex flex-column p-4 overflow-auto">
+                    <div class="d-flex align-items-center mb-4">
+                        <button class="btn btn-link btn-sm p-0 me-3" (click)="isCreating = false">
+                            <i class="ti ti-arrow-left fs-20"></i>
+                        </button>
+                        <h5 class="mb-0 fw-bold">Ouvrir un nouveau ticket</h5>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fs-13 fw-bold">Titre du ticket</label>
+                        <input type="text" class="form-control rounded-3" [(ngModel)]="newTicket.title" placeholder="Ex: Erreur lors du déploiement">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fs-13 fw-bold">Sujet / Description détaillée</label>
+                        <textarea class="form-control rounded-3" rows="4" [(ngModel)]="newTicket.subject" placeholder="Décrivez votre problème ici..."></textarea>
+                    </div>
+
+                    <div class="mb-3" *ngIf="!task">
+                        <label class="form-label fs-13 fw-bold">Projet concerné</label>
+                        <select class="form-select rounded-3" [(ngModel)]="newTicket.projectId">
+                            <option [value]="null">Sélectionner un projet...</option>
+                            <option *ngIf="project" [value]="project.id">{{project.name}} (Actuel)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fs-13 fw-bold d-block">Captures d'écran (Max 3)</label>
+                        <div class="d-flex gap-2 mb-2">
+                            <div *ngFor="let img of newTicket.images; let i = index" class="position-relative">
+                                <img [src]="img" class="rounded border" style="width: 80px; height: 80px; object-fit: cover;">
+                                <button class="btn btn-danger btn-xs rounded-circle position-absolute top-0 end-0 p-1" style="transform: translate(50%, -50%);" (click)="removeImage(i)">
+                                    <i class="ti ti-x fs-10"></i>
+                                </button>
+                            </div>
+                            <label *ngIf="newTicket.images.length < 3" class="upload-box border border-dashed rounded d-flex align-items-center justify-content-center cursor-pointer" style="width: 80px; height: 80px;">
+                                <input type="file" class="d-none" (change)="onFileSelected($event)" multiple accept="image/*">
+                                <i class="ti ti-plus text-muted fs-20"></i>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto pt-3 border-top d-flex gap-2">
+                        <button class="btn btn-light rounded-pill px-4" (click)="isCreating = false">Annuler</button>
+                        <button class="btn btn-primary rounded-pill px-4 shadow" (click)="submitNewTicket()" [disabled]="!newTicket.title || !newTicket.subject">
+                            Créer le ticket
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chat / Details View -->
+                <div *ngIf="selectedTicketId && !isCreating" class="h-100 d-flex flex-column overflow-hidden">
                     <div class="p-2 border-bottom d-flex justify-content-between align-items-center bg-white">
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center overflow-hidden">
                             <button class="btn btn-link btn-sm text-decoration-none d-md-none me-2 p-0" (click)="selectedTicketId = null">
                                 <i class="ti ti-chevron-left fs-16"></i>
                             </button>
-                            <h6 class="mb-0 fw-bold fs-14 text-truncate" style="max-width: 250px;">{{ getSelectedTicket()?.subject }}</h6>
+                            <h6 class="mb-0 fw-bold fs-14 text-truncate">{{ getSelectedTicket()?.title || getSelectedTicket()?.subject }}</h6>
                         </div>
                         <div *ngIf="isCreator(getSelectedTicket()) && getSelectedTicket()?.status !== 'VALIDATED'">
-                            <button class="btn btn-sm btn-success rounded-pill px-3 shadow-sm d-flex align-items-center py-1" (click)="validateTicket(selectedTicketId)">
+                            <button class="btn btn-sm btn-success rounded-pill px-3 py-1 shadow-sm fs-12" (click)="startValidation()">
                                 <i class="ti ti-check me-1"></i> Valider
                             </button>
                         </div>
                     </div>
-                    <app-ticket-chat [ticketId]="selectedTicketId" [showHeader]="false" class="h-100"></app-ticket-chat>
+
+                    <!-- Validation Info for Historical Tickets -->
+                    <div *ngIf="getSelectedTicket()?.status === 'VALIDATED'" class="p-3 bg-soft-success border-bottom">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="ti ti-circle-check-filled text-success me-2"></i>
+                            <span class="fw-bold fs-13 text-success">Ticket résolu et validé</span>
+                        </div>
+                        <p class="mb-1 fs-12 text-muted"><strong>Validé le :</strong> {{getSelectedTicket().validatedAt | date:'dd/MM/yyyy HH:mm'}}</p>
+                        <p class="mb-1 fs-12 text-muted"><strong>Corrigé par :</strong> {{getSelectedTicket().correctedBy}}</p>
+                        <p class="mb-0 fs-12 text-muted"><strong>Solution :</strong> {{getSelectedTicket().solution}}</p>
+                    </div>
+
+                    <!-- Chat Component -->
+                    <app-ticket-chat *ngIf="!isValidating" [ticketId]="selectedTicketId" [showHeader]="false" class="h-100"></app-ticket-chat>
+
+                    <!-- Validation Form -->
+                    <div *ngIf="isValidating" class="p-4 bg-light h-100 overflow-auto">
+                        <h6 class="fw-bold mb-3">Validation de la résolution</h6>
+                        <p class="small text-muted mb-4">Veuillez indiquer comment le problème a été résolu avant de clôturer définitivement le ticket.</p>
+                        
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Qui a corrigé le problème ?</label>
+                            <input type="text" class="form-control" [(ngModel)]="validationData.correctedBy" placeholder="Nom de l'intervenant">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold">Solution trouvée</label>
+                            <textarea class="form-control" rows="3" [(ngModel)]="validationData.solution" placeholder="Description de la correction apportée..."></textarea>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-light btn-sm rounded-pill px-3" (click)="isValidating = false">Annuler</button>
+                            <button class="btn btn-success btn-sm rounded-pill px-4 shadow" (click)="confirmValidation()">
+                                Confirmer la résolution
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

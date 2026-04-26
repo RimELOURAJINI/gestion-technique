@@ -8,6 +8,7 @@ import { interval, Subscription } from 'rxjs';
 import { TeamChatService } from '../../services/team-chat.service';
 import { DailyReportService } from '../../services/daily-report.service';
 import { PrimeService } from '../../services/prime.service';
+import { TicketService } from '../../services/ticket.service';
 
 
 @Component({
@@ -26,6 +27,7 @@ export class EmployeeDashboardComponent implements OnInit {
   unreadChatCount: number = 0;
   reportSubmitted: boolean = true;
   newPrimesCount: number = 0;
+  activeTicketsCount: number = 0;
   tasksMenuOpen: boolean = false;
   dashboardMenuOpen: boolean = false;
   private notificationSub?: Subscription;
@@ -38,7 +40,8 @@ export class EmployeeDashboardComponent implements OnInit {
     private notificationService: NotificationService,
     private teamChatService: TeamChatService,
     private dailyReportService: DailyReportService,
-    private primeService: PrimeService
+    private primeService: PrimeService,
+    private ticketService: TicketService
   ) {}
 
 
@@ -55,11 +58,13 @@ export class EmployeeDashboardComponent implements OnInit {
     this.loadUnreadChatCount();
     this.loadReportStatus();
     this.loadPrimes();
+    this.loadActiveTicketsCount();
     // Poll every 30 seconds
     this.notificationSub = interval(30000).subscribe(() => {
       this.loadNotifications();
       this.loadUnreadChatCount();
       this.loadPrimes();
+      this.loadActiveTicketsCount();
     });
 
     // Auto-open menu if on tasks page
@@ -143,6 +148,15 @@ export class EmployeeDashboardComponent implements OnInit {
     if (userId) {
       this.primeService.getMyAffectations(userId).subscribe(data => {
         this.newPrimesCount = data.filter(a => a.status === 'VALIDÉE').length;
+      });
+    }
+  }
+
+  loadActiveTicketsCount(): void {
+    const userId = this.authService.getUserId();
+    if (userId) {
+      this.ticketService.getTicketsByEmployee(userId).subscribe(data => {
+        this.activeTicketsCount = data.filter(t => t.status !== 'RESOLVED' && t.status !== 'CLOSED').length;
       });
     }
   }

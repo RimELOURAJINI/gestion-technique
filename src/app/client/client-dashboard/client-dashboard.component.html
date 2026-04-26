@@ -24,6 +24,10 @@
                </a>
                <a class="nav-link text-white d-flex align-items-center gap-2" routerLink="./tickets" routerLinkActive="active-link">
                   <i class="ti ti-messages fs-18"></i> Support & Tickets
+                  <span class="badge bg-danger rounded-pill" style="font-size: 10px;" *ngIf="activeTicketsCount > 0">{{activeTicketsCount}}</span>
+               </a>
+               <a class="nav-link text-white d-flex align-items-center gap-2" routerLink="./reclamations" routerLinkActive="active-link">
+                  <i class="ti ti-alert-circle fs-18"></i> Réclamations
                </a>
                <a class="nav-link text-white d-flex align-items-center gap-2" routerLink="./deals" routerLinkActive="active-link">
                   <i class="ti ti-medal fs-18"></i> Mes Propositions

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { EmployeeService } from '../../services/employee.service';
 import { AuthService } from '../../services/auth.service';
 import { Task } from '../../models/models';
@@ -9,12 +10,13 @@ interface CalendarDay {
   isCurrentMonth: boolean;
   isToday: boolean;
   tasks: Task[];
+  note?: string;
 }
 
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css'
 })
@@ -25,6 +27,9 @@ export class CalendarComponent implements OnInit {
   tasks: Task[] = [];
   calendarDays: CalendarDay[] = [];
   selectedDay: CalendarDay | null = null;
+  dayNote: string = '';
+  notesMap: { [key: string]: string } = {};
+  currentUserId: number | null = null;
 
   monthNames = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
   dayNames = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
@@ -32,15 +37,27 @@ export class CalendarComponent implements OnInit {
   constructor(private employeeService: EmployeeService, private authService: AuthService) {}
 
   ngOnInit(): void {
-    const userId = this.authService.getUserId();
-    if (userId) {
-      this.employeeService.getMyTasks(userId).subscribe(tasks => {
+    this.currentUserId = this.authService.getUserId();
+    if (this.currentUserId) {
+      // Load both tasks and notes from backend
+      this.employeeService.getMyTasks(this.currentUserId).subscribe(tasks => {
         this.tasks = tasks;
-        this.buildCalendar();
+        this.loadNotes();
       });
     } else {
       this.buildCalendar();
     }
+  }
+
+  loadNotes(): void {
+    if (!this.currentUserId) return;
+    this.employeeService.getCalendarNotes(this.currentUserId).subscribe(notes => {
+      this.notesMap = {};
+      notes.forEach(n => {
+        this.notesMap[n.date] = n.content;
+      });
+      this.buildCalendar();
+    });
   }
 
   buildCalendar(): void {
@@ -54,19 +71,22 @@ export class CalendarComponent implements OnInit {
     for (let i = startDay - 1; i >= 0; i--) {
       const d = new Date(firstDay);
       d.setDate(d.getDate() - (i + 1));
-      days.push({ date: d, isCurrentMonth: false, isToday: false, tasks: this.getTasksForDate(d) });
+      const key = this.formatDate(d);
+      days.push({ date: d, isCurrentMonth: false, isToday: false, tasks: this.getTasksForDate(d), note: this.notesMap[key] });
     }
     for (let i = 1; i <= lastDay.getDate(); i++) {
       const d = new Date(this.currentYear, this.currentMonth, i);
       const isToday = d.toDateString() === this.today.toDateString();
-      days.push({ date: d, isCurrentMonth: true, isToday, tasks: this.getTasksForDate(d) });
+      const key = d.toDateString();
+      days.push({ date: d, isCurrentMonth: true, isToday, tasks: this.getTasksForDate(d), note: this.notesMap[key] });
     }
     // Fill to 6 rows
     let remaining = 42 - days.length;
     for (let i = 1; i <= remaining; i++) {
       const d = new Date(lastDay);
       d.setDate(d.getDate() + i);
-      days.push({ date: d, isCurrentMonth: false, isToday: false, tasks: this.getTasksForDate(d) });
+      const key = this.formatDate(d);
+      days.push({ date: d, isCurrentMonth: false, isToday: false, tasks: this.getTasksForDate(d), note: this.notesMap[key] });
     }
 
     this.calendarDays = days;
@@ -94,6 +114,40 @@ export class CalendarComponent implements OnInit {
 
   selectDay(day: CalendarDay): void {
     this.selectedDay = day;
+    const key = day.date.toDateString();
+    this.dayNote = this.notesMap[key] || '';
+  }
+
+  saveNote(): void {
+    if (!this.selectedDay || !this.currentUserId) return;
+    const key = this.formatDate(this.selectedDay.date);
+    
+    const noteObj = {
+      userId: this.currentUserId,
+      date: key,
+      content: this.dayNote.trim()
+    };
+
+    this.employeeService.saveCalendarNote(noteObj).subscribe({
+      next: (saved) => {
+        if (this.dayNote.trim()) {
+          this.notesMap[key] = this.dayNote.trim();
+        } else {
+          delete this.notesMap[key];
+        }
+        this.buildCalendar();
+      },
+      error: (err) => alert('Erreur lors de la sauvegarde de la note.')
+    });
+  }
+
+  formatDate(date: Date): string {
+    const d = new Date(date);
+    const month = '' + (d.getMonth() + 1);
+    const day = '' + d.getDate();
+    const year = d.getFullYear();
+
+    return [year, month.padStart(2, '0'), day.padStart(2, '0')].join('-');
   }
 
   get currentMonthName(): string {

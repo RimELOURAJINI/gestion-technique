@@ -41,7 +41,7 @@ export class TaskDetailComponent implements OnInit {
     private employeeService: EmployeeService,
     private authService: AuthService,
     private location: Location
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -88,16 +88,45 @@ export class TaskDetailComponent implements OnInit {
 
   // --- Subtasks ---
   addSubtask(): void {
-    if (!this.task || !this.newSubtaskTitle.trim() || !this.task.id) return;
-    const sub: SubTask = { title: this.newSubtaskTitle.trim(), done: false };
-    this.employeeService.createSubtask(this.task.id, sub).subscribe(
-      created => {
+    console.log("🚀 addSubtask() appelé. Titre:", this.newSubtaskTitle);
+    console.log("État de task:", this.task);
+
+    if (!this.task) {
+      console.warn("⚠️ Task est null");
+      alert("Erreur: La tâche n'est pas chargée.");
+      return;
+    }
+
+    if (!this.newSubtaskTitle || !this.newSubtaskTitle.trim()) {
+      console.warn("⚠️ Titre vide");
+      return;
+    }
+
+    if (!this.task.id) {
+      console.error("❌ ID de tâche manquant");
+      alert("Erreur: ID de tâche manquant.");
+      return;
+    }
+
+    const sub: SubTask = { 
+      title: this.newSubtaskTitle.trim(), 
+      done: false 
+    };
+
+    console.log("Envoi au back pour taskId:", this.task.id, sub);
+    this.employeeService.createSubtask(this.task.id, sub).subscribe({
+      next: (created) => {
+        console.log("✅ Succès back-end:", created);
         if (!this.task!.subtasks) this.task!.subtasks = [];
         this.task!.subtasks.push(created);
         this.newSubtaskTitle = '';
+        // Optionnel: alert('Sous-tâche ajoutée !');
       },
-      err => console.error('Error creating subtask', err)
-    );
+      error: (err) => {
+        console.error("❌ Erreur back-end:", err);
+        alert("Erreur lors de l'ajout: " + (err.error?.message || err.message));
+      }
+    });
   }
 
   toggleSubtask(sub: SubTask): void {
@@ -144,7 +173,7 @@ export class TaskDetailComponent implements OnInit {
   sendTicket(): void {
     const userId = this.authService.getUserId();
     if (!this.task?.id || !userId || !this.ticketMessage) return;
-    
+
     const rec: Reclamation = { message: this.ticketMessage, status: 'PENDING' };
     this.employeeService.sendBlockingTicket(userId, this.task.id, rec).subscribe(
       () => {

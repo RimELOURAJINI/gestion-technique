@@ -164,6 +164,19 @@
                             <span class="sidebar-badge" *ngIf="unreadChatCount > 0">{{unreadChatCount}}</span>
                         </a>
                     </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/tickets'" routerLinkActive="active">
+                            <i class="ti ti-messages sidebar-icon"></i>
+                            <span class="sidebar-text">Tickets</span>
+                            <span class="sidebar-badge" *ngIf="activeTicketsCount > 0">{{activeTicketsCount}}</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" [routerLink]="basePath + '/reclamations'" routerLinkActive="active">
+                            <i class="ti ti-alert-circle sidebar-icon"></i>
+                            <span class="sidebar-text">Réclamations</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
 
@@ -222,12 +235,6 @@
                         <a class="sidebar-link" [routerLink]="basePath + '/deals'" routerLinkActive="active">
                             <i class="ti ti-medal sidebar-icon"></i>
                             <span class="sidebar-text">Deals & Clients</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" [routerLink]="basePath + '/tickets'" routerLinkActive="active">
-                            <i class="ti ti-messages sidebar-icon"></i>
-                            <span class="sidebar-text">Tickets</span>
                         </a>
                     </li>
                 </ul>

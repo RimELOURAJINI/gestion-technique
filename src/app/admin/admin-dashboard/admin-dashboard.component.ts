@@ -6,6 +6,7 @@ import { NotificationService, NotificationDTO } from '../../services/notificatio
 import { AiChatbotComponent } from '../../shared/ai-chatbot/ai-chatbot.component';
 import { DailyReportService } from '../../services/daily-report.service';
 import { PrimeService } from '../../services/prime.service';
+import { TicketService } from '../../services/ticket.service';
 import { interval, Subscription } from 'rxjs';
 
 @Component({
@@ -22,6 +23,7 @@ export class AdminDashboardComponent implements OnInit {
     unreadCount: number = 0;
     unsubmittedReportCount: number = 0;
     pendingPrimesCount: number = 0;
+    activeTicketsCount: number = 0;
     dashboardMenuOpen: boolean = false;
     usersMenuOpen: boolean = false;
     configMenuOpen: boolean = false;
@@ -32,6 +34,7 @@ export class AdminDashboardComponent implements OnInit {
         private notificationService: NotificationService,
         private dailyReportService: DailyReportService,
         public primeService: PrimeService,
+        private ticketService: TicketService,
         public router: Router
     ) { }
 
@@ -47,12 +50,14 @@ export class AdminDashboardComponent implements OnInit {
                 this.loadNotifications(user.id);
                 this.loadUnsubmittedCount();
                 this.loadPendingPrimesCount();
+                this.loadActiveTicketsCount();
                 // Poll for new notifications every 30 seconds
                 this.notificationSub = interval(30000).subscribe(() => {
                     const currentId = this.authService.getUserId();
                     if (currentId) this.loadNotifications(currentId);
                     this.loadUnsubmittedCount();
                     this.loadPendingPrimesCount();
+                    this.loadActiveTicketsCount();
                 });
             }
 
@@ -122,6 +127,12 @@ export class AdminDashboardComponent implements OnInit {
 
     toggleConfigMenu() {
         this.configMenuOpen = !this.configMenuOpen;
+    }
+
+    loadActiveTicketsCount(): void {
+        this.ticketService.getAllTickets().subscribe(data => {
+            this.activeTicketsCount = data.filter(t => t.status !== 'RESOLVED' && t.status !== 'CLOSED').length;
+        });
     }
 }
 

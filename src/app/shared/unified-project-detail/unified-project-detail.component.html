@@ -37,7 +37,7 @@
 
             <!-- Stats & Progress -->
             <div class="row g-4 mb-4">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="card border-0 shadow-sm rounded-4 bg-primary-gradient text-white h-100">
                         <div class="card-body p-4">
                             <h6 class="text-white-50 small text-uppercase fw-bold mb-3">Progression du Temps</h6>
@@ -51,7 +51,21 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm rounded-4 bg-dark text-white h-100">
+                        <div class="card-body p-4">
+                            <h6 class="text-white-50 small text-uppercase fw-bold mb-3">Progression Technique</h6>
+                            <div class="d-flex align-items-end justify-content-between mb-2">
+                                <h3 class="mb-0 fw-bold text-success">{{project.progress || 0}}%</h3>
+                                <div class="fs-12 text-white-50">Basé sur les tâches</div>
+                            </div>
+                            <div class="progress bg-white-transparent" style="height: 8px;">
+                                <div class="progress-bar bg-success" [style.width.%]="project.progress || 0"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
                     <div class="card border-0 shadow-sm rounded-4 h-100">
                         <div class="card-body p-4">
                             <h6 class="text-muted small text-uppercase fw-bold mb-3">Consommation Budget</h6>
@@ -71,23 +85,61 @@
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-4 d-flex align-items-center">
-                        <i class="ti ti-users text-primary me-2"></i>Équipe Assignée
+                        <i class="ti ti-users text-primary me-2"></i>Équipes & Membres ({{project.memberCount || 0}} Pers.)
                     </h5>
-                    <div *ngIf="!project.teams || project.teams.length === 0" class="text-center py-4">
-                        <p class="text-muted italic">Aucune équipe technique assignée à ce projet.</p>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-6" *ngFor="let team of project.teams">
-                            <div class="team-card p-3 rounded-3 border bg-soft-light d-flex align-items-center">
-                                <div class="avatar avatar-md bg-white text-primary rounded-circle border shadow-sm me-3 d-flex align-items-center justify-content-center">
-                                    <i class="ti ti-users-group fs-20"></i>
-                                </div>
-                                <div>
+                    
+                    <!-- 1. Display Teams -->
+                    <div *ngIf="project.teams && project.teams.length > 0">
+                        <div class="mb-4" *ngFor="let team of project.teams; let isLast = last">
+                            <div class="d-flex align-items-center justify-content-between mb-3 bg-light p-2 rounded-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-primary me-2">ÉQUIPE</span>
                                     <h6 class="mb-0 fw-bold">{{team.name}}</h6>
-                                    <p class="mb-0 text-muted small">{{team.users?.length || 0}} membres</p>
+                                </div>
+                                <div class="fs-12 text-muted" *ngIf="team.manager">
+                                    <i class="ti ti-crown text-warning me-1"></i>Leader : <strong>{{team.manager.firstName}} {{team.manager.lastName}}</strong>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-4" *ngFor="let member of team.users">
+                                    <div class="member-card p-3 rounded-3 border bg-soft-light d-flex align-items-center">
+                                        <div class="avatar avatar-sm bg-white text-indigo rounded-circle border shadow-sm me-2 d-flex align-items-center justify-content-center fw-bold">
+                                            {{member.firstName.charAt(0)}}{{member.lastName.charAt(0)}}
+                                        </div>
+                                        <div class="overflow-hidden">
+                                            <h6 class="mb-0 fw-bold fs-13 text-truncate">{{member.firstName}} {{member.lastName}}</h6>
+                                            <p class="mb-0 text-muted extra-small">Membre Équipe</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr class="my-4 opacity-25" *ngIf="!isLast">
+                        </div>
+                    </div>
+
+                    <!-- 2. Display Individual Assignments (not in teams) -->
+                    <div *ngIf="getOtherMembers().length > 0">
+                        <div class="d-flex align-items-center mb-3 mt-4">
+                            <span class="badge bg-secondary me-2">AUTRES</span>
+                            <h6 class="mb-0 fw-bold">Membres affectés via Tâches</h6>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-4" *ngFor="let member of getOtherMembers()">
+                                <div class="member-card p-3 rounded-3 border bg-soft-light d-flex align-items-center">
+                                    <div class="avatar avatar-sm bg-white text-secondary rounded-circle border shadow-sm me-2 d-flex align-items-center justify-content-center fw-bold">
+                                        {{member.firstName.charAt(0)}}{{member.lastName.charAt(0)}}
+                                    </div>
+                                    <div class="overflow-hidden">
+                                        <h6 class="mb-0 fw-bold fs-13 text-truncate">{{member.firstName}} {{member.lastName}}</h6>
+                                        <p class="mb-0 text-muted extra-small">Expert affecté</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div *ngIf="(!project.teams || project.teams.length === 0) && getOtherMembers().length === 0" class="text-center py-4">
+                        <p class="text-muted italic">Aucun membre ni équipe assigné à ce projet.</p>
                     </div>
                 </div>
             </div>

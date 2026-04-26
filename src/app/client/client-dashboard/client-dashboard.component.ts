@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
 import { Project } from '../../models/models';
+import { TicketService } from '../../services/ticket.service';
 
 @Component({
   selector: 'app-client-dashboard',
@@ -15,12 +16,24 @@ import { Project } from '../../models/models';
 export class ClientDashboardComponent implements OnInit {
   clientName = '';
 
+  activeTicketsCount: number = 0;
   constructor(
-    private authService: AuthService
+    private authService: AuthService,
+    private ticketService: TicketService
   ) {}
 
   ngOnInit() {
     this.clientName = localStorage.getItem('userName') || 'Client';
+    this.loadActiveTicketsCount();
+  }
+
+  loadActiveTicketsCount(): void {
+    const userId = this.authService.getUserId();
+    if (userId) {
+      this.ticketService.getClientTickets(userId).subscribe(data => {
+        this.activeTicketsCount = data.filter(t => t.status !== 'RESOLVED' && t.status !== 'CLOSED').length;
+      });
+    }
   }
 
   logout() {

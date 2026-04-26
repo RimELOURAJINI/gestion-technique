@@ -7,6 +7,7 @@ import { AiChatbotComponent } from '../../shared/ai-chatbot/ai-chatbot.component
 import { TeamChatService } from '../../services/team-chat.service';
 import { DailyReportService } from '../../services/daily-report.service';
 import { PrimeService } from '../../services/prime.service';
+import { TicketService } from '../../services/ticket.service';
 import { interval, Subscription } from 'rxjs';
 
 @Component({
@@ -24,6 +25,7 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
   unreadChatCount: number = 0;
   reportSubmitted: boolean = true;
   newPrimesCount: number = 0;
+  activeTicketsCount: number = 0;
   projectsMenuOpen: boolean = true;
   private notificationSub?: Subscription;
   private chatCountSub?: Subscription;
@@ -34,6 +36,7 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
     private teamChatService: TeamChatService,
     private dailyReportService: DailyReportService,
     private primeService: PrimeService,
+    private ticketService: TicketService,
     public router: Router
   ) { }
 
@@ -50,12 +53,14 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
         this.loadUnreadChatCount(user.id);
         this.loadReportStatus(user.id);
         this.loadPrimes(user.id);
+        this.loadActiveTicketsCount(user.id);
         this.notificationSub = interval(30000).subscribe(() => {
           const currentId = this.authService.getUserId();
           if (currentId) {
             this.loadNotifications(currentId);
             this.loadUnreadChatCount(currentId);
             this.loadPrimes(currentId);
+            this.loadActiveTicketsCount(currentId);
           }
         });
       }
@@ -122,6 +127,12 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
   loadPrimes(userId: number): void {
     this.primeService.getMyAffectations(userId).subscribe(data => {
       this.newPrimesCount = data.filter(a => a.status === 'VALIDÉE').length;
+    });
+  }
+
+  loadActiveTicketsCount(userId: number): void {
+    this.ticketService.getTicketsByCommercial(userId).subscribe(data => {
+      this.activeTicketsCount = data.filter(t => t.status !== 'RESOLVED' && t.status !== 'CLOSED').length;
     });
   }
 }

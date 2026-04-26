@@ -133,6 +133,19 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/tickets" routerLinkActive="active">
+                            <i class="ti ti-messages sidebar-icon"></i>
+                            <span class="sidebar-text">Tickets Clients</span>
+                            <span class="sidebar-badge" *ngIf="activeTicketsCount > 0">{{activeTicketsCount}}</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/reclamations" routerLinkActive="active">
+                            <i class="ti ti-alert-circle sidebar-icon"></i>
+                            <span class="sidebar-text">Réclamations</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
                         <a class="sidebar-link" routerLink="/commercial/my-attendance" routerLinkActive="active">
                             <i class="ti ti-clock-user sidebar-icon"></i>
                             <span class="sidebar-text">Ma Présence</span>
@@ -142,12 +155,6 @@
                         <a class="sidebar-link" routerLink="/commercial/my-leaves" routerLinkActive="active">
                             <i class="ti ti-calendar-event sidebar-icon"></i>
                             <span class="sidebar-text">Mes Congés</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/commercial/tickets" routerLinkActive="active">
-                            <i class="ti ti-messages sidebar-icon"></i>
-                            <span class="sidebar-text">Tickets Clients</span>
                         </a>
                     </li>
                     <li class="sidebar-item">

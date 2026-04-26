@@ -189,4 +189,8 @@ export class AuthService {
     }
     return null;
   }
+
+  getUserRoles(): string[] {
+    return this.currentUserValue?.roles || [];
+  }
 }

@@ -39,6 +39,8 @@ export interface Project {
   client?: User;
   commercial?: User;
   openTicketsCount?: number; // UI Badge count
+  memberCount?: number;
+  involvedUsers?: User[];
 }
 
 export interface SubTask {
@@ -75,8 +77,11 @@ export interface Task {
 
 export interface Ticket {
   id?: number;
+  title?: string;
   subject: string;
   description: string;
+  solution?: string;
+  correctedBy?: string;
   status: string;
   priority: string;
   createdBy?: User;
@@ -86,6 +91,9 @@ export interface Ticket {
   task?: Task;
   validatedAt?: string;
   lastMessageAt?: string;
+  imageUrl1?: string;
+  imageUrl2?: string;
+  imageUrl3?: string;
 }
 
 export interface Reclamation {

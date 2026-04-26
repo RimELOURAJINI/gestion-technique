@@ -142,6 +142,19 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/employee/tickets" routerLinkActive="active">
+                            <i class="ti ti-messages sidebar-icon"></i>
+                            <span class="sidebar-text">Tickets Clients</span>
+                            <span class="sidebar-badge" *ngIf="activeTicketsCount > 0">{{activeTicketsCount}}</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/employee/reclamations" routerLinkActive="active">
+                            <i class="ti ti-alert-circle sidebar-icon"></i>
+                            <span class="sidebar-text">Réclamations</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
                         <a class="sidebar-link" routerLink="/employee/projects" routerLinkActive="active">
                             <i class="ti ti-briefcase sidebar-icon"></i>
                             <span class="sidebar-text">Mes Projets</span>
@@ -218,18 +231,6 @@
 
             <div class="sidebar-divider"></div>
 
-            <!-- CLIENTS -->
-            <div class="sidebar-section">
-                <span class="sidebar-section-label">Clients</span>
-                <ul class="sidebar-menu">
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/employee/tickets" routerLinkActive="active">
-                            <i class="ti ti-messages sidebar-icon"></i>
-                            <span class="sidebar-text">Tickets Clients</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
         </nav>
 
         <!-- FOOTER : profil utilisateur connecté -->

@@ -97,4 +97,15 @@ export class UnifiedProjectDetailComponent implements OnInit {
       default: return 'bg-soft-secondary text-secondary';
     }
   }
+
+  getOtherMembers(): any[] {
+    if (!this.project || !this.project.involvedUsers) return [];
+    
+    const teamUserIds = new Set();
+    this.project.teams?.forEach(team => {
+      team.users?.forEach(user => teamUserIds.add(user.id));
+    });
+
+    return this.project.involvedUsers.filter(user => !teamUserIds.has(user.id));
+  }
 }

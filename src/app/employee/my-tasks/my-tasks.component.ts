@@ -138,9 +138,7 @@ export class MyTasksComponent implements OnInit {
 
     if (this.currentFilter === 'today') {
       filteredTasks = this.tasks.filter(t => {
-        if (!t.deadline) return false;
-        const dDate = new Date(t.deadline).toISOString().split('T')[0];
-        return dDate === today;
+        return t.status !== 'DONE' && t.status !== 'COMPLETED';
       });
     } else if (this.currentFilter === 'subtasks') {
       // In this mode, we show tasks that have subtasks, or maybe we want a different display.

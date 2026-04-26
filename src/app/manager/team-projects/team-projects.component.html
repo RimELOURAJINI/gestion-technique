@@ -26,7 +26,7 @@
 <!-- Project Cards Grid -->
 <div *ngIf="!isLoading && projects.length > 0" class="row">
     <div *ngFor="let project of projects" class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 mb-4">
-        <div class="card main-card h-100 border-0 shadow-sm overflow-hidden clickable-card" (click)="openProject(project)">
+        <div class="card main-card h-100 border-0 shadow-sm overflow-hidden clickable-card" [routerLink]="['/manager/projects', project.id]">
             <div class="card-header bg-white border-0 py-3">
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
@@ -87,19 +87,22 @@
                 <div class="mb-0">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <small class="text-muted fs-11 text-uppercase fw-bold">Membres de l'Équipe</small>
-                        <span class="badge badge-soft-dark fs-10">{{project.teams?.[0]?.users?.length || 0}} Pers.</span>
+                        <span class="badge badge-soft-dark fs-10">{{project.memberCount || 0}} Pers.</span>
                     </div>
                     <div class="avatar-list-stacked d-flex">
-                        <div *ngFor="let member of project.teams?.[0]?.users | slice:0:5" class="avatar avatar-sm rounded-circle border border-white" [title]="member.firstName + ' ' + member.lastName">
-                            <span class="bg-soft-indigo text-indigo fs-10 fw-bold d-flex align-items-center justify-content-center w-100 h-100">
-                                {{member.firstName.charAt(0)}}{{member.lastName.charAt(0)}}
-                            </span>
-                        </div>
-                        <div *ngIf="(project.teams?.[0]?.users?.length || 0) > 5" class="avatar avatar-sm rounded-circle border border-white bg-dark">
+                        <ng-container *ngFor="let team of project.teams">
+                            <div *ngFor="let member of team.users | slice:0:5" class="avatar avatar-sm rounded-circle border border-white" [title]="member.firstName + ' ' + member.lastName">
+                                <span class="bg-soft-indigo text-indigo fs-10 fw-bold d-flex align-items-center justify-content-center w-100 h-100">
+                                    {{member.firstName.charAt(0)}}{{member.lastName.charAt(0)}}
+                                </span>
+                            </div>
+                        </ng-container>
+                        <div *ngIf="(project.memberCount || 0) > 5" class="avatar avatar-sm rounded-circle border border-white bg-dark">
                             <span class="text-white fs-10 fw-bold d-flex align-items-center justify-content-center w-100 h-100">
-                                +{{(project.teams?.[0]?.users?.length || 0) - 5}}
+                                +{{(project.memberCount || 0) - 5}}
                             </span>
                         </div>
+                        <div *ngIf="(project.memberCount || 0) === 0" class="fs-11 text-muted">Aucun membre assigné via équipe.</div>
                     </div>
                 </div>
             </div>
@@ -109,87 +112,6 @@
                     <i class="ti ti-list-details me-2"></i>Gérer les Tâches
                 </a>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Project Detail Side Panel (Taiga Style) -->
-<div class="task-detail-overlay" *ngIf="selectedProject" (click)="closeProject()"></div>
-<div class="task-detail-panel" [class.open]="selectedProject">
-    <div class="panel-header d-flex align-items-center justify-content-between p-3 border-bottom">
-        <h5 class="fw-bold mb-0">Détails du Projet</h5>
-        <button class="btn btn-icon btn-sm" (click)="closeProject()">
-            <i class="ti ti-x fs-18"></i>
-        </button>
-    </div>
-
-    <div class="panel-body p-4" *ngIf="selectedProject">
-        <!-- Project Badge & Title -->
-        <div class="d-flex align-items-center mb-4">
-            <div class="avatar avatar-lg bg-soft-primary text-primary rounded me-3 d-flex align-items-center justify-content-center">
-                <i class="ti ti-rocket fs-24"></i>
-            </div>
-            <div>
-                <h4 class="fw-bold text-dark mb-1">{{ selectedProject.name }}</h4>
-                <span class="badge bg-soft-info text-info">#PRJ-{{ selectedProject.id }}</span>
-            </div>
-        </div>
-
-        <!-- Quick Info Cards -->
-        <div class="row g-2 mb-4">
-            <div class="col-6">
-                <div class="p-3 border rounded bg-light">
-                    <span class="d-block text-muted fs-11 text-uppercase mb-1">Statut</span>
-                    <span class="fw-bold text-dark">{{ selectedProject.status || 'N/A' }}</span>
-                </div>
-            </div>
-            <div class="col-6">
-                <div class="p-3 border rounded bg-light">
-                    <span class="d-block text-muted fs-11 text-uppercase mb-1">Date Limite</span>
-                    <span class="fw-bold text-dark">{{ selectedProject.expectedEndDate | date:'dd MMM yyyy' }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Description -->
-        <div class="mb-4">
-            <h6 class="fw-bold mb-2">Description</h6>
-            <p class="text-muted fs-13">{{ selectedProject.description || 'Aucune description fournie.' }}</p>
-        </div>
-
-        <!-- Progress -->
-        <div class="mb-4 p-3 border rounded">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="fw-bold mb-0">Avancement d'Équipe</h6>
-                <span class="fw-bold text-primary">{{ getProgress(selectedProject) }}%</span>
-            </div>
-            <div class="progress progress-sm">
-                <div class="progress-bar bg-primary" [style.width.%]="getProgress(selectedProject)"></div>
-            </div>
-        </div>
-
-        <!-- Team Info -->
-        <div class="mb-4">
-            <h6 class="fw-bold mb-3">Membres de l'Équipe ({{ selectedProject.teams?.[0]?.users?.length || 0 }})</h6>
-            <div class="team-list border rounded p-2">
-                <div *ngFor="let user of selectedProject.teams?.[0]?.users" class="d-flex align-items-center p-2 border-bottom last-child-no-border">
-                    <div class="avatar avatar-sm bg-soft-indigo text-indigo rounded-circle me-2 d-flex align-items-center justify-content-center">
-                        {{ user.firstName[0] }}{{ user.lastName[0] }}
-                    </div>
-                    <div>
-                        <p class="mb-0 fw-bold fs-12">{{ user.firstName }} {{ user.lastName }}</p>
-                        <small class="text-muted">{{ user.email }}</small>
-                    </div>
-                </div>
-                <p *ngIf="!selectedProject.teams?.[0]?.users?.length" class="text-muted small text-center p-3 mb-0">Aucun membre assigné spécifiquement.</p>
-            </div>
-        </div>
-
-        <!-- Action -->
-        <div class="mt-5">
-            <button class="btn btn-dark w-100 py-2 d-flex align-items-center justify-content-center" [routerLink]="['/manager/tasks']" [queryParams]="{projectId: selectedProject.id}">
-                <i class="ti ti-list-details me-2"></i> Gérer les tâches de l'équipe
-            </button>
         </div>
     </div>
 </div>
