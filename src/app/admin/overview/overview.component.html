@@ -144,7 +144,7 @@
                     <span class="fs-15 fw-medium text-white">L'Agent IA vérifie les ratios et effectue une projection de risque...</span>
                 </div>
                 <!-- Fixed styling here: explicit rgba background and text color -->
-                <div *ngIf="aiMessage" class="ai-content p-3 rounded-3 shadow-inner" style="background-color: rgba(0, 0, 0, 0.25); color: #f8fafc; white-space: pre-wrap; line-height: 1.8; font-size: 15px; border: 1px solid rgba(255,255,255,0.1);">{{ aiMessage }}</div>
+                <div *ngIf="aiMessage" class="ai-content p-4 rounded-3" style="background-color: rgba(0,0,0,0.25); color: #f0f4ff; border: 1px solid rgba(255,255,255,0.1); font-size: 14px; line-height: 1.9;" [innerHTML]="aiMessageHtml"></div>
                 <div *ngIf="!isAiLoading && !aiMessage" class="text-center py-4">
                     <div class="avatar avatar-xl bg-soft-primary rounded-circle mb-3 border border-primary border-opacity-25 mx-auto d-flex align-items-center justify-content-center">
                         <i class="ti ti-brain fs-32 text-primary opacity-50"></i>

@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
 import { Project, Team, User } from '../../models/models';
-import { TicketChatComponent } from '../../shared/ticket-chat/ticket-chat.component';
 import { TicketService } from '../../services/ticket.service';
 import { AuthService } from '../../services/auth.service';
+import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
 
 @Component({
     selector: 'app-project-management',
     standalone: true,
-    imports: [CommonModule, FormsModule, TicketChatComponent],
+    imports: [CommonModule, FormsModule, RouterModule, ProjectSupportModalComponent],
     templateUrl: './project-management.component.html',
     styleUrl: './project-management.component.css'
 })
@@ -29,9 +30,9 @@ export class ProjectManagementComponent implements OnInit {
     selectedProjectId: number | null = null;
     selectedManagerId: number | null = null;
 
-    // Chat Support
-    chatProject: any = null;
-    chatTicketId: number | null = null;
+    // Support Modal
+    showSupportModal = false;
+    selectedSupportProject: Project | null = null;
 
     constructor(private adminService: AdminService, private ticketService: TicketService, private authService: AuthService) { }
 
@@ -132,32 +133,30 @@ export class ProjectManagementComponent implements OnInit {
         this.selectedProjectId = projectId;
     }
 
-    openChatForProject(project: any) {
-        this.chatProject = project;
-        this.chatTicketId = null;
-        // Try to find existing ticket for this project
-        const clientId = project.client?.id;
-        if (clientId) {
-            this.ticketService.getClientTickets(clientId).subscribe((tickets: any[]) => {
-                const existing = tickets.find((t: any) => t.project?.id === project.id && t.type === 'SUPPORT');
-                if (existing) this.chatTicketId = existing.id ?? null;
-            });
-        }
+    openSupportModal(project: Project, event?: Event) {
+        if (event) event.stopPropagation();
+        this.selectedSupportProject = project;
+        this.showSupportModal = true;
     }
 
-    openAdminProjectChat() {
-        if (!this.chatProject) return;
-        const adminId = this.authService.getUserId();
-        if (!adminId) return;
-        const payload: any = {
-            subject: `Support Admin: ${this.chatProject.name}`,
-            description: `Discussion support pour le projet ${this.chatProject.name}`,
-            type: 'SUPPORT',
-            project: { id: this.chatProject.id }
-        };
-        this.ticketService.createTicket(adminId, payload).subscribe((res: any) => {
-            this.chatTicketId = res.id ?? null;
-        });
+    closeSupportModal() {
+        this.showSupportModal = false;
+        this.selectedSupportProject = null;
+    }
+
+    getProgress(project: Project): number {
+        if (!project.budget || !project.spentBudget) return 0;
+        return Math.min(Math.round((project.spentBudget / project.budget) * 100), 100);
+    }
+
+    getStatusClass(status: string): string {
+        switch (status?.toUpperCase()) {
+            case 'ACTIVE': return 'bg-soft-success text-success';
+            case 'COMPLETED': return 'bg-success text-white';
+            case 'ON_HOLD': return 'bg-soft-warning text-warning';
+            case 'CANCELLED': return 'bg-soft-danger text-danger';
+            default: return 'bg-soft-secondary text-secondary';
+        }
     }
 
     resetForm() {

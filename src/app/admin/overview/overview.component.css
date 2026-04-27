@@ -17,6 +17,53 @@
 }
 
 .bg-lightyellow { background-color: #fff9e6 !important; color: #ffc107 !important; }
-.bg-lightblue { background-color: #e6f7ff !important; color: #1890ff !important; }
-.bg-lightgreen { background-color: #f6ffed !important; color: #52c41a !important; }
-.bg-lightred { background-color: #fff1f0 !important; color: #f5222d !important; }
+.bg-lightblue   { background-color: #e6f7ff !important; color: #1890ff !important; }
+.bg-lightgreen  { background-color: #f6ffed !important; color: #52c41a !important; }
+.bg-lightred    { background-color: #fff1f0 !important; color: #f5222d !important; }
+
+/* ────────────────────────────────
+   AI Content Formatting
+   ──────────────────────────────── */
+
+/* Titre de partie  :  "PARTIE 1 — ..." */
+.ai-content ::ng-deep .ai-section-title {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #7eb8f7;
+    letter-spacing: 0.5px;
+    margin-top: 22px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(126, 184, 247, 0.3);
+}
+
+.ai-content ::ng-deep .ai-section-title:first-child {
+    margin-top: 0;
+}
+
+/* Puce  •  item */
+.ai-content ::ng-deep .ai-bullet {
+    display: block;
+    padding: 5px 4px 5px 14px;
+    border-left: 3px solid rgba(126, 184, 247, 0.45);
+    margin: 5px 0;
+    color: #e2e8f0;
+    line-height: 1.7;
+}
+
+/* Item numéroté  1. texte */
+.ai-content ::ng-deep .ai-numbered {
+    display: block;
+    padding: 5px 4px 5px 14px;
+    margin: 5px 0;
+    color: #e2e8f0;
+    line-height: 1.7;
+    font-weight: 600;
+}
+
+/* Gras **texte** */
+.ai-content ::ng-deep strong {
+    color: #a5c8ff;
+    font-weight: 600;
+}

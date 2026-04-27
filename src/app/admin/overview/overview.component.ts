@@ -1,5 +1,7 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef } from '@angular/core';
 import { AdminService } from '../../services/admin.service';
 import { Project, Team, User, Reclamation } from '../../models/models';
 import { RouterLink, RouterModule } from '@angular/router';
@@ -38,6 +40,7 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
 
   isAiLoading = false;
   aiMessage = '';
+  aiMessageHtml: SafeHtml = '';
   
   // Nouveaux paramètres pour aide à la décision
   riskThreshold: number = 80;
@@ -52,7 +55,9 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
   constructor(
     private adminService: AdminService,
     private authService: AuthService,
-    private aiService: AiService
+    private aiService: AiService,
+    private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -196,16 +201,55 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
       next: (chunk) => {
         this.isAiLoading = false;
         this.aiMessage += chunk;
+        this.aiMessageHtml = this.formatAiMessage(this.aiMessage);
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('AI Error:', err);
-        if (!this.aiMessage) this.aiMessage = 'Erreur lors de l\'analyse de la vélocité via l\'agent IA.';
+        if (!this.aiMessage) {
+          this.aiMessage = 'Erreur lors de l\'analyse de la vélocité via l\'agent IA.';
+          this.aiMessageHtml = this.sanitizer.bypassSecurityTrustHtml(this.aiMessage);
+        }
         this.isAiLoading = false;
       },
       complete: () => {
         this.isAiLoading = false;
+        this.aiMessageHtml = this.formatAiMessage(this.aiMessage);
+        this.cdr.detectChanges();
       }
     });
+  }
+
+  /** Convertit le texte brut de l'IA en HTML mis en forme */
+  formatAiMessage(text: string): SafeHtml {
+    if (!text) return '';
+
+    let html = text
+      // Échappe le HTML dangereux
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      // Titres de parties : "PARTIE X — ..." sur leur propre ligne stylée
+      .replace(
+        /(PARTIE\s+\d+\s*[—–-]\s*[^\n]+)/g,
+        '<div class="ai-section-title">$1</div>'
+      )
+      // Points numérotés "1. texte"
+      .replace(
+        /^(\d+\.\s+.+)$/gm,
+        '<div class="ai-numbered">$1</div>'
+      )
+      // Puces • et -
+      .replace(
+        /^[•\-]\s+(.+)$/gm,
+        '<div class="ai-bullet">• $1</div>'
+      )
+      // Gras **texte**
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      // Sauts de ligne simples → <br>
+      .replace(/\n/g, '<br>');
+
+    return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
   // Added missing method

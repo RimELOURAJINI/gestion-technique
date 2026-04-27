@@ -1,36 +1,3 @@
-<!-- Admin Chat Support Overlay -->
-<div *ngIf="chatProject" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:1055;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;">
-  <div style="background:white;width:92%;max-width:1050px;height:82vh;display:flex;flex-direction:column;border-radius:16px;overflow:hidden;">
-    <div class="p-3 bg-dark text-white d-flex justify-content-between align-items-center flex-shrink-0">
-      <h6 class="mb-0 fw-bold"><i class="ti ti-headset me-2"></i>Support Projet : {{ chatProject.name }}</h6>
-      <button class="btn btn-sm btn-link text-white" (click)="chatProject = null; chatTicketId = null">Fermer <i class="ti ti-x ms-1"></i></button>
-    </div>
-    <div class="flex-grow-1 overflow-hidden d-flex">
-      <!-- Project Info -->
-      <div class="p-3 bg-light border-end" style="width:260px;overflow-y:auto;flex-shrink:0;">
-        <label class="text-muted fs-10 text-uppercase fw-bold d-block mb-1">Description</label>
-        <p class="fs-12">{{ chatProject.description }}</p>
-        <label class="text-muted fs-10 text-uppercase fw-bold d-block mb-1 mt-3">Budget</label>
-        <span class="badge bg-success-subtle text-success fs-12">{{ chatProject.budget | number:'1.2-2' }} €</span>
-        <label class="text-muted fs-10 text-uppercase fw-bold d-block mb-1 mt-3">Client</label>
-        <span class="fs-12">{{ chatProject.client?.firstName }} {{ chatProject.client?.lastName }}</span>
-        <label class="text-muted fs-10 text-uppercase fw-bold d-block mb-1 mt-3">Équipes</label>
-        <div *ngFor="let t of chatProject.teams" class="badge bg-primary-subtle text-primary w-100 text-start mb-1">{{ t.name }}</div>
-      </div>
-      <!-- Chat -->
-      <div class="flex-grow-1 d-flex flex-column overflow-hidden">
-        <div *ngIf="!chatTicketId" class="h-100 d-flex flex-column align-items-center justify-content-center p-4 text-center">
-          <i class="ti ti-messages fs-1 text-muted mb-3"></i>
-          <h6>Ouvrir un fil de discussion</h6>
-          <p class="text-muted fs-12">Ce chat regroupe le client, le commercial et toutes les équipes techniques.</p>
-          <button class="btn btn-primary rounded-pill px-4" (click)="openAdminProjectChat()">Démarrer le chat</button>
-        </div>
-        <app-ticket-chat *ngIf="chatTicketId" [ticketId]="chatTicketId" [showHeader]="false" class="flex-grow-1 d-flex flex-column overflow-hidden"></app-ticket-chat>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- Page Header -->
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
     <div>
@@ -38,7 +5,7 @@
         <p class="mb-0 text-muted small">Consultez et gérez l'ensemble des projets de l'organisation.</p>
     </div>
     <div class="d-flex align-items-center">
-        <button type="button" class="btn btn-primary d-inline-flex align-items-center"
+        <button type="button" class="btn btn-primary d-inline-flex align-items-center shadow-sm"
             data-bs-toggle="modal" data-bs-target="#projectModal" (click)="resetForm()">
             <i class="ti ti-square-rounded-plus-filled me-2"></i>NOUVEAU PROJET
         </button>
@@ -50,103 +17,132 @@
     <div class="spinner-border text-primary" role="status"></div>
 </div>
 
+<!-- Project Cards Grid -->
 <div *ngIf="!isLoading" class="row">
-    <div class="col-md-12">
-        <div class="card main-card">
-            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <h5 class="mb-0 fs-16 fw-bold">Liste des Projets</h5>
+    <div *ngFor="let project of projects" class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 mb-4">
+        <div class="card main-card h-100 border-0 shadow-sm overflow-hidden clickable-card position-relative" [routerLink]="['/admin/projects', project.id]">
+            <!-- Card Header -->
+            <div class="card-header bg-white border-0 py-3">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar avatar-md bg-soft-primary rounded-circle me-3 border border-primary">
+                            <i class="ti ti-rocket text-primary fs-18"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold fs-15 text-truncate" style="max-width: 180px;">{{project.name}}</h6>
+                            <div class="d-flex align-items-center gap-1 mt-1">
+                                <span class="badge fs-10" [ngClass]="getStatusClass(project.status)">
+                                    {{project.status}}
+                                </span>
+                                <span class="badge bg-soft-info text-info fs-10 cursor-pointer hover-effect" 
+                                      (click)="openSupportModal(project, $event)">
+                                    <i class="ti ti-headset me-1"></i> Support
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Admin Dropdown Actions -->
+                    <div class="dropdown" (click)="$event.stopPropagation()">
+                        <button class="btn btn-icon btn-sm btn-light rounded-circle" type="button" data-bs-toggle="dropdown">
+                            <i class="ti ti-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
+                            <li>
+                                <a class="dropdown-item py-2" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#projectModal" (click)="editProject(project)">
+                                    <i class="ti ti-edit me-2 text-primary"></i>Modifier Infos
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#assignModal" (click)="openAssignModal(project.id)">
+                                    <i class="ti ti-user-share me-2 text-info"></i>Affecter Manager
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider opacity-50"></li>
+                            <li>
+                                <a class="dropdown-item py-2 text-danger" href="javascript:void(0);" (click)="deleteProject(project.id)">
+                                    <i class="ti ti-trash me-2"></i>Supprimer
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-nowrap mb-0">
-                        <thead class="thead-light">
-                            <tr>
-                                <th>Projet</th>
-                                <th>Manager Responsable</th>
-                                <th>Date Limite</th>
-                                <th>Statut</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let project of projects">
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar avatar-rounded bg-primary-gradient-100 flex-shrink-0 me-2">
-                                            <i class="ti ti-rocket fs-18 text-primary"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0 fw-medium fs-14">{{project.name}}</h6>
-                                            <span class="fs-12 text-muted text-truncate d-block" style="max-width: 250px;">{{project.description}}</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div *ngIf="project.manager" class="d-flex align-items-center">
-                                        <img src="assets/assets/img/profiles/avatar-02.jpg" class="avatar avatar-sm avatar-rounded me-2" alt="img">
-                                        <div>
-                                            <span class="fs-13 d-block text-dark fw-medium">{{project.manager.firstName}} {{project.manager.lastName}}</span>
-                                            <span class="fs-12 text-muted">Team Leader</span>
-                                        </div>
-                                    </div>
-                                    <div *ngIf="!project.manager">
-                                        <span class="badge badge-soft-danger mb-1">Non assigné</span>
-                                        <a href="javascript:void(0);" class="d-block fs-12 text-primary text-decoration-underline"
-                                            data-bs-toggle="modal" data-bs-target="#assignModal" (click)="openAssignModal(project.id)">
-                                            Assigner maintenant
-                                        </a>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="fs-13 text-dark fw-medium">{{project.expectedEndDate | date:'dd MMM yyyy'}}</span>
-                                </td>
-                                <td>
-                                    <span class="badge d-inline-flex align-items-center" [ngClass]="{
-                                        'badge-soft-success': project.status === 'ACTIVE' || project.status === 'COMPLETED',
-                                        'badge-soft-warning': project.status === 'ON_HOLD',
-                                        'badge-soft-danger': project.status === 'CANCELLED'
-                                    }">
-                                        <i class="ti ti-point-filled me-1"></i>{{project.status}}
-                                    </span>
-                                </td>
-                                <td class="text-end">
-                                    <div class="dropdown">
-                                        <button class="btn btn-icon btn-sm btn-light rounded-circle" type="button" data-bs-toggle="dropdown">
-                                            <i class="ti ti-dots-vertical"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end">
-                                            <li>
-                                                <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#assignModal" (click)="openAssignModal(project.id)">
-                                                    <i class="ti ti-user-share me-2"></i>Affecter Manager
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#projectModal" (click)="editProject(project)">
-                                                    <i class="ti ti-edit me-2"></i>Modifier
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item text-primary" href="javascript:void(0);" (click)="openChatForProject(project)">
-                                                    <i class="ti ti-headset me-2"></i>Chat Support
-                                                </a>
-                                            </li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li>
-                                                <a class="dropdown-item text-danger" href="javascript:void(0);" (click)="deleteProject(project.id)">
-                                                    <i class="ti ti-trash me-2"></i>Supprimer
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+            <!-- Card Body -->
+            <div class="card-body">
+                <!-- Description -->
+                <p class="text-muted fs-13 mb-3 line-clamp-2" style="height: 40px;">
+                    {{project.description || 'Aucune description fournie.'}}
+                </p>
+
+                <!-- Manager Info -->
+                <div class="mb-3 p-2 rounded bg-light border-dashed">
+                    <div *ngIf="project.manager" class="d-flex align-items-center">
+                        <div class="avatar avatar-xs rounded-circle bg-primary text-white me-2 fs-10 fw-bold">
+                            {{project.manager.firstName.charAt(0)}}{{project.manager.lastName.charAt(0)}}
+                        </div>
+                        <div>
+                            <small class="text-muted d-block fs-10 text-uppercase fw-bold">Responsable</small>
+                            <span class="fs-12 fw-medium text-dark">{{project.manager.firstName}} {{project.manager.lastName}}</span>
+                        </div>
+                    </div>
+                    <div *ngIf="!project.manager" class="text-center py-1">
+                        <span class="text-danger fs-11 fw-bold"><i class="ti ti-alert-circle me-1"></i>Manager non assigné</span>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="fs-12 text-muted fw-medium">Consommation Budget</span>
+                        <span class="fs-12 fw-bold" [class.text-danger]="getProgress(project) > 90" [class.text-primary]="getProgress(project) <= 90">
+                            {{ getProgress(project) }}%
+                        </span>
+                    </div>
+                    <div class="progress progress-xs mb-0" style="height: 6px;">
+                        <div class="progress-bar" [ngClass]="getProgress(project) > 90 ? 'bg-danger' : 'bg-primary'"
+                            role="progressbar" [style.width.%]="getProgress(project)"></div>
+                    </div>
+                </div>
+
+                <!-- Info Row -->
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="p-2 border rounded bg-light-50">
+                            <small class="text-muted d-block fs-10 text-uppercase fw-bold mb-1">Budget</small>
+                            <span class="fs-12 fw-bold text-dark">{{project.budget | number:'1.0-0'}} TND</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 border rounded bg-light-50">
+                            <small class="text-muted d-block fs-10 text-uppercase fw-bold mb-1">Échéance</small>
+                            <span class="fs-12 fw-medium text-dark"><i class="ti ti-calendar-event me-1"></i>{{project.expectedEndDate | date:'dd/MM/yy'}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Footer -->
+            <div class="card-footer bg-white border-0 pt-0 pb-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="avatar-list-stacked d-flex align-items-center">
+                        <span class="fs-11 text-muted me-2">Équipes:</span>
+                        <span *ngFor="let team of project.teams | slice:0:3" class="badge bg-soft-secondary text-secondary fs-10 me-1">{{team.name}}</span>
+                        <span *ngIf="project.teams && project.teams.length > 3" class="text-muted fs-10">+{{project.teams.length - 3}}</span>
+                    </div>
+                    <i class="ti ti-arrow-narrow-right text-primary fs-18"></i>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Support Modal Overlay -->
+<app-project-support-modal 
+    *ngIf="showSupportModal" 
+    [project]="selectedSupportProject" 
+    (onClose)="closeSupportModal()">
+</app-project-support-modal>
 
 <!-- Modal: Create / Edit Project -->
 <div class="modal fade" id="projectModal" tabindex="-1" aria-hidden="true">
