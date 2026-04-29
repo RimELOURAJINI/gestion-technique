@@ -46,6 +46,7 @@
               <th>Collaborateur</th>
               <th>Rôle</th>
               <th>Statut</th>
+              <th>Sentiment</th>
               <th>Problèmes</th>
               <th>Heure soumission</th>
               <th>Action</th>
@@ -73,6 +74,12 @@
                 <span *ngIf="!s.submitted" class="badge bg-soft-warning text-warning rounded-pill">
                   <i class="ti ti-clock me-1"></i>Non rédigé
                 </span>
+              </td>
+              <td>
+                <span *ngIf="s.submitted" class="badge rounded-pill" [ngClass]="getSentimentClass(s.sentiment)">
+                  {{ getSentimentLabel(s.sentiment) }}
+                </span>
+                <span *ngIf="!s.submitted" class="text-muted fs-12">—</span>
               </td>
               <td>
                 <span *ngIf="s.hasProblems" class="badge bg-soft-danger text-danger rounded-pill">
@@ -201,6 +208,12 @@
       </button>
     </div>
     <div class="detail-modal-body p-4">
+      <div class="d-flex align-items-center mb-4 p-3 rounded-3 bg-light">
+          <div class="me-3 fs-13 fw-bold text-muted text-uppercase">Analyse Sentiment IA :</div>
+          <span class="badge fs-12 py-2 px-3 rounded-pill" [ngClass]="getSentimentClass(selectedReport.sentiment)">
+              {{ getSentimentLabel(selectedReport.sentiment) }}
+          </span>
+      </div>
       <div class="report-section mb-3">
         <div class="section-label"><i class="ti ti-checkbox me-2 text-success"></i>TÂCHES ACCOMPLIES</div>
         <div class="section-content">{{ selectedReport.tasksAccomplished || '—' }}</div>

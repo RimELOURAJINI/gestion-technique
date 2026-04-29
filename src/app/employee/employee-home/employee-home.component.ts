@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { EmployeeService } from '../../services/employee.service';
 import { HrService } from '../../services/hr.service';
 import { AuthService } from '../../services/auth.service';
@@ -21,7 +22,8 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
   stats = {
     myProjects: 0,
     activeTasks: 0,
-    completedTasks: 0
+    completedTasks: 0,
+    productivityScore: 0
   };
   today: Date = new Date();
   upcomingTasks: Task[] = [];
@@ -46,7 +48,8 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
     private employeeService: EmployeeService,
     private hrService: HrService,
     public authService: AuthService,
-    private aiService: AiService
+    private aiService: AiService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -84,9 +87,16 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
         this.isLoading = false;
       });
 
-      // Load Today's Attendance
-      this.hrService.getTodayAttendance(userId).subscribe(attendance => {
-        this.activeAttendance = attendance;
+      // Fetch real Productivity Score from backend
+      this.http.get<any>(`http://localhost:8080/api/stats/user/${userId}/productivity`).subscribe({
+        next: (data) => {
+          this.activeAttendance = data.presentToday ? { checked: true } : null;
+          this.stats.productivityScore = data.score;
+        },
+        error: () => {
+          // Fallback: call attendance manually
+          this.hrService.getTodayAttendance(userId).subscribe(att => { this.activeAttendance = att; });
+        }
       });
     }
   }

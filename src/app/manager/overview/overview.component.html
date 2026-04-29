@@ -33,18 +33,24 @@
 
 <!-- Stats Cards -->
 <div class="row row-gap-3 mb-4">
-    <!-- Mes Projets -->
+    <!-- Mes Projets / Deals -->
     <div class="col-xl-3 col-sm-6 d-flex">
         <div class="card flex-fill mb-0 position-relative overflow-hidden">
             <div class="card-body position-relative z-1">
                 <div class="d-flex align-items-start justify-content-between">
-                    <div>
+                    <div *ngIf="!isCommercialLeader">
                         <p class="fs-14 mb-1 text-muted">Mes Projets</p>
                         <h2 class="mb-1 fs-20 fw-bold">{{stats.projects}}</h2>
-                        <p class="text-success mb-0 fs-13">Projets assignés</p>
+                        <p class="text-success mb-0 fs-13">Projets actifs</p>
+                    </div>
+                    <div *ngIf="isCommercialLeader">
+                        <p class="fs-14 mb-1 text-muted">Valeur Pipeline</p>
+                        <h2 class="mb-1 fs-20 fw-bold text-primary">{{stats.pipelineValue | number:'1.0-0'}} TND</h2>
+                        <p class="text-primary mb-0 fs-13">Opportunités totales</p>
                     </div>
                     <span class="avatar avatar-md rounded-circle bg-soft-primary border border-primary">
-                        <i class="ti ti-briefcase fs-16 text-primary"></i>
+                        <i class="ti ti-briefcase fs-16 text-primary" *ngIf="!isCommercialLeader"></i>
+                        <i class="ti ti-chart-bar fs-16 text-primary" *ngIf="isCommercialLeader"></i>
                     </span>
                 </div>
             </div>
@@ -52,18 +58,24 @@
         </div>
     </div>
 
-    <!-- Tâches Actives -->
+    <!-- Tâches Actives / Win Rate -->
     <div class="col-xl-3 col-sm-6 d-flex">
         <div class="card flex-fill mb-0 position-relative overflow-hidden">
             <div class="card-body position-relative z-1">
                 <div class="d-flex align-items-start justify-content-between">
-                    <div>
+                    <div *ngIf="!isCommercialLeader">
                         <p class="fs-14 mb-1 text-muted">Tâches Actives</p>
                         <h2 class="mb-1 fs-20 fw-bold text-info">{{stats.activeTasks}}</h2>
-                        <p class="text-info mb-0 fs-13">En cours d'exécution</p>
+                        <p class="text-info mb-0 fs-13">En cours</p>
+                    </div>
+                    <div *ngIf="isCommercialLeader">
+                        <p class="fs-14 mb-1 text-muted">Taux de Conversion</p>
+                        <h2 class="mb-1 fs-20 fw-bold text-info">{{stats.winRate}}%</h2>
+                        <p class="text-info mb-0 fs-13">Deals gagnés</p>
                     </div>
                     <span class="avatar avatar-md rounded-circle bg-soft-info border border-info">
-                        <i class="ti ti-list-check fs-16 text-info"></i>
+                        <i class="ti ti-list-check fs-16 text-info" *ngIf="!isCommercialLeader"></i>
+                        <i class="ti ti-target-arrow fs-16 text-info" *ngIf="isCommercialLeader"></i>
                     </span>
                 </div>
             </div>
@@ -71,18 +83,19 @@
         </div>
     </div>
 
-    <!-- Tâches Terminées -->
+    <!-- Tâches Terminées / Projets -->
     <div class="col-xl-3 col-sm-6 d-flex">
         <div class="card flex-fill mb-0 position-relative overflow-hidden">
             <div class="card-body position-relative z-1">
                 <div class="d-flex align-items-start justify-content-between">
                     <div>
-                        <p class="fs-14 mb-1 text-muted">Tâches Terminées</p>
-                        <h2 class="mb-1 fs-20 fw-bold text-success">{{stats.completedTasks}}</h2>
-                        <p class="text-success mb-0 fs-13">Objectifs atteints</p>
+                        <p class="fs-14 mb-1 text-muted">{{ isCommercialLeader ? 'Projets Commerciaux' : 'Tâches Terminées' }}</p>
+                        <h2 class="mb-1 fs-20 fw-bold text-success">{{ isCommercialLeader ? stats.projects : stats.completedTasks }}</h2>
+                        <p class="text-success mb-0 fs-13">{{ isCommercialLeader ? 'Accompagnement' : 'Objectifs atteints' }}</p>
                     </div>
                     <span class="avatar avatar-md rounded-circle bg-soft-success border border-success">
-                        <i class="ti ti-circle-check fs-16 text-success"></i>
+                        <i class="ti ti-circle-check fs-16 text-success" *ngIf="!isCommercialLeader"></i>
+                        <i class="ti ti-presentation fs-16 text-success" *ngIf="isCommercialLeader"></i>
                     </span>
                 </div>
             </div>
@@ -96,7 +109,7 @@
             <div class="card-body position-relative z-1">
                 <div class="d-flex align-items-start justify-content-between">
                     <div>
-                        <p class="fs-14 mb-1 text-muted">Mon Équipe</p>
+                        <p class="fs-14 mb-1 text-muted">{{ isCommercialLeader ? 'Force de Vente' : 'Mon Équipe' }}</p>
                         <h2 class="mb-1 fs-20 fw-bold">{{stats.teamMembers}}</h2>
                         <p class="text-purple mb-0 fs-13">Collaborateurs actifs</p>
                     </div>
@@ -198,15 +211,45 @@
         </div>
     </div>
 
-    <!-- Recent Tasks -->
+    <!-- Recent Tasks / Leaderboard -->
     <div class="col-lg-5 d-flex">
         <div class="card flex-fill">
             <div class="card-header d-flex align-items-center justify-content-between py-3">
-                <h5 class="mb-0 fs-16 fw-bold">Dernières Tâches</h5>
-                <a routerLink="/manager/tasks" class="btn btn-sm btn-light">Gérer</a>
+                <h5 class="mb-0 fs-16 fw-bold">{{ isCommercialLeader ? 'Leaderboard Commerciaux' : 'Dernières Tâches' }}</h5>
+                <a [routerLink]="isCommercialLeader ? '/commercial-leader/team' : '/manager/tasks'" class="btn btn-sm btn-light">Voir tout</a>
             </div>
             <div class="card-body p-0">
-                <div class="list-group list-group-flush">
+                <!-- Leaderboard (Comm Leader) -->
+                <div *ngIf="isCommercialLeader" class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light fs-11 text-uppercase text-muted fw-bold">
+                            <tr>
+                                <th class="ps-3 py-2">Commercial</th>
+                                <th class="py-2">Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Mocking leaderboard for demo -->
+                            <tr>
+                                <td class="ps-3 py-3 d-flex align-items-center">
+                                    <div class="avatar avatar-xs bg-primary text-white rounded-circle me-2">J</div>
+                                    <span class="fs-13">Jean Dupont</span>
+                                </td>
+                                <td><span class="badge bg-soft-success text-success">98%</span></td>
+                            </tr>
+                            <tr>
+                                <td class="ps-3 py-3 d-flex align-items-center">
+                                    <div class="avatar avatar-xs bg-info text-white rounded-circle me-2">M</div>
+                                    <span class="fs-13">Marie Laurent</span>
+                                </td>
+                                <td><span class="badge bg-soft-primary text-primary">85%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Recent Tasks (Manager) -->
+                <div *ngIf="!isCommercialLeader" class="list-group list-group-flush">
                     <div *ngFor="let t of recentTasks" class="list-group-item px-3 py-3 border-0 border-bottom">
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center">
@@ -233,7 +276,7 @@
                         </div>
                     </div>
                 </div>
-                <div *ngIf="recentTasks.length === 0" class="text-center py-5">
+                <div *ngIf="!isCommercialLeader && recentTasks.length === 0" class="text-center py-5">
                     <i class="ti ti-clipboard-list fs-32 text-muted mb-2"></i>
                     <p class="text-muted small mb-0">Aucune tâche récente.</p>
                 </div>

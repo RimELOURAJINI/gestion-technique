@@ -10,6 +10,7 @@ import { AiService } from '../../services/ai.service';
 import { FormsModule } from '@angular/forms';
 import { PersonalPointageComponent } from '../../shared/personal-pointage/personal-pointage.component';
 import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
+import { HrService } from '../../services/hr.service';
 
 declare var initDashboardCharts: any;
 declare var ApexCharts: any;
@@ -26,7 +27,9 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
     projects: 0,
     teams: 0,
     managers: 0,
-    reclamations: 0
+    reclamations: 0,
+    attendanceRate: 0,
+    overdueTasks: 0
   };
   projectBreakdown = {
     completedText: '0%',
@@ -56,6 +59,7 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
     private adminService: AdminService,
     private authService: AuthService,
     private aiService: AiService,
+    private hrService: HrService,
     private sanitizer: DomSanitizer,
     private cdr: ChangeDetectorRef
   ) {}
@@ -79,7 +83,7 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
     
     // Load Projects
     this.adminService.getAllProjects().subscribe((projects) => {
-      this.projects = projects; // Set the projects array
+      this.projects = projects;
       this.stats.projects = projects.length;
       this.recentProjects = projects.slice(-5).reverse();
       
@@ -97,9 +101,11 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
           this.projectBreakdown.completedText = Math.round((completed / projects.length) * 100) + '%';
           this.projectBreakdown.delayedText = Math.round((delayed / projects.length) * 100) + '%';
           this.projectBreakdown.inProgressText = Math.round((inProgress / projects.length) * 100) + '%';
+          
+          // Added overdue tasks stat
+          this.stats.overdueTasks = delayed;
       }
       
-      // Mettre à jour les graphes avec des vraies données
       setTimeout(() => this.renderDynamicCharts(projects, completed, delayed, inProgress), 800);
     });
 
@@ -121,7 +127,17 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
       
       this.stats.reclamations = reclamations.filter(r => r.status === 'PENDING').length;
       this.recentReclamations = reclamations.slice(-5).reverse();
-      this.isLoading = false;
+    });
+
+    // New: Load Today's Attendance Rate
+    const today = new Date();
+    this.hrService.getAllAttendanceByDate(today).subscribe(attendance => {
+      this.adminService.getUsersByRole('ROLE_EMPLOYEE').subscribe(employees => {
+        const totalEmployees = employees.length || 1;
+        const presentCount = attendance.length;
+        this.stats.attendanceRate = Math.round((presentCount / totalEmployees) * 100);
+        this.isLoading = false;
+      });
     });
   }
 

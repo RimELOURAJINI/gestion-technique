@@ -119,6 +119,7 @@ export interface DailyReport {
   victories: string;            // [VICTOIRES DU JOUR]
   notes: string;                // [NOTES / REMARQUES]
   submittedAt?: string;
+  sentiment?: string; // positive | neutral | negative (from backend)
 }
 
 export interface DailyReportSummary {
@@ -129,6 +130,7 @@ export interface DailyReportSummary {
   hasProblems: boolean;
   reportId?: number;
   submittedAt?: string;
+  sentiment?: string; // positive | neutral | negative (from backend)
 }
 
 export interface Prime {

@@ -9,6 +9,7 @@ import { AdminService } from '../../services/admin.service';
 import { AiService } from '../../services/ai.service';
 import { PersonalPointageComponent } from '../../shared/personal-pointage/personal-pointage.component';
 import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
+import { DealService } from '../../services/deal.service';
 
 declare var initDashboardCharts: any;
 
@@ -25,6 +26,8 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
     activeTasks: 0,
     completedTasks: 0,
     teamMembers: 0,
+    pipelineValue: 0,
+    winRate: 0,
     priorityLevel: '',
     riskThreshold: 0,
     teams: [] as Team[],
@@ -32,6 +35,7 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
     client: {} as User,
     commercial: {} as User
   };
+  isCommercialLeader: boolean = false;
   today: Date = new Date();
   myProjects: Project[] = [];
   recentTasks: Task[] = [];
@@ -52,11 +56,13 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
     private statsService: StatsService,
     private authService: AuthService,
     private aiService: AiService,
-    private adminService: AdminService, // Correctly injected
+    private adminService: AdminService,
+    private dealService: DealService,
     private router: Router
   ) {}
 
   ngOnInit() {
+    this.isCommercialLeader = this.authService.isCommercialLeader();
     this.loadDashboardData();
   }
 
@@ -75,6 +81,15 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
     if (!userId) return;
 
     this.isLoading = true;
+
+    // Load Deals if Commercial Leader
+    if (this.isCommercialLeader) {
+        this.dealService.getAllDeals().subscribe(deals => {
+            this.stats.pipelineValue = deals.reduce((acc, deal) => acc + (deal.amount || 0), 0);
+            const wonDeals = deals.filter(d => d.status === 'WON').length;
+            this.stats.winRate = deals.length > 0 ? Math.round((wonDeals / deals.length) * 100) : 0;
+        });
+    }
 
     // Load Real Stats for Cards
     this.statsService.getManagerDashboardStats(userId).subscribe({

@@ -34,20 +34,16 @@
 <!-- Stats Cards -->
 <div class="row row-gap-3 mb-4">
     <!-- Total Projets -->
-    <div class="col-xl-3 col-sm-6 d-flex">
+    <div class="col-xl-2 col-sm-6 d-flex">
         <div class="card flex-fill mb-0 position-relative overflow-hidden">
             <div class="card-body position-relative z-1">
                 <div class="d-flex align-items-start justify-content-between">
                     <div>
-                        <p class="fs-14 mb-1 text-muted">Total Projets</p>
-                        <h2 class="mb-1 fs-20 fw-bold">{{stats.projects}}</h2>
-                        <p class="text-success mb-0 fs-13">
-                            <i class="ti ti-arrow-bar-up me-1"></i>+{{recentProjects.length}}
-                            <span class="text-body ms-1">récents</span>
-                        </p>
+                        <p class="fs-12 mb-1 text-muted">Total Projets</p>
+                        <h2 class="mb-1 fs-18 fw-bold">{{stats.projects}}</h2>
                     </div>
-                    <span class="avatar avatar-md rounded-circle bg-soft-primary border border-primary">
-                        <i class="ti ti-briefcase fs-16 text-primary"></i>
+                    <span class="avatar avatar-sm rounded-circle bg-soft-primary border border-primary">
+                        <i class="ti ti-briefcase fs-14 text-primary"></i>
                     </span>
                 </div>
             </div>
@@ -55,60 +51,88 @@
         </div>
     </div>
 
-    <!-- Équipes -->
-    <div class="col-xl-3 col-sm-6 d-flex">
+    <!-- Présence -->
+    <div class="col-xl-2 col-sm-6 d-flex">
         <div class="card flex-fill mb-0 position-relative overflow-hidden">
             <div class="card-body position-relative z-1">
                 <div class="d-flex align-items-start justify-content-between">
                     <div>
-                        <p class="fs-14 mb-1 text-muted">Équipes Actives</p>
-                        <h2 class="mb-1 fs-20 fw-bold">{{stats.teams}}</h2>
-                        <p class="text-info mb-0 fs-13">Gestion en cours</p>
+                        <p class="fs-12 mb-1 text-muted">Taux Présence</p>
+                        <h2 class="mb-1 fs-18 fw-bold" [class.text-danger]="stats.attendanceRate < 80">{{stats.attendanceRate}}%</h2>
                     </div>
-                    <span class="avatar avatar-md rounded-circle bg-soft-success border border-success">
-                        <i class="ti ti-users-group fs-16 text-success"></i>
+                    <span class="avatar avatar-sm rounded-circle bg-soft-success border border-success">
+                        <i class="ti ti-clock-check fs-14 text-success"></i>
                     </span>
                 </div>
             </div>
-            <img src="assets/assets/img/icons/elemnt-02.svg" alt="icon" class="img-fluid position-absolute top-0 start-0">
+        </div>
+    </div>
+
+    <!-- Tâches en Retard -->
+    <div class="col-xl-2 col-sm-6 d-flex">
+        <div class="card flex-fill mb-0 position-relative overflow-hidden">
+            <div class="card-body position-relative z-1">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <p class="fs-12 mb-1 text-muted">Tâches Retard</p>
+                        <h2 class="mb-1 fs-18 fw-bold" [class.text-danger]="stats.overdueTasks > 0">{{stats.overdueTasks}}</h2>
+                    </div>
+                    <span class="avatar avatar-sm rounded-circle bg-soft-danger border border-danger">
+                        <i class="ti ti-alert-triangle fs-14 text-danger"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Équipes -->
+    <div class="col-xl-2 col-sm-6 d-flex">
+        <div class="card flex-fill mb-0 position-relative overflow-hidden">
+            <div class="card-body position-relative z-1">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <p class="fs-12 mb-1 text-muted">Équipes Actives</p>
+                        <h2 class="mb-1 fs-18 fw-bold">{{stats.teams}}</h2>
+                    </div>
+                    <span class="avatar avatar-sm rounded-circle bg-soft-info border border-info">
+                        <i class="ti ti-users-group fs-14 text-info"></i>
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Team Leaders -->
-    <div class="col-xl-3 col-sm-6 d-flex">
+    <div class="col-xl-2 col-sm-6 d-flex">
         <div class="card flex-fill mb-0 position-relative overflow-hidden">
             <div class="card-body position-relative z-1">
                 <div class="d-flex align-items-start justify-content-between">
                     <div>
-                        <p class="fs-14 mb-1 text-muted">Team Leaders</p>
-                        <h2 class="mb-1 fs-20 fw-bold">{{stats.managers}}</h2>
-                        <p class="text-warning mb-0 fs-13">Responsables de pôles</p>
+                        <p class="fs-12 mb-1 text-muted">Team Leaders</p>
+                        <h2 class="mb-1 fs-18 fw-bold">{{stats.managers}}</h2>
                     </div>
-                    <span class="avatar avatar-md rounded-circle bg-soft-warning border border-warning">
-                        <i class="ti ti-user-star fs-16 text-warning"></i>
+                    <span class="avatar avatar-sm rounded-circle bg-soft-warning border border-warning">
+                        <i class="ti ti-user-star fs-14 text-warning"></i>
                     </span>
                 </div>
             </div>
-            <img src="assets/assets/img/icons/elemnt-03.svg" alt="icon" class="img-fluid position-absolute top-0 start-0">
         </div>
     </div>
 
     <!-- Réclamations -->
-    <div class="col-xl-3 col-sm-6 d-flex">
+    <div class="col-xl-2 col-sm-6 d-flex">
         <div class="card flex-fill mb-0 position-relative overflow-hidden">
             <div class="card-body position-relative z-1">
                 <div class="d-flex align-items-start justify-content-between">
                     <div>
-                        <p class="fs-14 mb-1 text-muted">Réclamations en Attente</p>
-                        <h2 class="mb-1 fs-20 fw-bold text-danger">{{stats.reclamations}}</h2>
-                        <p class="text-danger mb-0 fs-13">Action immédiate requise</p>
+                        <p class="fs-12 mb-1 text-muted">Réclamations</p>
+                        <h2 class="mb-1 fs-18 fw-bold text-danger">{{stats.reclamations}}</h2>
                     </div>
-                    <span class="avatar avatar-md rounded-circle bg-soft-danger border border-danger">
-                        <i class="ti ti-exclamation-circle fs-16 text-danger"></i>
+                    <span class="avatar avatar-sm rounded-circle bg-soft-danger border border-danger">
+                        <i class="ti ti-exclamation-circle fs-14 text-danger"></i>
                     </span>
                 </div>
             </div>
-            <img src="assets/assets/img/icons/elemnt-04.svg" alt="icon" class="img-fluid position-absolute top-0 start-0">
         </div>
     </div>
 </div>

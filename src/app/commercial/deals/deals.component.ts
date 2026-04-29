@@ -18,10 +18,20 @@ import { DealNegotiationComponent } from '../../shared/deal-negotiation/deal-neg
           <h4 class="fw-bold text-dark mb-1">Espace Deals & Propositions</h4>
           <p class="text-muted small">Gérez vos opportunités commerciales et collaborez avec vos clients.</p>
         </div>
-        <button class="btn btn-primary d-flex align-items-center gap-2" (click)="showCreateForm = !showCreateForm">
-          <i class="ti" [ngClass]="showCreateForm ? 'ti-x' : 'ti-plus'"></i>
-          {{ showCreateForm ? 'Annuler' : 'Nouvelle Proposition' }}
-        </button>
+        <div class="d-flex gap-2">
+            <div class="btn-group p-1 bg-light rounded-3 shadow-sm me-2">
+                <button class="btn btn-sm px-3" [class.btn-white]="viewMode === 'list'" [class.shadow-sm]="viewMode === 'list'" (click)="viewMode = 'list'">
+                    <i class="ti ti-list"></i> Liste
+                </button>
+                <button class="btn btn-sm px-3" [class.btn-white]="viewMode === 'kanban'" [class.shadow-sm]="viewMode === 'kanban'" (click)="viewMode = 'kanban'">
+                    <i class="ti ti-layout-kanban"></i> Kanban
+                </button>
+            </div>
+            <button class="btn btn-primary d-flex align-items-center gap-2" (click)="showCreateForm = !showCreateForm">
+              <i class="ti" [ngClass]="showCreateForm ? 'ti-x' : 'ti-plus'"></i>
+              {{ showCreateForm ? 'Annuler' : 'Nouvelle Proposition' }}
+            </button>
+        </div>
       </div>
 
       <!-- Onglets -->
@@ -77,8 +87,8 @@ import { DealNegotiationComponent } from '../../shared/deal-negotiation/deal-neg
         </div>
       </div>
 
-      <!-- Vue : Mes Deals -->
-      <div class="row g-4" *ngIf="activeTab === 'my-deals'">
+      <!-- Vue : Mes Deals (LIST) -->
+      <div class="row g-4" *ngIf="activeTab === 'my-deals' && viewMode === 'list'">
         <div class="col-xl-4 col-md-6" *ngFor="let deal of deals">
           <div class="card border-0 shadow-sm h-100 deal-card">
             <div class="card-body p-4">
@@ -116,9 +126,43 @@ import { DealNegotiationComponent } from '../../shared/deal-negotiation/deal-neg
         </div>
       </div>
 
+      <!-- Vue : Mes Deals (KANBAN) -->
+      <div class="kanban-wrapper overflow-auto" *ngIf="activeTab === 'my-deals' && viewMode === 'kanban'">
+          <div class="d-flex gap-3 pb-3" style="min-width: 1200px;">
+              <div class="kanban-column flex-fill" *ngFor="let col of kanbanColumns">
+                  <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded-3">
+                      <h6 class="fw-bold mb-0 fs-13 text-uppercase">{{ col.label }}</h6>
+                      <span class="badge bg-white text-dark border shadow-sm">{{ getDealsByStatus(col.statuses).length }}</span>
+                  </div>
+                  <div class="kanban-list d-flex flex-column gap-3">
+                      <div class="card border-0 shadow-sm border-start border-3" 
+                           *ngFor="let deal of getDealsByStatus(col.statuses)"
+                           [class.border-primary]="col.color === 'primary'"
+                           [class.border-warning]="col.color === 'warning'"
+                           [class.border-success]="col.color === 'success'">
+                          <div class="card-body p-3">
+                              <h6 class="fw-bold fs-14 mb-2">{{ deal.name }}</h6>
+                              <div class="d-flex align-items-center mb-3">
+                                  <div class="avatar-xs bg-light rounded-circle me-2 d-flex align-items-center justify-content-center fs-10">
+                                      {{ deal.client?.firstName?.charAt(0) }}
+                                  </div>
+                                  <span class="text-muted fs-11">{{ deal.client?.firstName }} {{ deal.client?.lastName }}</span>
+                              </div>
+                              <div class="d-flex justify-content-between align-items-center">
+                                  <span class="fw-bold fs-13">{{ deal.budget | number:'1.0-0' }} €</span>
+                                  <button class="btn btn-icon btn-sm btn-soft-primary rounded-circle" (click)="openChat(deal)">
+                                      <i class="ti ti-chevron-right"></i>
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
       <!-- Vue : Demandes Clients -->
       <div class="row g-4" *ngIf="activeTab === 'incoming'">
-        <!-- ... (Contenu demandes clients inchangé) -->
         <div class="col-xl-4 col-md-6" *ngFor="let deal of unassignedDeals">
           <div class="card border-0 shadow-sm h-100 border-start border-4 border-info">
             <div class="card-body p-4">
@@ -153,31 +197,43 @@ import { DealNegotiationComponent } from '../../shared/deal-negotiation/deal-neg
     <app-deal-negotiation 
       *ngIf="selectedDealChat" 
       [deal]="selectedDealChat" 
-      [isAdmin]="false"
-      [isCommercial]="true"
+      [isAdmin]="false" 
+      [isCommercial]="true" 
       (onClose)="selectedDealChat = null">
     </app-deal-negotiation>
   `,
   styles: [`
     .deal-card { transition: transform 0.2s ease, box-shadow 0.2s ease; border-top: 4px solid transparent; }
     .deal-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important; }
+    .btn-white { background: #fff; border: 1px solid #e2e8f0; }
+    .kanban-wrapper { min-height: 500px; }
+    .kanban-column { min-width: 280px; width: 280px; }
     .bg-soft-primary { background-color: #eef2ff; }
-    .alert-soft-info { background-color: #e0f2fe; color: #0369a1; }
-    .alert-soft-warning { background-color: #fffbeb; color: #92400e; }
-    .alert-soft-success { background-color: #f0fdf4; color: #166534; }
     .chat-overlay { position: fixed; top: 0; right: 0; width: 450px; height: 100vh; background: #fff; z-index: 1050; display: flex; flex-direction: column; }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
   `]
 })
 export class DealsComponent implements OnInit {
   activeTab: 'my-deals' | 'incoming' = 'my-deals';
+  viewMode: 'list' | 'kanban' = 'kanban';
   deals: any[] = [];
   unassignedDeals: any[] = [];
   clients: User[] = [];
   showCreateForm = false;
   currentUserId: number | null = null;
   selectedDealChat: any = null;
+
+  kanbanColumns = [
+    { label: 'Brouillon', statuses: ['DRAFT'], color: 'secondary' },
+    { label: 'Proposition Envoyée', statuses: ['PENDING_CLIENT'], color: 'primary' },
+    { label: 'Négociation', statuses: ['NEGOTIATION', 'CLIENT_INITIATED'], color: 'warning' },
+    { label: 'En Validation Admin', statuses: ['PENDING_ADMIN'], color: 'info' },
+    { label: 'Gagné / Projet', statuses: ['VALIDATED'], color: 'success' }
+  ];
+
+  getDealsByStatus(statuses: string[]) {
+    return this.deals.filter(d => statuses.includes(d.status));
+  }
 
   newDeal = {
     name: '',

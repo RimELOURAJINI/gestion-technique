@@ -108,12 +108,12 @@
 
 <!-- Stats Cards -->
 <div class="row row-gap-3 mb-4">
-    <div class="col-xl-4 col-sm-6 d-flex">
+    <div class="col-xl-3 col-sm-6 d-flex">
         <div class="card flex-fill mb-0 position-relative overflow-hidden">
             <div class="card-body position-relative z-1">
                 <div class="d-flex align-items-start justify-content-between">
                     <div>
-                        <p class="fs-14 mb-1 text-muted">Mes Projets</p>
+                        <p class="fs-14 mb-1 text-muted">Mes Projets Actifs</p>
                         <h2 class="mb-1 fs-20 fw-bold">{{stats.myProjects}}</h2>
                         <p class="text-primary mb-0 fs-13">Projets assignés</p>
                     </div>
@@ -126,7 +126,7 @@
         </div>
     </div>
 
-    <div class="col-xl-4 col-sm-6 d-flex">
+    <div class="col-xl-3 col-sm-6 d-flex">
         <div class="card flex-fill mb-0 position-relative overflow-hidden">
             <div class="card-body position-relative z-1">
                 <div class="d-flex align-items-start justify-content-between">
@@ -159,6 +159,26 @@
                 </div>
             </div>
             <img src="assets/assets/img/icons/elemnt-03.svg" alt="icon" class="img-fluid position-absolute top-0 start-0">
+        </div>
+    </div>
+
+    <!-- Productivity Score -->
+    <div class="col-xl-3 col-sm-6 d-flex">
+        <div class="card flex-fill mb-0 position-relative overflow-hidden bg-dark text-white border-0 shadow">
+            <div class="card-body position-relative z-1">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <p class="fs-14 mb-1 text-white text-opacity-75">Score Productivité</p>
+                        <h2 class="mb-1 fs-24 fw-bold text-white">{{stats.productivityScore}}%</h2>
+                        <div class="progress progress-xs bg-white bg-opacity-10 mt-2" style="width: 100px;">
+                            <div class="progress-bar bg-primary" [style.width.%]="stats.productivityScore"></div>
+                        </div>
+                    </div>
+                    <span class="avatar avatar-md rounded-circle bg-primary text-white border border-white border-opacity-25 shadow-sm">
+                        <i class="ti ti-trophy fs-18"></i>
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
 </div>

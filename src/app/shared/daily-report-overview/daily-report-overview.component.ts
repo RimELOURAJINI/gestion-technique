@@ -79,6 +79,18 @@ export class DailyReportOverviewComponent implements OnInit, OnChanges {
     return this.summaries.filter(s => s.hasProblems).length;
   }
 
+  getSentimentClass(sentiment: string | undefined): string {
+    if (sentiment === 'positive') return 'badge-soft-success text-success';
+    if (sentiment === 'negative') return 'badge-soft-danger text-danger';
+    return 'badge-soft-secondary text-muted';
+  }
+
+  getSentimentLabel(sentiment: string | undefined): string {
+    if (sentiment === 'positive') return 'Positif 😊';
+    if (sentiment === 'negative') return 'Négatif 😟';
+    return 'Neutre 😐';
+  }
+
   openDetail(reportId: number): void {
     this.dailyReportService.getReportById(reportId).subscribe({
       next: (r) => { this.selectedReport = r; this.showDetail = true; },

@@ -15,6 +15,17 @@ export class PersonalPointageComponent implements OnInit {
   isClockingIn = false;
   today: Date = new Date();
 
+  // Timer properties
+  timerInterval: any;
+  elapsedTime: string = '00:00:00';
+  
+  // Weekly History
+  weeklyHistory: any[] = [];
+  
+  // Session details
+  sessionComment: string = '';
+  isTelework: boolean = false;
+
   constructor(
     private hrService: HrService,
     private authService: AuthService
@@ -22,6 +33,11 @@ export class PersonalPointageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadTodayAttendance();
+    this.loadWeeklyHistory();
+  }
+
+  ngOnDestroy(): void {
+    if (this.timerInterval) clearInterval(this.timerInterval);
   }
 
   loadTodayAttendance(): void {
@@ -31,9 +47,39 @@ export class PersonalPointageComponent implements OnInit {
     this.hrService.getTodayAttendance(userId).subscribe({
       next: (res) => {
         this.activeAttendance = res;
+        if (this.activeAttendance?.checkIn && !this.activeAttendance?.checkOut) {
+          this.startTimer(new Date(this.activeAttendance.checkIn));
+        }
       },
       error: (err) => console.error('[POINTAGE] Error loading today status', err)
     });
+  }
+
+  loadWeeklyHistory(): void {
+    const userId = this.authService.getUserId();
+    if (!userId) return;
+    this.hrService.getMyAttendance(userId).subscribe(history => {
+      // Get last 7 days summary
+      this.weeklyHistory = history.slice(0, 7);
+    });
+  }
+
+  startTimer(checkInTime: Date): void {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    
+    this.timerInterval = setInterval(() => {
+      const now = new Date().getTime();
+      const diff = now - checkInTime.getTime();
+      
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      this.elapsedTime = 
+        (hours < 10 ? '0' + hours : hours) + ':' + 
+        (minutes < 10 ? '0' + minutes : minutes) + ':' + 
+        (seconds < 10 ? '0' + seconds : seconds);
+    }, 1000);
   }
 
   onCheckIn(): void {
@@ -44,6 +90,7 @@ export class PersonalPointageComponent implements OnInit {
       next: (res) => {
         this.activeAttendance = res;
         this.isClockingIn = false;
+        this.startTimer(new Date(res.checkIn));
       },
       error: (err) => {
         console.error('[POINTAGE] Check-in error', err);
@@ -61,11 +108,21 @@ export class PersonalPointageComponent implements OnInit {
       next: (res) => {
         this.activeAttendance = res;
         this.isClockingIn = false;
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        this.loadWeeklyHistory();
       },
       error: (err) => {
         console.error('[POINTAGE] Check-out error', err);
         this.isClockingIn = false;
       }
     });
+  }
+
+  getDuration(checkIn: any, checkOut: any): string {
+    if (!checkIn || !checkOut) return '-';
+    const diff = new Date(checkOut).getTime() - new Date(checkIn).getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours}h ${minutes}m`;
   }
 }
