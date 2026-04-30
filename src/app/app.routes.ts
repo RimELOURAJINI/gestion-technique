@@ -134,7 +134,7 @@ export const routes: Routes = [
       { path: 'projects', component: TeamProjectsComponent },
       { path: 'projects/:id', component: UnifiedProjectDetailComponent },
       { path: 'tasks', component: TeamTasksComponent },
-      { path: 'deals', component: DealsComponent },
+      { path: 'deals', component: CommercialDealsComponent },
       { path: 'tickets', component: TicketsComponent },
       { path: 'reclamations', component: ReclamationHubComponent },
       { path: 'planning', component: ManagerPlanningComponent },
