@@ -31,6 +31,7 @@ import { TimesheetsComponent } from './employee/timesheets/timesheets.component'
 import { EmployeeSettingsComponent } from './employee/settings/settings.component';
 import { EmployeePerformanceComponent } from './employee/performance/performance.component';
 import { TaskDetailComponent } from './employee/task-detail/task-detail.component';
+import { TodoListComponent } from './employee/todo-list/todo-list.component';
 import { ProjectDetailComponent } from './employee/project-detail/project-detail.component';
 import { CommercialDashboardComponent } from './commercial/commercial-dashboard/commercial-dashboard.component';
 import { ProjectsComponent as CommercialProjectsComponent } from './commercial/projects/projects.component';
@@ -61,6 +62,7 @@ import { EmployeeDailyReportComponent } from './employee/daily-report/daily-repo
 import { CommercialDailyReportComponent } from './commercial/daily-report/daily-report.component';
 import { AdminPrimesComponent } from './admin/primes/primes.component';
 import { MyPrimesComponent } from './shared/my-primes/my-primes.component';
+import { HistoryComponent } from './shared/history/history.component';
 
 import { SignupComponent } from './signup/signup.component';
 
@@ -92,6 +94,7 @@ export const routes: Routes = [
       { path: 'my-attendance', component: AttendancePersonalComponent },
       { path: 'my-leaves', component: EmployeeLeavesComponent },
       { path: 'primes', component: AdminPrimesComponent },
+      { path: 'history', component: HistoryComponent },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }
     ]
   },
@@ -120,6 +123,7 @@ export const routes: Routes = [
       { path: 'team-chat', component: TeamChatComponent },
       { path: 'daily-report', component: ManagerDailyReportComponent },
       { path: 'team', loadComponent: () => import('./manager/my-team/my-team.component').then(m => m.MyTeamComponent) },
+      { path: 'history', component: HistoryComponent },
       { path: 'settings', component: FeaturePlaceholderComponent, data: { title: 'Paramètres Manager', description: 'Préférences manager et options de pilotage.' } },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }
     ]
@@ -161,6 +165,7 @@ export const routes: Routes = [
     children: [
       { path: 'home', component: EmployeeHomeComponent },
       { path: 'tasks', component: MyTasksComponent },
+      { path: 'todo', component: TodoListComponent },
       { path: 'projects', component: MyProjectsComponent },
       { path: 'tickets', component: EmployeeTicketsComponent },
       { path: 'reclamations', component: ReclamationHubComponent },

@@ -1,0 +1,156 @@
+<div class="content container-fluid">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Ma To-Do List</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="/employee/home">Dashboard</a></li>
+                    <li class="breadcrumb-item active">To-Do List</li>
+                </ul>
+            </div>
+            <div class="col-auto float-end ms-auto">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Ajouter une tâche personnelle..." [(ngModel)]="newTaskTitle" (keyup.enter)="addPersonalTask()">
+                        <button class="btn btn-primary" type="button" (click)="addPersonalTask()">
+                            <i class="ti ti-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Page Header -->
+
+    <div class="row">
+        <!-- Assigned Tasks (from Projects) -->
+        <div class="col-md-6">
+            <div class="card todo-card border-top border-4 border-primary">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0"><i class="ti ti-briefcase me-2 text-primary"></i>Tâches Projets</h5>
+                    <span class="badge rounded-pill bg-primary-light text-primary">{{ filteredTodayTasks.length }}</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="todo-list-container scrollable-todo">
+                        <div *ngIf="filteredTodayTasks.length === 0" class="empty-state p-4 text-center">
+                            <i class="ti ti-clipboard-off fs-40 text-muted mb-2"></i>
+                            <p class="text-muted mb-0">Aucune tâche correspondante.</p>
+                        </div>
+                        <div *ngFor="let task of filteredTodayTasks" class="todo-item p-3 border-bottom" [class.completed]="task.status === 'DONE'">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="form-check p-0 m-0">
+                                    <input class="form-check-input ms-0" type="checkbox" [checked]="task.status === 'DONE'" (change)="toggleTaskStatus(task)">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="todo-task-title mb-1" (click)="selectTask(task)" data-bs-toggle="modal" data-bs-target="#subtaskModal">{{ task.title }}</h6>
+                                            <span class="fs-11 text-muted"><i class="ti ti-folder me-1"></i>{{ task.project?.name }}</span>
+                                        </div>
+                                        <span class="badge fs-10" [ngClass]="task.priority === 'HIGH' ? 'bg-danger' : 'bg-warning text-dark'">{{ task.priority }}</span>
+                                    </div>
+                                    <div class="mt-2" *ngIf="task.subtasks && task.subtasks.length > 0">
+                                        <div class="progress progress-xs mb-1">
+                                            <div class="progress-bar bg-success" [style.width.%]="getTaskProgress(task)"></div>
+                                        </div>
+                                        <span class="fs-10 text-muted">{{ getTaskProgress(task) }}% complété</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal Tasks -->
+        <div class="col-md-6">
+            <div class="card todo-card border-top border-4 border-info">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0"><i class="ti ti-user-check me-2 text-info"></i>Tâches Personnelles</h5>
+                    <span class="badge rounded-pill bg-info-light text-info">{{ filteredPersonalTasks.length }}</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="todo-list-container scrollable-todo">
+                        <div *ngIf="filteredPersonalTasks.length === 0" class="empty-state p-4 text-center">
+                            <i class="ti ti-notes-off fs-40 text-muted mb-2"></i>
+                            <p class="text-muted mb-0">Aucune tâche correspondante.</p>
+                        </div>
+                        <div *ngFor="let task of filteredPersonalTasks" class="todo-item p-3 border-bottom" [class.completed]="task.status === 'DONE'">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="form-check p-0 m-0">
+                                    <input class="form-check-input ms-0" type="checkbox" [checked]="task.status === 'DONE'" (change)="toggleTaskStatus(task)">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="todo-task-title mb-1" (click)="selectTask(task)" data-bs-toggle="modal" data-bs-target="#subtaskModal">{{ task.title }}</h6>
+                                            <span class="fs-11 text-muted"><i class="ti ti-clock me-1"></i>Créé le {{ task.createdAt | date:'dd MMM HH:mm' }}</span>
+                                        </div>
+                                        <button class="btn btn-sm btn-soft-danger border-0 p-1" (click)="deleteTask(task.id!)">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
+                                    </div>
+                                    <div class="mt-2" *ngIf="task.subtasks && task.subtasks.length > 0">
+                                        <div class="progress progress-xs mb-1">
+                                            <div class="progress-bar bg-info" [style.width.%]="getTaskProgress(task)"></div>
+                                        </div>
+                                        <span class="fs-10 text-muted">{{ getTaskProgress(task) }}% complété</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Subtask Modal -->
+<div class="modal fade" id="subtaskModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div class="modal-header bg-light">
+                <div>
+                    <h5 class="modal-title fw-bold">{{ selectedTask?.title }}</h5>
+                    <span class="fs-12 text-muted" *ngIf="selectedTask?.project">Projet: {{ selectedTask?.project?.name }}</span>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-4">
+                    <label class="form-label fw-bold small text-uppercase">Sous-tâches (Analyse / Étapes)</label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Nouvelle étape..." [(ngModel)]="newSubtaskTitle" (keyup.enter)="addSubtask()">
+                        <button class="btn btn-primary" type="button" (click)="addSubtask()">Ajouter</button>
+                    </div>
+
+                    <div class="subtask-list">
+                        <div *ngIf="!selectedTask?.subtasks || selectedTask?.subtasks?.length === 0" class="text-center py-3 text-muted">
+                            Aucune sous-tâche pour le moment.
+                        </div>
+                        <div *ngFor="let sub of selectedTask?.subtasks" class="subtask-row d-flex align-items-center justify-content-between p-2 rounded mb-2 border">
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox" class="form-check-input" [checked]="sub.done" (change)="toggleSubtask(sub)">
+                                <span [class.text-decoration-line-through]="sub.done" [class.text-muted]="sub.done">{{ sub.title }}</span>
+                            </div>
+                            <button class="btn btn-sm text-danger p-0" (click)="deleteSubtask(selectedTask!, sub.id!)">
+                                <i class="ti ti-x"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="progress progress-sm mb-2" *ngIf="selectedTask?.subtasks?.length">
+                    <div class="progress-bar bg-success" [style.width.%]="getTaskProgress(selectedTask!)"></div>
+                </div>
+                <div class="d-flex justify-content-between fs-11 text-muted" *ngIf="selectedTask?.subtasks?.length">
+                    <span>Progression globale</span>
+                    <span>{{ getTaskProgress(selectedTask!) }}%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

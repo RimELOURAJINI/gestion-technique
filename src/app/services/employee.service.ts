@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, map, BehaviorSubject } from 'rxjs';
 import { Project, Task, Reclamation, Ticket, SubTask } from '../models/models';
 
 @Injectable({
@@ -8,8 +8,21 @@ import { Project, Task, Reclamation, Ticket, SubTask } from '../models/models';
 })
 export class EmployeeService {
   private baseUrl = 'http://localhost:8080/api';
+  private searchQuery = new BehaviorSubject<string>('');
+  searchQuery$ = this.searchQuery.asObservable();
+
+  private refreshTrigger = new BehaviorSubject<void>(undefined);
+  refreshTrigger$ = this.refreshTrigger.asObservable();
 
   constructor(private http: HttpClient) { }
+
+  triggerRefresh() {
+    this.refreshTrigger.next();
+  }
+
+  setSearchQuery(query: string) {
+    this.searchQuery.next(query);
+  }
 
   // Projects
   // Projects derived from assigned tasks
@@ -30,6 +43,10 @@ export class EmployeeService {
   // Tasks
   getMyTasks(userId: number): Observable<Task[]> {
     return this.http.get<Task[]>(`${this.baseUrl}/tasks/user/${userId}`);
+  }
+
+  searchTasks(userId: number, query: string): Observable<Task[]> {
+    return this.http.get<Task[]>(`${this.baseUrl}/tasks/user/${userId}/search?q=${query}`);
   }
 
   getTaskById(taskId: number): Observable<Task> {
@@ -62,7 +79,10 @@ export class EmployeeService {
   }
 
   updateTaskStatus(taskId: number, status: string): Observable<Task> {
-    return this.http.put<Task>(`${this.baseUrl}/tasks/${taskId}/status?status=${status}`, {});
+    // Backend expects PATCH with @RequestBody
+    return this.http.patch<Task>(`${this.baseUrl}/tasks/${taskId}/status`, JSON.stringify(status), {
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
   createTask(userId: number, task: Task): Observable<Task> {
@@ -114,6 +134,10 @@ export class EmployeeService {
 
   saveCalendarNote(note: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/calendar-notes`, note);
+  }
+
+  getTodoCount(userId: number): Observable<{count: number}> {
+    return this.http.get<{count: number}>(`${this.baseUrl}/tasks/user/${userId}/todo-count`);
   }
 }
 

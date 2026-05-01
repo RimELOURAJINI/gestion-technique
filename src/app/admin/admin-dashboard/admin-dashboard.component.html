@@ -129,51 +129,18 @@
         </div>
 
         <!-- NAVIGATION PRINCIPALE -->
+        <!-- NAVIGATION PRINCIPALE -->
         <nav class="sidebar-nav" data-simplebar>
-            <!-- MON ESPACE -->
+            <!-- GESTION GLOBALE -->
             <div class="sidebar-section">
-                <span class="sidebar-section-label">Mon Espace</span>
+                <span class="sidebar-section-label">Gestion Globale</span>
                 <ul class="sidebar-menu">
                     <li class="sidebar-item">
                         <a class="sidebar-link" routerLink="/admin/overview" routerLinkActive="active">
                             <i class="ti ti-dashboard sidebar-icon"></i>
-                            <span class="sidebar-text">Dashboard</span>
+                            <span class="sidebar-text">Tableau de Bord</span>
                         </a>
                     </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/admin/my-attendance" routerLinkActive="active">
-                            <i class="ti ti-clock-user sidebar-icon"></i>
-                            <span class="sidebar-text">Ma Présence</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/admin/my-leaves" routerLinkActive="active">
-                            <i class="ti ti-calendar-event sidebar-icon"></i>
-                            <span class="sidebar-text">Mes Congés</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/admin/tickets" routerLinkActive="active">
-                            <i class="ti ti-messages sidebar-icon"></i>
-                            <span class="sidebar-text">Tickets</span>
-                            <span class="sidebar-badge" *ngIf="activeTicketsCount > 0">{{activeTicketsCount}}</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/admin/reclamations" routerLinkActive="active">
-                            <i class="ti ti-alert-circle sidebar-icon"></i>
-                            <span class="sidebar-text">Réclamations</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="sidebar-divider"></div>
-
-            <!-- ADMINISTRATION -->
-            <div class="sidebar-section">
-                <span class="sidebar-section-label">Administration</span>
-                <ul class="sidebar-menu">
                     <li class="sidebar-item">
                         <a class="sidebar-link" routerLink="/admin/users" routerLinkActive="active">
                             <i class="ti ti-users sidebar-icon"></i>
@@ -192,10 +159,41 @@
                             <span class="sidebar-text">Projets</span>
                         </a>
                     </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- SUPPORT & OPERATIONS -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">Support & Opérations</span>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/tickets" routerLinkActive="active">
+                            <i class="ti ti-messages sidebar-icon"></i>
+                            <span class="sidebar-text">Tickets</span>
+                            <span class="sidebar-badge" *ngIf="activeTicketsCount > 0">{{activeTicketsCount}}</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/reclamations" routerLinkActive="active">
+                            <i class="ti ti-alert-circle sidebar-icon"></i>
+                            <span class="sidebar-text">Réclamations</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- RH & VALIDATION -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">Suivi RH & Primes</span>
+                <ul class="sidebar-menu">
                     <li class="sidebar-item">
                         <a class="sidebar-link" routerLink="/admin/attendance" routerLinkActive="active">
                             <i class="ti ti-clock-check sidebar-icon"></i>
-                            <span class="sidebar-text">Présences</span>
+                            <span class="sidebar-text">Présences Globales</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
@@ -208,8 +206,29 @@
                     <li class="sidebar-item">
                         <a class="sidebar-link" routerLink="/admin/daily-reports" routerLinkActive="active">
                             <i class="ti ti-report-analytics sidebar-icon"></i>
-                            <span class="sidebar-text">Rapports</span>
+                            <span class="sidebar-text">Rapports Journaliers</span>
                             <span class="sidebar-badge" *ngIf="unsubmittedReportCount > 0">{{unsubmittedReportCount}}</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- MON ESPACE -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">Mon Espace Personnel</span>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/my-attendance" routerLinkActive="active">
+                            <i class="ti ti-clock-user sidebar-icon"></i>
+                            <span class="sidebar-text">Ma Présence</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/my-leaves" routerLinkActive="active">
+                            <i class="ti ti-calendar-event sidebar-icon"></i>
+                            <span class="sidebar-text">Mes Congés</span>
                         </a>
                     </li>
                 </ul>
@@ -222,15 +241,21 @@
                 <span class="sidebar-section-label">Système</span>
                 <ul class="sidebar-menu">
                     <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/admin/finance" routerLinkActive="active">
+                            <i class="ti ti-database sidebar-icon"></i>
+                            <span class="sidebar-text">Finance</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
                         <a class="sidebar-link" routerLink="/admin/audit" routerLinkActive="active">
                             <i class="ti ti-shield-lock sidebar-icon"></i>
                             <span class="sidebar-text">Audit</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/admin/finance" routerLinkActive="active">
-                            <i class="ti ti-database sidebar-icon"></i>
-                            <span class="sidebar-text">Finance</span>
+                        <a class="sidebar-link" routerLink="/admin/history" routerLinkActive="active">
+                            <i class="ti ti-history sidebar-icon"></i>
+                            <span class="sidebar-text">Historique Projets</span>
                         </a>
                     </li>
                 </ul>

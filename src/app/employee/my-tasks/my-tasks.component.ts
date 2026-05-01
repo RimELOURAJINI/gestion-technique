@@ -6,6 +6,7 @@ import { EmployeeService } from '../../services/employee.service';
 import { AuthService } from '../../services/auth.service';
 import { Project, Task, Reclamation, SubTask } from '../../models/models';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-my-tasks',
@@ -86,6 +87,8 @@ export class MyTasksComponent implements OnInit {
   selectedTaskForDates: Task | null = null;
   manualStartDate: string = '';
   manualEndDate: string = '';
+  searchText: string = '';
+  private searchSub?: Subscription;
 
   constructor(
     private employeeService: EmployeeService,
@@ -95,11 +98,30 @@ export class MyTasksComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.searchSub = this.employeeService.searchQuery$.subscribe(query => {
+      this.searchText = query.toLowerCase();
+      if (this.searchText) {
+        const userId = this.authService.getUserId();
+        if (userId) {
+          this.employeeService.searchTasks(userId, this.searchText).subscribe(res => {
+            this.tasks = res;
+            this.groupTasks();
+          });
+        }
+      } else {
+        this.loadTasks();
+      }
+    });
+
     this.route.queryParams.subscribe(params => {
       this.currentFilter = params['filter'] || '';
       this.loadTasks();
       this.loadProjects();
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.searchSub) this.searchSub.unsubscribe();
   }
 
   loadProjects(): void {
@@ -137,13 +159,13 @@ export class MyTasksComponent implements OnInit {
     let filteredTasks = this.tasks;
 
     if (this.currentFilter === 'today') {
-      filteredTasks = this.tasks.filter(t => {
+      filteredTasks = filteredTasks.filter(t => {
         return t.status !== 'DONE' && t.status !== 'COMPLETED';
       });
     } else if (this.currentFilter === 'subtasks') {
       // In this mode, we show tasks that have subtasks, or maybe we want a different display.
       // For now, let's just filter tasks that have at least one subtask.
-      filteredTasks = this.tasks.filter(t => t.subtasks && t.subtasks.length > 0);
+      filteredTasks = filteredTasks.filter(t => t.subtasks && t.subtasks.length > 0);
     }
 
     filteredTasks.forEach(task => {

@@ -9,6 +9,7 @@ import { TeamChatService } from '../../services/team-chat.service';
 import { DailyReportService } from '../../services/daily-report.service';
 import { PrimeService } from '../../services/prime.service';
 import { TicketService } from '../../services/ticket.service';
+import { EmployeeService } from '../../services/employee.service';
 
 
 @Component({
@@ -28,6 +29,8 @@ export class EmployeeDashboardComponent implements OnInit {
   reportSubmitted: boolean = true;
   newPrimesCount: number = 0;
   activeTicketsCount: number = 0;
+  todayTasks: any[] = [];
+  todoCount: number = 0;
   tasksMenuOpen: boolean = false;
   dashboardMenuOpen: boolean = false;
   private notificationSub?: Subscription;
@@ -41,8 +44,14 @@ export class EmployeeDashboardComponent implements OnInit {
     private teamChatService: TeamChatService,
     private dailyReportService: DailyReportService,
     private primeService: PrimeService,
-    private ticketService: TicketService
+    private ticketService: TicketService,
+    private employeeService: EmployeeService
   ) {}
+
+  onSearch(event: any): void {
+    const query = event.target.value;
+    this.employeeService.setSearchQuery(query);
+  }
 
 
   ngOnInit(): void {
@@ -59,12 +68,20 @@ export class EmployeeDashboardComponent implements OnInit {
     this.loadReportStatus();
     this.loadPrimes();
     this.loadActiveTicketsCount();
+    this.loadTodayTasks();
+    
+    // Listen for refreshes from other components
+    this.employeeService.refreshTrigger$.subscribe(() => {
+      this.loadTodayTasks();
+    });
+
     // Poll every 30 seconds
     this.notificationSub = interval(30000).subscribe(() => {
       this.loadNotifications();
       this.loadUnreadChatCount();
       this.loadPrimes();
       this.loadActiveTicketsCount();
+      this.loadTodayTasks();
     });
 
     // Auto-open menu if on tasks page
@@ -159,5 +176,27 @@ export class EmployeeDashboardComponent implements OnInit {
         this.activeTicketsCount = data.filter(t => t.status !== 'RESOLVED' && t.status !== 'CLOSED').length;
       });
     }
+  }
+
+  loadTodayTasks(): void {
+    const userId = this.authService.getUserId();
+    if (userId) {
+      this.employeeService.getMyTasks(userId).subscribe((tasks: any[]) => {
+        // We still keep the list for other potential uses, but only pending ones
+        this.todayTasks = tasks.filter((t: any) => t.status !== 'DONE' && t.status !== 'COMPLETED');
+      });
+
+      // Get accurate count (Tasks + Subtasks)
+      this.employeeService.getTodoCount(userId).subscribe(res => {
+        this.todoCount = res.count;
+      });
+    }
+  }
+
+  toggleTaskStatus(task: any): void {
+    const newStatus = task.status === 'DONE' ? 'TODO' : 'DONE';
+    this.employeeService.updateTaskStatus(task.id, newStatus).subscribe(() => {
+      this.loadTodayTasks();
+    });
   }
 }

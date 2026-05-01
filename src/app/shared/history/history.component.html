@@ -1,0 +1,93 @@
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Historique des Projets Livrés</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="/admin/overview">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Historique</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Project Selector -->
+        <div class="col-md-4">
+            <div class="card history-card">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="card-title mb-0">Projets Terminés</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <div *ngIf="projects.length === 0" class="p-4 text-center text-muted">
+                            Aucun projet historisé pour le moment.
+                        </div>
+                        <a *ngFor="let p of projects" 
+                           href="javascript:void(0)" 
+                           class="list-group-item list-group-item-action p-3"
+                           [class.active]="selectedProjectId === p.id"
+                           (click)="loadHistory(p.id)">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold">{{ p.name }}</span>
+                                <i class="ti ti-chevron-right"></i>
+                            </div>
+                            <small class="text-muted">Livré le {{ p.createdAt | date:'dd/MM/yyyy' }}</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Detail -->
+        <div class="col-md-8">
+            <div *ngIf="!selectedProjectId" class="card h-100 d-flex align-items-center justify-content-center p-5 text-center text-muted border-dashed">
+                <div>
+                    <i class="ti ti-history fs-40 mb-3 opacity-25"></i>
+                    <h5>Sélectionnez un projet pour voir son analyse temporelle</h5>
+                    <p>L'historique affiche la durée exacte passée dans chaque phase (À faire, En cours, Test, Terminé).</p>
+                </div>
+            </div>
+
+            <div *ngIf="selectedProjectId && loading" class="text-center p-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2">Analyse des données temporelles...</p>
+            </div>
+
+            <div *ngIf="selectedProjectId && !loading && historyData" class="card history-card border-0">
+                <div class="project-header">
+                    <h4 class="mb-1 text-white">{{ getSelectedProjectName() }}</h4>
+                    <p class="mb-0 opacity-75">Analyse de la chaîne de valeur et du temps de cycle par tâche</p>
+                </div>
+                <div class="card-body bg-white">
+                    <div *ngFor="let taskTitle of getTaskTitles()" class="task-group p-3 mb-4 border border-light shadow-sm">
+                        <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="ti ti-clipboard-list text-primary"></i>
+                            {{ taskTitle }}
+                        </h6>
+                        
+                        <div class="status-timeline">
+                            <div *ngFor="let entry of historyData[taskTitle]" class="timeline-item">
+                                <div class="timeline-dot" [ngClass]="getStatusClass(entry.status)"></div>
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <span class="badge mb-1" [ngClass]="getStatusClass(entry.status)">{{ entry.status }}</span>
+                                        <p class="fs-12 text-muted mb-0">
+                                            Entrée: {{ entry.entryDate | date:'dd/MM HH:mm' }} 
+                                            <span *ngIf="entry.exitDate">→ Sortie: {{ entry.exitDate | date:'dd/MM HH:mm' }}</span>
+                                        </p>
+                                    </div>
+                                    <div class="text-end" *ngIf="entry.durationMinutes != null">
+                                        <span class="duration-badge badge bg-soft-primary text-primary">
+                                            <i class="ti ti-clock me-1"></i>{{ formatDuration(entry.durationMinutes) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

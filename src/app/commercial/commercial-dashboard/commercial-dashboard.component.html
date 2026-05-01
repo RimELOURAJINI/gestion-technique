@@ -122,16 +122,31 @@
 
         <!-- NAVIGATION PRINCIPALE -->
         <nav class="sidebar-nav" data-simplebar>
-            <!-- ESPACE COMMERCIAL -->
+            <!-- ESPACE VENTE -->
             <div class="sidebar-section">
-                <span class="sidebar-section-label">Espace Commercial</span>
+                <span class="sidebar-section-label">Espace Vente</span>
                 <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/deals" routerLinkActive="active">
+                            <i class="ti ti-medal sidebar-icon"></i>
+                            <span class="sidebar-text">Mes Deals</span>
+                        </a>
+                    </li>
                     <li class="sidebar-item">
                         <a class="sidebar-link" routerLink="/commercial/projects" routerLinkActive="active">
                             <i class="ti ti-atom-2 sidebar-icon"></i>
                             <span class="sidebar-text">Mes Projets</span>
                         </a>
                     </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- RELATION CLIENT & TEAM -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">Relation Client & Team</span>
+                <ul class="sidebar-menu">
                     <li class="sidebar-item">
                         <a class="sidebar-link" routerLink="/commercial/tickets" routerLinkActive="active">
                             <i class="ti ti-messages sidebar-icon"></i>
@@ -146,30 +161,21 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/commercial/my-attendance" routerLinkActive="active">
-                            <i class="ti ti-clock-user sidebar-icon"></i>
-                            <span class="sidebar-text">Ma Présence</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/commercial/my-leaves" routerLinkActive="active">
-                            <i class="ti ti-calendar-event sidebar-icon"></i>
-                            <span class="sidebar-text">Mes Congés</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/commercial/deals" routerLinkActive="active">
-                            <i class="ti ti-medal sidebar-icon"></i>
-                            <span class="sidebar-text">Mes Deals</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
                         <a class="sidebar-link" routerLink="/commercial/team-chat" routerLinkActive="active">
                             <i class="ti ti-messages-2 sidebar-icon"></i>
                             <span class="sidebar-text">Team Chat</span>
                             <span class="sidebar-badge" *ngIf="unreadChatCount > 0">{{unreadChatCount}}</span>
                         </a>
                     </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- ACTIVITÉ QUOTIDIENNE -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">Activité Quotidienne</span>
+                <ul class="sidebar-menu">
                     <li class="sidebar-item">
                         <a class="sidebar-link" routerLink="/commercial/daily-report" routerLinkActive="active">
                             <i class="ti ti-checklist sidebar-icon"></i>
@@ -178,10 +184,31 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/my-attendance" routerLinkActive="active">
+                            <i class="ti ti-clock-user sidebar-icon"></i>
+                            <span class="sidebar-text">Ma Présence</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- RH & AVANTAGES -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">RH & Avantages</span>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
                         <a class="sidebar-link" routerLink="/commercial/primes" routerLinkActive="active">
                             <i class="ti ti-medal sidebar-icon"></i>
                             <span class="sidebar-text">Mes Primes</span>
                             <span class="sidebar-badge" *ngIf="newPrimesCount > 0">{{newPrimesCount}}</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/my-leaves" routerLinkActive="active">
+                            <i class="ti ti-calendar-event sidebar-icon"></i>
+                            <span class="sidebar-text">Mes Congés</span>
                         </a>
                     </li>
                 </ul>

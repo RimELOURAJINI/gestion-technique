@@ -28,7 +28,7 @@
                 <!-- Search -->
                 <div class="me-auto d-flex align-items-center header-search d-lg-flex d-none">
                     <div class="input-icon position-relative me-2">
-                       <input type="text" class="form-control" placeholder="Rechercher tâche / document...">
+                       <input type="text" class="form-control" placeholder="Rechercher tâche / document..." (input)="onSearch($event)">
                        <span class="input-icon-addon d-inline-flex p-0 header-search-icon"><i class="ti ti-command"></i></span>
                     </div>
                 </div>
@@ -127,7 +127,7 @@
         <nav class="sidebar-nav" data-simplebar>
             <!-- MON ESPACE DE TRAVAIL -->
             <div class="sidebar-section">
-                <span class="sidebar-section-label">Mon Espace</span>
+                <span class="sidebar-section-label">Mon Travail</span>
                 <ul class="sidebar-menu">
                     <li class="sidebar-item">
                         <a class="sidebar-link" routerLink="/employee/home" routerLinkActive="active">
@@ -136,9 +136,39 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/employee/tasks" routerLinkActive="active">
+                        <a class="sidebar-link" routerLink="/employee/projects" routerLinkActive="active">
+                            <i class="ti ti-briefcase sidebar-icon"></i>
+                            <span class="sidebar-text">Mes Projets</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item" [class.active]="router.url.includes('/employee/todo')">
+                        <a class="sidebar-link" routerLink="/employee/todo">
+                            <i class="ti ti-checklist sidebar-icon"></i>
+                            <span class="sidebar-text">To-Do List</span>
+                            <span *ngIf="todoCount > 0" class="sidebar-badge">{{ todoCount }}</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item" [class.active]="router.url.includes('/employee/tasks')">
+                        <a class="sidebar-link" routerLink="/employee/tasks">
                             <i class="ti ti-list-check sidebar-icon"></i>
                             <span class="sidebar-text">Mes Tâches</span>
+                        </a>
+                    </li>
+                </ul>
+
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- COMMUNICATION -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">Communication & Support</span>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/employee/team-chat" routerLinkActive="active">
+                            <i class="ti ti-messages-2 sidebar-icon"></i>
+                            <span class="sidebar-text">Team Chat</span>
+                            <span class="sidebar-badge" *ngIf="unreadChatCount > 0">{{unreadChatCount}}</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
@@ -154,17 +184,19 @@
                             <span class="sidebar-text">Réclamations</span>
                         </a>
                     </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- PILOTAGE QUOTIDIEN -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">Pilotage Quotidien</span>
+                <ul class="sidebar-menu">
                     <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/employee/projects" routerLinkActive="active">
-                            <i class="ti ti-briefcase sidebar-icon"></i>
-                            <span class="sidebar-text">Mes Projets</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/employee/team-chat" routerLinkActive="active">
-                            <i class="ti ti-messages-2 sidebar-icon"></i>
-                            <span class="sidebar-text">Team Chat</span>
-                            <span class="sidebar-badge" *ngIf="unreadChatCount > 0">{{unreadChatCount}}</span>
+                        <a class="sidebar-link" routerLink="/employee/calendar" routerLinkActive="active">
+                            <i class="ti ti-calendar-event sidebar-icon"></i>
+                            <span class="sidebar-text">Calendrier</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
@@ -175,10 +207,15 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/employee/primes" routerLinkActive="active">
-                            <i class="ti ti-medal sidebar-icon"></i>
-                            <span class="sidebar-text">Mes Primes</span>
-                            <span class="sidebar-badge" *ngIf="newPrimesCount > 0">{{newPrimesCount}}</span>
+                        <a class="sidebar-link" routerLink="/employee/timesheets" routerLinkActive="active">
+                            <i class="ti ti-clock-hour-4 sidebar-icon"></i>
+                            <span class="sidebar-text">Timesheets</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/employee/home" routerLinkActive="active">
+                            <i class="ti ti-clock-check sidebar-icon"></i>
+                            <span class="sidebar-text">Pointage Présence</span>
                         </a>
                     </li>
                 </ul>
@@ -186,32 +223,21 @@
 
             <div class="sidebar-divider"></div>
 
-            <!-- PILOTAGE & RH -->
+            <!-- RH & PERFORMANCE -->
             <div class="sidebar-section">
-                <span class="sidebar-section-label">Pilotage & RH</span>
+                <span class="sidebar-section-label">RH & Performance</span>
                 <ul class="sidebar-menu">
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/employee/calendar" routerLinkActive="active">
-                            <i class="ti ti-calendar-event sidebar-icon"></i>
-                            <span class="sidebar-text">Calendrier</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/employee/home" routerLinkActive="active">
-                            <i class="ti ti-clock-check sidebar-icon"></i>
-                            <span class="sidebar-text">Présence</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/employee/timesheets" routerLinkActive="active">
-                            <i class="ti ti-clock-hour-4 sidebar-icon"></i>
-                            <span class="sidebar-text">Timesheets</span>
-                        </a>
-                    </li>
                     <li class="sidebar-item">
                         <a class="sidebar-link" routerLink="/employee/leaves" routerLinkActive="active">
                             <i class="ti ti-calendar-user sidebar-icon"></i>
                             <span class="sidebar-text">Mes Congés</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/employee/primes" routerLinkActive="active">
+                            <i class="ti ti-medal sidebar-icon"></i>
+                            <span class="sidebar-text">Mes Primes</span>
+                            <span class="sidebar-badge" *ngIf="newPrimesCount > 0">{{newPrimesCount}}</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
@@ -228,10 +254,9 @@
                     </li>
                 </ul>
             </div>
+        </nav>
 
             <div class="sidebar-divider"></div>
-
-        </nav>
 
         <!-- FOOTER : profil utilisateur connecté -->
         <div class="sidebar-footer">

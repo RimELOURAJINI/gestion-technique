@@ -10,6 +10,7 @@ import { Project, Task, SubTask } from '../../models/models';
 import { AiService } from '../../services/ai.service';
 
 declare var initDashboardCharts: any;
+declare var ApexCharts: any;
 
 @Component({
   selector: 'app-employee-home',
@@ -144,7 +145,76 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
       if (typeof initDashboardCharts === 'function') {
         initDashboardCharts();
       }
-    }, 500);
+      this.renderProductivityChart();
+    }, 800);
+  }
+
+  renderProductivityChart() {
+    if (typeof ApexCharts === 'undefined') return;
+
+    const chartId = "reservation-chart";
+    const ctx = document.getElementById(chartId);
+    if (!ctx) return;
+
+    ctx.innerHTML = '';
+    
+    // We use the productivity score and some variations for the chart
+    const score = this.stats.productivityScore || 75;
+    const seriesData = [
+      Math.max(0, score - 15), 
+      Math.max(0, score - 5), 
+      score, 
+      Math.min(100, score + 5), 
+      Math.min(100, score + 10), 
+      score, 
+      Math.min(100, score + 2)
+    ];
+
+    const options = {
+      chart: {
+        width: '100%',
+        height: 250,
+        type: 'bar',
+        toolbar: { show: false },
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          columnWidth: '55%',
+          borderRadius: 4,
+          endingShape: 'rounded'
+        }
+      },
+      colors: ['#4361ee'],
+      dataLabels: { enabled: false },
+      stroke: {
+        show: true,
+        width: 2,
+        colors: ['transparent']
+      },
+      series: [{
+        name: 'Productivité (%)',
+        data: seriesData
+      }],
+      xaxis: {
+        categories: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+        axisTicks: { show: false },
+        axisBorder: { show: false }
+      },
+      yaxis: { 
+        max: 100,
+        labels: { formatter: (val: any) => val + '%' } 
+      },
+      tooltip: {
+        y: {
+          formatter: function (val: any) {
+            return val + " %";
+          }
+        }
+      }
+    };
+
+    new ApexCharts(ctx, options).render();
   }
 
   addTodo(): void {
