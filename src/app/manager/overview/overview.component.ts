@@ -136,7 +136,11 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
     // Load Projects
     this.teamLeaderService.getProjectsByUserId(userId).subscribe(projects => {
       this.myProjects = projects;
-      this.stats.projects = projects.length;
+      // Only count ongoing projects for the dashboard stat card
+      this.stats.projects = projects.filter(p => {
+          const s = (p.status || '').toUpperCase();
+          return s !== 'COMPLETED' && s !== 'DONE' && s !== 'TERMINE' && s !== 'TERMINEE' && s !== 'DELIVERED';
+      }).length;
       
       let allTasks: Task[] = [];
       let projectsProcessed = 0;

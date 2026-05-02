@@ -25,7 +25,7 @@ export class HistoryComponent implements OnInit {
   selectedProjectId: number | null = null;
   historyData: any = null; // Grouped by task title
   loading = false;
-  private apiUrl = 'http://localhost:8081/api';
+  private apiUrl = 'http://localhost:8080/api';
 
   constructor(private http: HttpClient) {}
 
@@ -34,8 +34,11 @@ export class HistoryComponent implements OnInit {
   }
 
   loadProjects(): void {
-    this.http.get<any[]>(`${this.apiUrl}/projects`).subscribe(data => {
-      this.projects = data.filter(p => p.status === 'COMPLETED' || p.status === 'DONE' || p.status === 'DELIVERED');
+    this.http.get<any[]>(`${this.apiUrl}/projects/all`).subscribe(data => {
+      this.projects = data.filter(p => {
+        const s = (p.status || '').toUpperCase();
+        return s === 'COMPLETED' || s === 'DONE' || s === 'DELIVERED' || s === 'TERMINE' || s === 'TERMINEE';
+      });
     });
   }
 

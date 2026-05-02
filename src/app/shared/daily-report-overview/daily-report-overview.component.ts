@@ -51,7 +51,25 @@ export class DailyReportOverviewComponent implements OnInit, OnChanges {
       });
     } else if (this.mode === 'team' && this.managerId) {
       this.dailyReportService.getTeamReports(this.managerId).subscribe({
-        next: (data) => { this.summaries = data; this.isLoading = false; },
+        next: (data: any[]) => { 
+          this.summaries = data.map(item => {
+            if (item.userName !== undefined) {
+              return item as DailyReportSummary;
+            } else {
+              return {
+                userId: item.user?.id || 0,
+                userName: ((item.user?.firstName || '') + ' ' + (item.user?.lastName || '')).trim() || 'Inconnu',
+                userRole: item.user?.roles?.[0]?.name || '',
+                submitted: true,
+                hasProblems: !!item.problemsEncountered,
+                reportId: item.id,
+                submittedAt: item.submittedAt,
+                sentiment: item.sentiment || 'neutral'
+              };
+            }
+          });
+          this.isLoading = false; 
+        },
         error: () => { this.isLoading = false; }
       });
       // Also load own report

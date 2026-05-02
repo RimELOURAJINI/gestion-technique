@@ -42,6 +42,8 @@
                     <p class="mb-0 fw-medium fs-13">{{ clientName }}</p>
                     <small class="text-white-50 fs-11">Compte Client Officiel</small>
                 </div>
+                <img [src]="'https://ui-avatars.com/api/?name=' + clientName + '&background=4e73df&color=fff'" 
+                     class="rounded-circle border border-2 border-white shadow-sm" width="38" height="38" alt="Client">
                 <button class="btn btn-link p-0 text-white" (click)="logout()">
                     <i class="ti ti-logout fs-20"></i>
                 </button>

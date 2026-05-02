@@ -83,13 +83,20 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
     
     // Load Projects
     this.adminService.getAllProjects().subscribe((projects) => {
+      // Only count ongoing projects for the main stat card
+      this.stats.projects = projects.filter(p => {
+          const s = (p.status || '').toUpperCase();
+          return s !== 'COMPLETED' && s !== 'DONE' && s !== 'TERMINE' && s !== 'TERMINEE';
+      }).length;
       this.projects = projects;
-      this.stats.projects = projects.length;
       this.recentProjects = projects.slice(-5).reverse();
       
       let completed = 0, delayed = 0, inProgress = 0;
       if (projects.length > 0) {
-          completed = projects.filter(p => p.status === 'COMPLETED').length;
+          completed = projects.filter(p => {
+              const s = (p.status || '').toUpperCase();
+              return s === 'COMPLETED' || s === 'DONE' || s === 'TERMINE' || s === 'TERMINEE';
+          }).length;
           delayed = projects.filter(p => {
               if (p.status === 'COMPLETED') return false;
               if (p.deadline) return new Date(p.deadline) < this.today;

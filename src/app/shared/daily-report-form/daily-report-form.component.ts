@@ -12,7 +12,7 @@ import { DailyReport } from '../../models/models';
   styleUrl: './daily-report-form.component.css'
 })
 export class DailyReportFormComponent implements OnInit, OnChanges {
-  @Input() userId!: number;
+  @Input() userId?: number;
   @Input() isOpen: boolean = false;
   @Output() closed = new EventEmitter<void>();
   @Output() submitted = new EventEmitter<DailyReport>();
@@ -46,6 +46,7 @@ export class DailyReportFormComponent implements OnInit, OnChanges {
   }
 
   loadMyReport(): void {
+    if (!this.userId) return;
     this.isLoading = true;
     this.dailyReportService.getMyReport(this.userId).subscribe({
       next: (report) => {

@@ -54,7 +54,11 @@ export class TeamTasksComponent implements OnInit {
         if (userId) {
             this.teamLeaderService.getEmployees().subscribe(res => this.employees = res);
             this.teamLeaderService.getProjectsByUserId(userId).subscribe(res => {
-                this.projects = res;
+                // Filter: Only allow tasks for ACTIVE/Ongoing projects
+                this.projects = res.filter(p => {
+                    const s = (p.status || '').toUpperCase();
+                    return s !== 'COMPLETED' && s !== 'DONE' && s !== 'TERMINE' && s !== 'TERMINEE';
+                });
                 // Auto-select from query param
                 this.route.queryParams.subscribe(params => {
                     this.selectedProjectId = params['projectId'] ? +params['projectId'] : (res[0]?.id ?? undefined);
@@ -108,7 +112,10 @@ export class TeamTasksComponent implements OnInit {
         this.todoTasks = this.tasks.filter(t => t.status === 'TODO' || t.status === 'NEW' || t.status === 'PENDING' || !t.status);
         this.inProgressTasks = this.tasks.filter(t => t.status === 'IN_PROGRESS' || t.status === 'DOING');
         this.testTasks = this.tasks.filter(t => t.status === 'TEST' || t.status === 'REVIEW');
-        this.doneTasks = this.tasks.filter(t => t.status === 'DONE' || t.status === 'COMPLETED' || t.status === 'FINISHED');
+        this.doneTasks = this.tasks.filter(t => {
+            const s = (t.status || '').toUpperCase();
+            return s === 'DONE' || s === 'COMPLETED' || s === 'FINISHED' || s === 'TERMINE' || s === 'TERMINEE';
+        });
     }
 
     onDrop(event: CdkDragDrop<Task[]>, newStatus: string) {

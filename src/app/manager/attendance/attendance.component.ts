@@ -16,6 +16,9 @@ export class ManagerAttendanceComponent implements OnInit {
   selectedDate: string = new Date().toISOString().split('T')[0];
   isLoading = true;
   managerId: number | null = null;
+  isHistoryMode = false;
+  searchTerm: string = '';
+  fullHistory: any[] = [];
 
   constructor(
     private hrService: HrService,
@@ -42,6 +45,41 @@ export class ManagerAttendanceComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  loadHistory(): void {
+    if (!this.managerId) return;
+    this.isLoading = true;
+    this.hrService.getTeamAttendanceHistory(this.managerId).subscribe({
+      next: (data) => {
+        this.fullHistory = data;
+        this.attendanceList = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading history', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  toggleMode(): void {
+    this.isHistoryMode = !this.isHistoryMode;
+    if (this.isHistoryMode) this.loadHistory();
+    else this.loadAttendance();
+  }
+
+  onSearch(): void {
+    if (!this.searchTerm) {
+      this.attendanceList = this.isHistoryMode ? this.fullHistory : this.attendanceList;
+      return;
+    }
+    const q = this.searchTerm.toLowerCase();
+    this.attendanceList = (this.isHistoryMode ? this.fullHistory : this.attendanceList).filter(a => 
+      a.user?.firstName?.toLowerCase().includes(q) || 
+      a.user?.lastName?.toLowerCase().includes(q) ||
+      a.user?.email?.toLowerCase().includes(q)
+    );
   }
 
   onDateChange(): void {

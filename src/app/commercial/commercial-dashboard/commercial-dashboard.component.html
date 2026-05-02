@@ -78,13 +78,15 @@
                 <!-- User Dropdown -->
                 <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center">
                     <a href="javascript:void(0);" class="topbar-link dropdown-toggle drop-arrow-none position-relative" data-bs-toggle="dropdown" data-bs-offset="0,22">
-                        <img src="assets/assets/img/profiles/avatar-05.jpg" width="38" class="rounded-1 d-flex" alt="user-image">
+                        <img [src]="'https://ui-avatars.com/api/?name=' + commercialName + '&background=ffc107&color=000'" 
+                             class="rounded-circle shadow-sm" width="38" height="38" alt="user-image">
                         <span class="online text-success"><i class="ti ti-circle-filled d-flex bg-white rounded-circle border border-1 border-white"></i></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-md p-2">
                     
                         <div class="d-flex align-items-center bg-light rounded-3 p-2 mb-2">
-                            <img src="assets/assets/img/profiles/avatar-05.jpg" class="rounded-circle" width="42" height="42" alt="Img">
+                            <img [src]="'https://ui-avatars.com/api/?name=' + commercialName + '&background=ffc107&color=000'" 
+                                 class="rounded-circle shadow-sm" width="42" height="42" alt="Img">
                             <div class="ms-2">
                                 <p class="fw-medium text-dark mb-0">{{ commercialName }}</p>
                                 <span class="d-block fs-13">{{ commercialRole }}</span>
@@ -234,7 +236,8 @@
         <div class="sidebar-footer">
             <div class="sidebar-user">
                 <div class="sidebar-user-avatar">
-                    <img src="assets/assets/img/profiles/avatar-05.jpg" alt="Commercial">
+                    <img [src]="'https://ui-avatars.com/api/?name=' + commercialName + '&background=ffc107&color=000'" 
+                         class="rounded-circle shadow-sm" width="36" height="36" alt="Commercial">
                 </div>
                 <div class="sidebar-user-info">
                     <span class="sidebar-user-name">{{ commercialName }}</span>

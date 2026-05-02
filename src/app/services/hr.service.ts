@@ -28,6 +28,10 @@ export class HrService {
     return this.http.get<any[]>(`${this.attendanceUrl}/manager/${managerId}/date?timestamp=${date.getTime()}`);
   }
 
+  getTeamAttendanceHistory(managerId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.attendanceUrl}/manager/${managerId}/history`);
+  }
+
   getAllAttendanceByDate(date: Date): Observable<any[]> {
     return this.http.get<any[]>(`${this.attendanceUrl}/admin/date?timestamp=${date.getTime()}`);
   }

@@ -35,7 +35,11 @@ export class TeamProjectsComponent implements OnInit {
         if (userId) {
             this.teamLeaderService.getProjectsByUserId(userId).subscribe({
                 next: (res) => {
-                    this.projects = res;
+                    // Only show ongoing projects (exclude COMPLETED, TERMINE, etc.)
+                    this.projects = res.filter(p => {
+                        const s = (p.status || '').toUpperCase();
+                        return s !== 'COMPLETED' && s !== 'DONE' && s !== 'TERMINE' && s !== 'TERMINEE' && s !== 'DELIVERED';
+                    });
                     this.loadTicketCounts(userId);
                 },
                 error: (err) => {

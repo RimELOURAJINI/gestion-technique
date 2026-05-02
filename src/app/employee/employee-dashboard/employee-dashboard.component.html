@@ -77,17 +77,15 @@
                 <!-- User Dropdown -->
                 <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center">
                     <a href="javascript:void(0);" class="topbar-link dropdown-toggle drop-arrow-none position-relative" data-bs-toggle="dropdown" data-bs-offset="0,22">
-                        <div class="avatar avatar-rounded avatar-md bg-info text-white d-flex align-items-center justify-content-center">
-                            {{ employeeInitials }}
-                        </div>
+                        <img [src]="'https://ui-avatars.com/api/?name=' + employeeName + '&background=0D6EFD&color=fff'" 
+                             class="rounded-circle" width="38" height="38" alt="user-image">
                         <span class="online text-success"><i class="ti ti-circle-filled d-flex bg-white rounded-circle border border-1 border-white"></i></span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-md p-2">
                     
                         <div class="d-flex align-items-center bg-light rounded-3 p-2 mb-2">
-                            <div class="avatar avatar-rounded avatar-md bg-info text-white d-flex align-items-center justify-content-center me-2">
-                                {{ employeeInitials }}
-                            </div>
+                            <img [src]="'https://ui-avatars.com/api/?name=' + employeeName + '&background=0D6EFD&color=fff'" 
+                                 class="rounded-circle" width="42" height="42" alt="Img">
                             <div class="ms-1">
                                 <p class="fw-medium text-dark mb-0">{{ employeeName }}</p>
                                 <span class="d-block fs-13">{{ employeeRole }}</span>
@@ -267,9 +265,8 @@
         <!-- FOOTER : profil utilisateur connecté -->
         <div class="sidebar-footer">
             <div class="sidebar-user">
-                <div class="sidebar-user-avatar">
-                    {{ employeeInitials }}
-                </div>
+                    <img [src]="'https://ui-avatars.com/api/?name=' + employeeName + '&background=0D6EFD&color=fff'" 
+                         class="rounded-circle" width="36" height="36" alt="Employee">
                 <div class="sidebar-user-info">
                     <span class="sidebar-user-name">{{ employeeName }}</span>
                     <span class="sidebar-user-role">{{ employeeRole }}</span>

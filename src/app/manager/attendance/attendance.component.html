@@ -1,14 +1,22 @@
 <div class="container-fluid p-0">
     <div class="row align-items-center mb-4">
         <div class="col-sm-6">
-            <h4 class="fw-bold mb-1">Suivi des Présences</h4>
-            <p class="text-muted small mb-0">Visualisez la présence de votre équipe en temps réel.</p>
+            <h4 class="fw-bold mb-1">{{ isHistoryMode ? 'Historique des Présences' : 'Suivi des Présences' }}</h4>
+            <p class="text-muted small mb-0">{{ isHistoryMode ? 'Historique complet des entrées et sorties de l\'équipe.' : 'Visualisez la présence de votre équipe en temps réel.' }}</p>
         </div>
-        <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
-            <div class="d-inline-flex align-items-center bg-white border rounded-pill px-3 py-1 shadow-sm">
+        <div class="col-sm-6 text-sm-end mt-3 mt-sm-0 d-flex gap-2 justify-content-end">
+            <div class="input-group search-group" style="max-width: 250px;">
+                <span class="input-group-text bg-white border-end-0"><i class="ti ti-search"></i></span>
+                <input type="text" class="form-control border-start-0 ps-0 fs-13" placeholder="Filtrer membre..." [(ngModel)]="searchTerm" (input)="onSearch()">
+            </div>
+            <div class="d-inline-flex align-items-center bg-white border rounded-pill px-3 py-1 shadow-sm" *ngIf="!isHistoryMode">
                 <i class="ti ti-calendar me-2 text-primary"></i>
                 <input type="date" [(ngModel)]="selectedDate" (change)="onDateChange()" class="border-0 bg-transparent fs-13 focus-none py-1">
             </div>
+            <button class="btn btn-primary btn-sm rounded-pill px-3" (click)="toggleMode()">
+                <i class="ti" [ngClass]="isHistoryMode ? 'ti-calendar' : 'ti-history'"></i>
+                {{ isHistoryMode ? 'Vue Jour' : 'Historique' }}
+            </button>
         </div>
     </div>
 
@@ -16,12 +24,14 @@
         <div class="card-body p-0">
             <div *ngIf="isLoading" class="text-center py-5">
                 <div class="spinner-border text-primary" role="status"></div>
-                <p class="mt-2 text-muted">Chargement des présences...</p>
+                <p class="mt-2 text-muted">Chargement des données...</p>
             </div>
 
             <div *ngIf="!isLoading && attendanceList.length === 0" class="text-center py-5">
-                <img src="assets/assets/img/icons/elemnt-02.svg" alt="Empty" class="img-fluid mb-3 opacity-25" style="max-height: 100px;">
-                <p class="text-muted">Aucune donnée de présence pour cette date.</p>
+                <div class="mb-3 opacity-25">
+                    <i class="ti ti-calendar-off fs-60"></i>
+                </div>
+                <p class="text-muted">Aucune donnée de présence disponible.</p>
             </div>
 
             <div class="table-responsive" *ngIf="!isLoading && attendanceList.length > 0">

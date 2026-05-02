@@ -32,6 +32,10 @@ export class StatsService {
     return this.http.get(`${this.apiUrl}/manager/dashboard/${managerId}`);
   }
 
+  getTeamPerformance(managerId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/manager/performance/${managerId}`);
+  }
+
   // User Wellness
   updateWellness(userId: number, energyLevel: number, mood: string): Observable<any> {
     return this.http.put(`${this.apiUrl}/user/wellness/${userId}`, { energyLevel, mood });
