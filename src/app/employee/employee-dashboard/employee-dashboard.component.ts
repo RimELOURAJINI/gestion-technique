@@ -172,8 +172,8 @@ export class EmployeeDashboardComponent implements OnInit {
   loadActiveTicketsCount(): void {
     const userId = this.authService.getUserId();
     if (userId) {
-      this.ticketService.getTicketsByEmployee(userId).subscribe(data => {
-        this.activeTicketsCount = data.filter(t => t.status !== 'RESOLVED' && t.status !== 'CLOSED').length;
+      this.ticketService.getUnansweredTicketsCountForUser(userId).subscribe(count => {
+        this.activeTicketsCount = count;
       });
     }
   }

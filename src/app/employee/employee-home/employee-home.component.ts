@@ -60,18 +60,23 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
       
       this.employeeService.getMyProjects(userId).subscribe(projects => {
         this.myProjects = projects;
-        this.stats.myProjects = projects.length;
+        // Correction: Only projects with non-completed status are considered active in the dashboard stats
+        this.stats.myProjects = projects.filter(p => {
+          const s = (p.status || '').toUpperCase();
+          return s !== 'COMPLETED' && s !== 'FINISHED' && s !== 'TERMINE' && s !== 'TERMINEE';
+        }).length;
       });
 
       this.employeeService.getMyTasks(userId).subscribe(tasks => {
-        this.stats.activeTasks = tasks.filter(t => t.status !== 'COMPLETED' && t.status !== 'DONE').length;
-        this.stats.completedTasks = tasks.filter(t => t.status === 'COMPLETED' || t.status === 'DONE').length;
+        const finishedStatuses = ['COMPLETED', 'DONE', 'TERMINE', 'TERMINEE'];
+        this.stats.activeTasks = tasks.filter(t => !finishedStatuses.includes((t.status || '').toUpperCase())).length;
+        this.stats.completedTasks = tasks.filter(t => finishedStatuses.includes((t.status || '').toUpperCase())).length;
         
         // Today's tasks (All uncompleted tasks)
         const todayStr = this.today.toDateString();
         let ctx = '';
         this.todayTasks = tasks.filter(t => {
-          const isUncompleted = t.status !== 'COMPLETED' && t.status !== 'DONE';
+          const isUncompleted = !finishedStatuses.includes((t.status || '').toUpperCase());
           if (isUncompleted) {
              ctx += `- ${t.title} (Priorité: ${t.priority}, Deadline: ${t.deadline ? new Date(t.deadline).toLocaleDateString() : 'Non fixée'})\n`;
           }
@@ -81,23 +86,29 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
 
         // Upcoming (non-today, non-completed)
         this.upcomingTasks = tasks
-          .filter(t => (t.status !== 'COMPLETED' && t.status !== 'DONE') && t.deadline)
+          .filter(t => !finishedStatuses.includes((t.status || '').toUpperCase()) && t.deadline)
           .sort((a, b) => new Date(a.deadline!).getTime() - new Date(b.deadline!).getTime())
           .slice(0, 5);
           
         this.isLoading = false;
       });
 
-      // Fetch real Productivity Score from backend
-      this.http.get<any>(`http://localhost:8080/api/stats/user/${userId}/productivity`).subscribe({
-        next: (data) => {
-          this.activeAttendance = data.presentToday ? { checked: true } : null;
-          this.stats.productivityScore = data.score;
+      // Fetch real Attendance for today to ensure 'checkIn' property exists for the UI
+      this.hrService.getTodayAttendance(userId).subscribe({
+        next: (att) => {
+          this.activeAttendance = att;
         },
         error: () => {
-          // Fallback: call attendance manually
-          this.hrService.getTodayAttendance(userId).subscribe(att => { this.activeAttendance = att; });
+          this.activeAttendance = null;
         }
+      });
+
+      // Fetch Productivity Score separately
+      this.http.get<any>(`http://localhost:8080/api/stats/user/${userId}/productivity`).subscribe({
+        next: (data) => {
+          this.stats.productivityScore = data.score;
+        },
+        error: () => { }
       });
     }
   }
@@ -240,14 +251,16 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
   }
 
   getStatusClass(s: string): string {
-    if (s === 'DONE' || s === 'COMPLETED') return 'bg-success';
-    if (s === 'IN_PROGRESS') return 'bg-warning text-dark';
+    const status = (s || '').toUpperCase();
+    if (status === 'DONE' || status === 'COMPLETED' || status === 'TERMINE' || status === 'TERMINEE') return 'bg-success';
+    if (status === 'IN_PROGRESS' || status === 'EN COURS') return 'bg-warning text-dark';
     return 'bg-secondary';
   }
 
   getStatusLabel(s: string): string {
-    if (s === 'DONE' || s === 'COMPLETED') return 'Terminée';
-    if (s === 'IN_PROGRESS') return 'En cours';
+    const status = (s || '').toUpperCase();
+    if (status === 'DONE' || status === 'COMPLETED' || status === 'TERMINE' || status === 'TERMINEE') return 'Terminée';
+    if (status === 'IN_PROGRESS' || status === 'EN COURS') return 'En cours';
     return 'À faire';
   }
 

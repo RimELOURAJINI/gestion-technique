@@ -48,7 +48,10 @@
                                             <h6 class="todo-task-title mb-1" (click)="selectTask(task)" data-bs-toggle="modal" data-bs-target="#subtaskModal">{{ task.title }}</h6>
                                             <span class="fs-11 text-muted"><i class="ti ti-folder me-1"></i>{{ task.project?.name }}</span>
                                         </div>
-                                        <span class="badge fs-10" [ngClass]="task.priority === 'HIGH' ? 'bg-danger' : 'bg-warning text-dark'">{{ task.priority }}</span>
+                                        <div class="d-flex gap-1 align-items-center">
+                                            <span class="badge fs-10" [ngClass]="task.priority === 'HIGH' ? 'bg-danger' : 'bg-warning text-dark'">{{ task.priority }}</span>
+                                            <span class="badge fs-10" [ngClass]="getStatusClass(task.status)">{{ getStatusLabel(task.status) }}</span>
+                                        </div>
                                     </div>
                                     <div class="mt-2" *ngIf="task.subtasks && task.subtasks.length > 0">
                                         <div class="progress progress-xs mb-1">
@@ -88,9 +91,12 @@
                                             <h6 class="todo-task-title mb-1" (click)="selectTask(task)" data-bs-toggle="modal" data-bs-target="#subtaskModal">{{ task.title }}</h6>
                                             <span class="fs-11 text-muted"><i class="ti ti-clock me-1"></i>Créé le {{ task.createdAt | date:'dd MMM HH:mm' }}</span>
                                         </div>
-                                        <button class="btn btn-sm btn-soft-danger border-0 p-1" (click)="deleteTask(task.id!)">
-                                            <i class="ti ti-trash"></i>
-                                        </button>
+                                        <div class="d-flex gap-1 align-items-center">
+                                            <span class="badge fs-10" [ngClass]="getStatusClass(task.status)">{{ getStatusLabel(task.status) }}</span>
+                                            <button class="btn btn-sm btn-soft-danger border-0 p-1" (click)="deleteTask(task.id!)">
+                                                <i class="ti ti-trash"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                     <div class="mt-2" *ngIf="task.subtasks && task.subtasks.length > 0">
                                         <div class="progress progress-xs mb-1">

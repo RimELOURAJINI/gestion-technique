@@ -48,8 +48,36 @@ export class TodoListComponent implements OnInit {
     if (userId) {
       this.employeeService.getMyTasks(userId).subscribe({
         next: (tasks) => {
-          this.todayTasks = tasks.filter(t => t.project != null);
-          this.personalTasks = tasks.filter(t => t.project == null);
+          const today = new Date().toDateString();
+          
+          // 1. Filter: show uncompleted tasks OR those completed today
+          const filtered = tasks.filter(t => {
+            const isDone = t.status === 'DONE' || t.status === 'COMPLETED';
+            if (!isDone) return true;
+            if (t.actualEndTime) {
+              return new Date(t.actualEndTime).toDateString() === today;
+            }
+            // Fallback for just completed tasks without actualEndTime yet (though updateTaskStatus sets it)
+            return true; 
+          });
+
+          // 2. Sort: Uncompleted first, then by priority (HIGH > MEDIUM > LOW), then completed at bottom
+          const priorityWeight: any = { 'HIGH': 1, 'MEDIUM': 2, 'LOW': 3 };
+          
+          const sorted = filtered.sort((a, b) => {
+            const aDone = a.status === 'DONE' || a.status === 'COMPLETED' ? 1 : 0;
+            const bDone = b.status === 'DONE' || b.status === 'COMPLETED' ? 1 : 0;
+            
+            if (aDone !== bDone) return aDone - bDone;
+            
+            const aPrio = priorityWeight[a.priority || 'MEDIUM'] || 2;
+            const bPrio = priorityWeight[b.priority || 'MEDIUM'] || 2;
+            
+            return aPrio - bPrio;
+          });
+
+          this.todayTasks = sorted.filter(t => t.project != null);
+          this.personalTasks = sorted.filter(t => t.project == null);
           
           // For each task, load subtasks
           tasks.forEach(t => {
@@ -135,6 +163,24 @@ export class TodoListComponent implements OnInit {
     this.employeeService.deleteSubtask(subId).subscribe(() => {
       task.subtasks = task.subtasks?.filter(s => s.id !== subId);
     });
+  }
+
+  getStatusClass(s: string | undefined): string {
+    if (!s) return 'bg-secondary';
+    const status = s.toUpperCase();
+    if (status === 'DONE' || status === 'COMPLETED') return 'bg-success';
+    if (status === 'IN_PROGRESS' || status === 'DOING') return 'bg-warning text-dark';
+    if (status === 'TEST' || status === 'REVIEW') return 'bg-info';
+    return 'bg-secondary';
+  }
+
+  getStatusLabel(s: string | undefined): string {
+    if (!s) return 'À faire';
+    const status = s.toUpperCase();
+    if (status === 'DONE' || status === 'COMPLETED') return 'Terminée';
+    if (status === 'IN_PROGRESS' || status === 'DOING') return 'En cours';
+    if (status === 'TEST' || status === 'REVIEW') return 'En Test';
+    return 'À faire';
   }
 
   getTaskProgress(task: Task): number {

@@ -30,8 +30,8 @@ export class ClientDashboardComponent implements OnInit {
   loadActiveTicketsCount(): void {
     const userId = this.authService.getUserId();
     if (userId) {
-      this.ticketService.getClientTickets(userId).subscribe(data => {
-        this.activeTicketsCount = data.filter(t => t.status !== 'RESOLVED' && t.status !== 'CLOSED').length;
+      this.ticketService.getUnansweredTicketsCountForUser(userId).subscribe(count => {
+        this.activeTicketsCount = count;
       });
     }
   }

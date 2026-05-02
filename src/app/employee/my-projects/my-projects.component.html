@@ -44,7 +44,7 @@
 			<div class="card project-card flex-fill clickable-card">
 				<div class="card-body">
 					<div class="d-flex align-items-start justify-content-between mb-3">
-						<div class="d-flex align-items-center cursor-pointer" (click)="openProjectDetail(project)">
+						<div class="d-flex align-items-center cursor-pointer" (click)="activeTab === 'history' ? openHistoryDetail(project) : openProjectDetail(project)">
 							<div class="avatar avatar-md bg-primary-light border border-primary-low me-2 d-flex align-items-center justify-content-center">
 								<i class="ti ti-briefcase text-primary fs-18"></i>
 							</div>
@@ -54,15 +54,15 @@
 							</div>
 						</div>
 						<span class="badge badge-pill" [ngClass]="{
-							'bg-pending': project.status === 'IN_PROGRESS',
+							'bg-pending': project.status === 'IN_PROGRESS' || project.status === 'ACTIVE',
 							'bg-success': project.status === 'COMPLETED',
-							'bg-secondary': !project.status || (project.status !== 'IN_PROGRESS' && project.status !== 'COMPLETED')
-						}">{{project.status || 'En attente'}}</span>
+							'bg-secondary': !project.status
+						}">{{project.status === 'COMPLETED' ? 'Terminé' : (project.status === 'ACTIVE' || project.status === 'IN_PROGRESS' ? 'Actif' : (project.status || 'En attente'))}}</span>
 					</div>
 					
-					<p class="text-muted small text-truncate-2 mb-3 cursor-pointer" style="height: 40px;" (click)="openProjectDetail(project)">{{project.description}}</p>
+					<p class="text-muted small text-truncate-2 mb-3 cursor-pointer" style="height: 40px;" (click)="activeTab === 'history' ? openHistoryDetail(project) : openProjectDetail(project)">{{project.description}}</p>
 					
-					<div class="project-progress mb-3 cursor-pointer" (click)="openProjectDetail(project)">
+					<div class="project-progress mb-3 cursor-pointer" (click)="activeTab === 'history' ? openHistoryDetail(project) : openProjectDetail(project)">
 						<div class="d-flex justify-content-between align-items-center mb-1">
 							<span class="fs-12 text-muted">Progression</span>
 							<span class="fs-12 fw-bold text-dark">{{ project.progress || 0 }}%</span>
@@ -103,6 +103,68 @@
 	</div>
 
     <app-project-support-modal *ngIf="showSupportModal" [project]="selectedProjectForSupport" (onClose)="showSupportModal = false"></app-project-support-modal>
+
+    <!-- History Detail Modal -->
+    <div class="modal fade show" *ngIf="showHistoryModal" style="display: block; background: rgba(0,0,0,0.5);" (click)="showHistoryModal = false">
+        <div class="modal-dialog modal-dialog-centered modal-lg" (click)="$event.stopPropagation()">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+                <div class="modal-header border-0 bg-light p-4" style="border-radius: 20px 20px 0 0;">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar avatar-md bg-success-light text-success me-3 d-flex align-items-center justify-content-center rounded-circle">
+                            <i class="ti ti-history fs-20"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0">{{selectedProjectForHistory?.name}}</h5>
+                            <span class="fs-12 text-muted">Historique des tâches complétées</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" (click)="showHistoryModal = false"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div *ngIf="isLoadingHistory" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-2 text-muted">Chargement de l'historique...</p>
+                    </div>
+
+                    <div *ngIf="!isLoadingHistory && historyTasks.length === 0" class="text-center py-5">
+                        <i class="ti ti-clipboard-x fs-40 text-muted mb-2"></i>
+                        <p class="text-muted">Aucune tâche complétée trouvée pour ce projet.</p>
+                    </div>
+
+                    <div *ngIf="!isLoadingHistory && historyTasks.length > 0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="border-0">Tâche</th>
+                                        <th class="border-0">Début</th>
+                                        <th class="border-0">Fin</th>
+                                        <th class="border-0">Durée</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let task of historyTasks">
+                                        <td class="fw-medium text-dark">{{task.title}}</td>
+                                        <td class="fs-12 text-muted">{{task.actualStartTime | date:'dd/MM HH:mm'}}</td>
+                                        <td class="fs-12 text-muted">{{task.actualEndTime | date:'dd/MM HH:mm'}}</td>
+                                        <td>
+                                            <span class="badge bg-soft-info text-info rounded-pill">
+                                                {{calculateDuration(task.actualStartTime, task.actualEndTime)}}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="showHistoryModal = false">Fermer</button>
+                    <button type="button" class="btn btn-primary rounded-pill px-4" (click)="openProjectDetail(selectedProjectForHistory!)">Voir détails complets</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- /Page Content -->
 

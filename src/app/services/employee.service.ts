@@ -27,17 +27,7 @@ export class EmployeeService {
   // Projects
   // Projects derived from assigned tasks
   getMyProjects(userId: number): Observable<Project[]> {
-    return this.getMyTasks(userId).pipe(
-      map(tasks => {
-        const projectsMap = new Map<number, Project>();
-        tasks.forEach(t => {
-          if (t.project && t.project.id) {
-            projectsMap.set(t.project.id, t.project);
-          }
-        });
-        return Array.from(projectsMap.values());
-      })
-    );
+    return this.http.get<Project[]>(`${this.baseUrl}/projects/user/${userId}`);
   }
 
   // Tasks

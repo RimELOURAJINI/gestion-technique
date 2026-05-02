@@ -63,6 +63,7 @@ import { CommercialDailyReportComponent } from './commercial/daily-report/daily-
 import { AdminPrimesComponent } from './admin/primes/primes.component';
 import { MyPrimesComponent } from './shared/my-primes/my-primes.component';
 import { HistoryComponent } from './shared/history/history.component';
+import { TaskHistoryComponent } from './employee/history/task-history.component';
 
 import { SignupComponent } from './signup/signup.component';
 
@@ -166,6 +167,7 @@ export const routes: Routes = [
       { path: 'home', component: EmployeeHomeComponent },
       { path: 'tasks', component: MyTasksComponent },
       { path: 'todo', component: TodoListComponent },
+      { path: 'history', component: TaskHistoryComponent },
       { path: 'projects', component: MyProjectsComponent },
       { path: 'tickets', component: EmployeeTicketsComponent },
       { path: 'reclamations', component: ReclamationHubComponent },

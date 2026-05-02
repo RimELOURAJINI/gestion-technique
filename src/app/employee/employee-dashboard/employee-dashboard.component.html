@@ -148,6 +148,12 @@
                             <span *ngIf="todoCount > 0" class="sidebar-badge">{{ todoCount }}</span>
                         </a>
                     </li>
+                    <li class="sidebar-item" [class.active]="router.url.includes('/employee/history')">
+                        <a class="sidebar-link" routerLink="/employee/history">
+                            <i class="ti ti-history sidebar-icon"></i>
+                            <span class="sidebar-text">Historique des tâches</span>
+                        </a>
+                    </li>
                     <li class="sidebar-item" [class.active]="router.url.includes('/employee/tasks')">
                         <a class="sidebar-link" routerLink="/employee/tasks">
                             <i class="ti ti-list-check sidebar-icon"></i>

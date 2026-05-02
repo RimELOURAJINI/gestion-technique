@@ -130,9 +130,12 @@ export class AdminDashboardComponent implements OnInit {
     }
 
     loadActiveTicketsCount(): void {
-        this.ticketService.getAllTickets().subscribe(data => {
-            this.activeTicketsCount = data.filter(t => t.status !== 'RESOLVED' && t.status !== 'CLOSED').length;
-        });
+        const userId = this.authService.getUserId();
+        if (userId) {
+            this.ticketService.getUnansweredTicketsCountForUser(userId).subscribe(count => {
+                this.activeTicketsCount = count;
+            });
+        }
     }
 }
 

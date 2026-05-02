@@ -23,6 +23,11 @@ export class MyProjectsComponent implements OnInit {
   showSupportModal = false;
   selectedProjectForSupport: any = null;
 
+  showHistoryModal = false;
+  selectedProjectForHistory: Project | null = null;
+  historyTasks: any[] = [];
+  isLoadingHistory = false;
+
   constructor(
     private employeeService: EmployeeService,
     private authService: AuthService,
@@ -36,14 +41,48 @@ export class MyProjectsComponent implements OnInit {
   loadProjects(): void {
     const userId = this.authService.getUserId();
     if (userId) {
-      this.employeeService.getMyProjects(userId).subscribe(
-        (res: Project[]) => {
-          this.projects = res;
-          this.ongoingProjects = res.filter(p => p.status !== 'COMPLETED');
-          this.historicalProjects = res.filter(p => p.status === 'COMPLETED');
-        },
-        (err: any) => console.error('Error loading projects', err)
-      );
+      // Combine projects from tasks and projects from official API
+      this.employeeService.getMyTasks(userId).subscribe(tasks => {
+        const projectMap = new Map<number, Project>();
+        tasks.forEach(t => {
+          if (t.project && t.project.id) {
+            projectMap.set(t.project.id, t.project);
+          }
+        });
+
+        this.employeeService.getMyProjects(userId).subscribe(enrichedRes => {
+          const finalProjects: Project[] = [];
+          
+          // Use projects from tasks as base
+          const unfinishedProjectIds = new Set<number>();
+          tasks.forEach(t => {
+            const isDone = t.status === 'DONE' || t.status === 'COMPLETED' || t.status === 'TERMINE';
+            if (t.project && t.project.id && !isDone) {
+              unfinishedProjectIds.add(t.project.id);
+            }
+          });
+
+          projectMap.forEach((p, id) => {
+            const enriched = enrichedRes.find(ep => ep.id === id);
+            finalProjects.push(enriched || p);
+          });
+
+          // Add other projects from official API
+          enrichedRes.forEach(ep => {
+            if (!projectMap.has(ep.id!)) {
+              finalProjects.push(ep);
+            }
+          });
+
+          this.projects = finalProjects;
+          
+          // Logic: Project is ongoing if it's NOT COMPLETED OR the user has unfinished tasks in it
+          this.ongoingProjects = finalProjects.filter(p => p.status !== 'COMPLETED' || unfinishedProjectIds.has(p.id!));
+          
+          // Project is in history if it's COMPLETED AND the user has no more unfinished tasks in it
+          this.historicalProjects = finalProjects.filter(p => p.status === 'COMPLETED' && !unfinishedProjectIds.has(p.id!));
+        });
+      });
     }
   }
 
@@ -60,6 +99,34 @@ export class MyProjectsComponent implements OnInit {
   openProjectSupport(project: Project): void {
     this.selectedProjectForSupport = project;
     this.showSupportModal = true;
+  }
+
+  openHistoryDetail(project: Project): void {
+    this.selectedProjectForHistory = project;
+    this.showHistoryModal = true;
+    this.isLoadingHistory = true;
+    this.historyTasks = [];
+    
+    if (project.id) {
+      this.employeeService.getTasksByProject(project.id).subscribe({
+        next: (tasks) => {
+          this.historyTasks = tasks.filter(t => t.status === 'DONE' || t.status === 'COMPLETED');
+          this.isLoadingHistory = false;
+        },
+        error: () => this.isLoadingHistory = false
+      });
+    }
+  }
+
+  calculateDuration(start: any, end: any): string {
+    if (!start || !end) return 'N/A';
+    const s = new Date(start);
+    const e = new Date(end);
+    const diffMs = e.getTime() - s.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const hours = Math.floor(diffMins / 60);
+    const mins = diffMins % 60;
+    return `${hours}h ${mins}m`;
   }
 
 

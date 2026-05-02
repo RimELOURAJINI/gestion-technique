@@ -37,6 +37,10 @@ export class TicketService {
     return this.http.get<Ticket[]>(`${this.baseUrl}/employee/${userId}`);
   }
 
+  getUnansweredTicketsCountForUser(userId: number): Observable<number> {
+    return this.http.get<number>(`${this.baseUrl}/user/${userId}/unansweredCount`);
+  }
+
   createTicket(userId: number, ticket: Ticket): Observable<Ticket> {
     return this.http.post<Ticket>(`${this.baseUrl}/user/${userId}`, ticket);
   }

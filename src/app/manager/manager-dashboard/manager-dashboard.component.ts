@@ -141,8 +141,8 @@ export class ManagerDashboardComponent implements OnInit {
     }
 
     loadActiveTicketsCount(userId: number): void {
-        this.ticketService.getTicketsByManager(userId).subscribe(data => {
-            this.activeTicketsCount = data.filter(t => t.status !== 'RESOLVED' && t.status !== 'CLOSED').length;
+        this.ticketService.getUnansweredTicketsCountForUser(userId).subscribe(count => {
+            this.activeTicketsCount = count;
         });
     }
 }
