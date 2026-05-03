@@ -23,14 +23,19 @@ import { RouterModule, Router } from '@angular/router';
         </div>
       </div>
 
-      <app-personal-pointage></app-personal-pointage>
-
       <div class="row">
         <div *ngFor="let project of projects" class="col-md-6 col-lg-4 mb-4">
           <div class="card border-0 shadow-sm h-100 card-hover clickable-card">
             <div class="card-body p-4">
               <div class="d-flex justify-content-between align-items-start mb-3">
-                <div class="badge bg-soft-primary text-primary rounded-pill px-3">{{ project.status }}</div>
+                <div class="badge rounded-pill px-3" 
+                     [ngClass]="{
+                       'bg-soft-success text-success': project.status === 'Completed' || project.status === 'DONE' || project.status === 'TERMINE',
+                       'bg-soft-primary text-primary': project.status === 'ACTIVE' || project.status === 'IN_PROGRESS',
+                       'bg-soft-warning text-warning': project.status === 'NOT_STARTED' || project.status === 'TODO'
+                     }">
+                  {{ project.status }}
+                </div>
                 <div class="text-muted fs-11">Début: {{ project.startDate | date }}</div>
               </div>
               <h5 class="fw-bold mb-2 cursor-pointer" [routerLink]="['/client/projects', project.id]">{{ project.name }}</h5>
@@ -42,7 +47,8 @@ import { RouterModule, Router } from '@angular/router';
                   <span class="fs-12 fw-bold text-dark">{{ calculateProgress(project) }}%</span>
                 </div>
                 <div class="progress rounded-pill" style="height: 8px;">
-                  <div class="progress-bar bg-primary bg-gradient" 
+                  <div class="progress-bar bg-gradient" 
+                       [ngClass]="project.status === 'Completed' || project.status === 'DONE' ? 'bg-success' : 'bg-primary'"
                        role="progressbar" [style.width.%]="calculateProgress(project)"></div>
                 </div>
               </div>

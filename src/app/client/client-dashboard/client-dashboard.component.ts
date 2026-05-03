@@ -17,6 +17,10 @@ export class ClientDashboardComponent implements OnInit {
   clientName = '';
 
   activeTicketsCount: number = 0;
+  unreadCount = 0;
+  notifications: any[] = [];
+  clientRole = 'Client Officiel';
+
   constructor(
     private authService: AuthService,
     private ticketService: TicketService

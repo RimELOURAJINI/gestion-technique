@@ -41,6 +41,7 @@ export interface Project {
   openTicketsCount?: number; // UI Badge count
   memberCount?: number;
   involvedUsers?: User[];
+  activeTasksCount?: number;
 }
 
 export interface SubTask {

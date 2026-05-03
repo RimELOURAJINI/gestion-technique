@@ -38,7 +38,9 @@ export class TeamProjectsComponent implements OnInit {
                     // Only show ongoing projects (exclude COMPLETED, TERMINE, etc.)
                     this.projects = res.filter(p => {
                         const s = (p.status || '').toUpperCase();
-                        return s !== 'COMPLETED' && s !== 'DONE' && s !== 'TERMINE' && s !== 'TERMINEE' && s !== 'DELIVERED';
+                        const isFinished = s === 'COMPLETED' || s === 'DONE' || s === 'TERMINE' || s === 'TERMINEE' || s === 'DELIVERED';
+                        // Show if not finished OR if there are still active tasks
+                        return !isFinished || (p.activeTasksCount && p.activeTasksCount > 0);
                     });
                     this.loadTicketCounts(userId);
                 },
