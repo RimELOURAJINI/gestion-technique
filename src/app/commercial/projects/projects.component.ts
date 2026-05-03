@@ -17,10 +17,10 @@ import { ProjectSupportModalComponent } from '../../shared/project-support-modal
 })
 export class ProjectsComponent implements OnInit {
   projects: any[] = [];
-  projectIdsWithTickets: number[] = [];
+  selectedProjectForSupport: any = null;
+  unreadTicketCounts: any = {};
   isLoading = true;
   showSupportModal = false;
-  selectedProjectForSupport: any = null;
 
   constructor(
     private adminService: AdminService,
@@ -44,8 +44,8 @@ export class ProjectsComponent implements OnInit {
   }
 
   loadTicketIndicators() {
-    this.adminService.getProjectIdsWithTickets().subscribe({
-        next: (ids) => this.projectIdsWithTickets = ids
+    this.adminService.getProjectUnreadTicketCounts().subscribe({
+        next: (counts) => this.unreadTicketCounts = counts
     });
   }
 
@@ -54,11 +54,11 @@ export class ProjectsComponent implements OnInit {
   }
 
   isProjectTicketActive(projectId: number): boolean {
-      return this.projectIdsWithTickets.includes(projectId);
+      return (this.unreadTicketCounts[projectId] || 0) > 0;
   }
 
   hasTickets(projectId: number): boolean {
-      return this.projectIdsWithTickets.includes(projectId);
+      return (this.unreadTicketCounts[projectId] || 0) > 0;
   }
 
   openProjectSupport(project: any): void {

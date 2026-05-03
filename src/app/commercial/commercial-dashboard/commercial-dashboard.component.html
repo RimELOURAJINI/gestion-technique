@@ -124,6 +124,21 @@
 
         <!-- NAVIGATION PRINCIPALE -->
         <nav class="sidebar-nav" data-simplebar>
+            <!-- DASHBOARD -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-label">Dashboard</span>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/overview" routerLinkActive="active">
+                            <i class="ti ti-dashboard sidebar-icon"></i>
+                            <span class="sidebar-text">Vue d'ensemble</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
             <!-- ESPACE VENTE -->
             <div class="sidebar-section">
                 <span class="sidebar-section-label">Espace Vente</span>
@@ -191,6 +206,12 @@
                             <span class="sidebar-text">Ma Présence</span>
                         </a>
                     </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/history" routerLinkActive="active">
+                            <i class="ti ti-history sidebar-icon"></i>
+                            <span class="sidebar-text">Historique Présences</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
 
@@ -216,20 +237,6 @@
                 </ul>
             </div>
 
-            <div class="sidebar-divider"></div>
-
-            <!-- COMPTE -->
-            <div class="sidebar-section">
-                <span class="sidebar-section-label">Compte</span>
-                <ul class="sidebar-menu">
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/commercial/settings" routerLinkActive="active">
-                            <i class="ti ti-settings sidebar-icon"></i>
-                            <span class="sidebar-text">Paramètres</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
         </nav>
 
         <!-- FOOTER : profil utilisateur connecté -->

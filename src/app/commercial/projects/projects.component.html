@@ -24,9 +24,9 @@
         <div class="card h-100 shadow-sm border-0 lift clickable-card" (click)="viewDetails(p)">
             <div class="card-body p-4 position-relative">
                 <!-- Glowing Ticket Indicator -->
-                <div *ngIf="hasTickets(p.id)" class="ticket-status-badge" title="Voir la discussion active">
+                <div *ngIf="unreadTicketCounts[p.id] > 0" class="ticket-status-badge" title="Messages non lus">
                    <span class="badge bg-danger pulse-ring">
-                      <i class="ti ti-messages me-1"></i> TICKET ACTIF
+                      <i class="ti ti-messages me-1"></i> {{ unreadTicketCounts[p.id] }} {{ unreadTicketCounts[p.id] > 1 ? 'tickets' : 'ticket' }}
                    </span>
                 </div>
 

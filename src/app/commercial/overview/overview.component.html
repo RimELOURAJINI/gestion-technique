@@ -1,0 +1,108 @@
+<div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
+    <div>
+        <h4 class="mb-1">Tableau de Bord Commercial</h4>
+        <p class="text-muted fs-13">Bienvenue, {{ commercialName }}. Suivez vos deals et vos performances projets.</p>
+    </div>
+    <div class="gap-2 d-flex align-items-center flex-wrap">
+        <div class="reportrange-picker d-flex align-items-center shadow">
+            <i class="ti ti-calendar-due text-dark fs-14 me-1"></i>
+            <span class="reportrange-picker-field">{{ today | date:'dd MMM yyyy' }}</span>
+        </div>
+    </div>
+</div>
+
+<app-personal-pointage></app-personal-pointage>
+
+<!-- Stats Row -->
+<div class="row mb-4 g-3">
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border-0 shadow-sm overflow-hidden">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted fs-12 mb-1">Mes Deals</p>
+                        <h3 class="mb-0 fw-bold">{{ stats.deals }}</h3>
+                    </div>
+                    <div class="avatar avatar-md bg-soft-warning text-warning rounded-circle">
+                        <i class="ti ti-medal fs-20"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border-0 shadow-sm overflow-hidden">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted fs-12 mb-1">Pipeline</p>
+                        <h3 class="mb-0 fw-bold">{{ stats.pipeline | currency:'EUR' }}</h3>
+                    </div>
+                    <div class="avatar avatar-md bg-soft-success text-success rounded-circle">
+                        <i class="ti ti-chart-arrows fs-20"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border-0 shadow-sm overflow-hidden">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted fs-12 mb-1">Projets Actifs</p>
+                        <h3 class="mb-0 fw-bold">{{ stats.activeProjects }}</h3>
+                    </div>
+                    <div class="avatar avatar-md bg-soft-primary text-primary rounded-circle">
+                        <i class="ti ti-briefcase fs-20"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6">
+        <div class="card border-0 shadow-sm overflow-hidden">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p class="text-muted fs-12 mb-1">Performance</p>
+                        <h3 class="mb-0 fw-bold">92%</h3>
+                    </div>
+                    <div class="avatar avatar-md bg-soft-info text-info rounded-circle">
+                        <i class="ti ti-trending-up fs-20"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Insights -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-dark text-white shadow-lg border-0" style="background: linear-gradient(135deg, #1b2850 0%, #0d162a 100%) !important;">
+            <div class="card-header border-0 d-flex justify-content-between align-items-center bg-transparent pt-4 pb-0">
+                <h5 class="mb-0 fs-18 fw-bold text-white d-flex align-items-center">
+                    <span class="avatar avatar-sm bg-warning rounded-circle me-2 d-flex align-items-center justify-content-center shadow-sm text-dark">
+                        <i class="ti ti-robot fs-16"></i>
+                    </span>
+                    AI Insights Commercial
+                </h5>
+                <button class="btn btn-warning d-flex align-items-center shadow-sm text-dark fw-bold" (click)="refreshAiStats()" [disabled]="isAiLoading">
+                    <i class="ti ti-refresh me-2" [class.ti-spin]="isAiLoading"></i>
+                    {{ isAiLoading ? 'Analyse...' : 'Générer analyse' }}
+                </button>
+            </div>
+            <div class="card-body pt-3 pb-4">
+                <div *ngIf="isAiLoading" class="d-flex align-items-center justify-content-center py-4 text-warning">
+                    <div class="spinner-grow spinner-grow-md me-3" role="status"></div>
+                    <span class="fs-15 fw-medium text-white">L'IA analyse vos deals et projets...</span>
+                </div>
+                <div *ngIf="aiMessage" class="ai-content p-4 rounded-3" style="background-color: rgba(255,255,255,0.05); color: #f0f4ff; border: 1px solid rgba(255,255,255,0.1); font-size: 15px; line-height: 1.8;" [innerHTML]="aiMessageHtml"></div>
+                <div *ngIf="!isAiLoading && !aiMessage" class="text-center py-4">
+                    <p class="text-white text-opacity-75 fs-15 mb-0">Demandez à l'IA d'analyser vos opportunités commerciales et l'état de vos projets clients.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

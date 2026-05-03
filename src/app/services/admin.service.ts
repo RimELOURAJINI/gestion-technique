@@ -52,6 +52,10 @@ export class AdminService {
     return this.http.get<number[]>(`${this.baseUrl}/projects/with-tickets`);
   }
 
+  getProjectUnreadTicketCounts(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/projects/unread-ticket-counts`);
+  }
+
   // ========== TASKS ==========
   getAllTasks(): Observable<Task[]> {
     return this.http.get<Task[]>(`${this.baseUrl}/tasks/all`);

@@ -1,0 +1,45 @@
+.reportrange-picker {
+    background: #fff;
+    cursor: pointer;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.avatar-md {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bg-soft-warning { background-color: rgba(255, 193, 7, 0.15) !important; }
+.bg-soft-success { background-color: rgba(3, 201, 90, 0.15) !important; }
+.bg-soft-primary { background-color: rgba(59, 68, 246, 0.15) !important; }
+.bg-soft-info { background-color: rgba(0, 207, 221, 0.15) !important; }
+
+.ai-content {
+    border-radius: 12px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.ti-spin {
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important;
+}

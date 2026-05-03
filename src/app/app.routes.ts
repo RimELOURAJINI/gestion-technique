@@ -38,6 +38,7 @@ import { ProjectsComponent as CommercialProjectsComponent } from './commercial/p
 import { ProjectDetailsComponent as CommercialProjectDetailsComponent } from './commercial/project-details/project-details.component';
 import { DealsComponent as CommercialDealsComponent } from './commercial/deals/deals.component';
 import { TicketsComponent as CommercialTicketsComponent } from './commercial/tickets/tickets.component';
+import { CommercialOverviewComponent } from './commercial/overview/overview.component';
 import { ClientDashboardComponent } from './client/client-dashboard/client-dashboard.component';
 import { DealsComponent as ClientDealsComponent } from './client/deals/deals.component';
 import { FeaturePlaceholderComponent } from './shared/feature-placeholder/feature-placeholder.component';
@@ -191,6 +192,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     data: { expectedRole: 'ROLE_COMMERCIAL' },
     children: [
+      { path: 'overview', component: CommercialOverviewComponent },
       { path: 'projects', component: CommercialProjectsComponent },
       { path: 'projects/:id', component: UnifiedProjectDetailComponent },
       { path: 'settings', component: FeaturePlaceholderComponent, data: { title: 'Paramètres Commercial', description: 'Préférences commercial et options de suivi.' } },
@@ -198,11 +200,12 @@ export const routes: Routes = [
       { path: 'tickets', component: CommercialTicketsComponent },
       { path: 'reclamations', component: ReclamationHubComponent },
       { path: 'my-attendance', component: AttendancePersonalComponent },
+      { path: 'history', component: HistoryComponent },
       { path: 'my-leaves', component: EmployeeLeavesComponent },
       { path: 'primes', component: MyPrimesComponent },
       { path: 'team-chat', component: EmployeeTeamChatComponent },
       { path: 'daily-report', component: CommercialDailyReportComponent },
-      { path: '', redirectTo: 'projects', pathMatch: 'full' }
+      { path: '', redirectTo: 'overview', pathMatch: 'full' }
     ]
   },
   {
