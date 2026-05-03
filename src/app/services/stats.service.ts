@@ -28,6 +28,10 @@ export class StatsService {
     return this.http.get(`${this.apiUrl}/manager/approvals/${managerId}`);
   }
 
+  getPendingReclamations(managerId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/manager/pending-reclamations/${managerId}`);
+  }
+
   getManagerDashboardStats(managerId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/manager/dashboard/${managerId}`);
   }

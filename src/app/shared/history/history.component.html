@@ -61,10 +61,17 @@
                 </div>
                 <div class="card-body bg-white">
                     <div *ngFor="let taskTitle of getTaskTitles()" class="task-group p-3 mb-4 border border-light shadow-sm">
-                        <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
-                            <i class="ti ti-clipboard-list text-primary"></i>
-                            {{ taskTitle }}
-                        </h6>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold mb-0 d-flex align-items-center gap-2">
+                                <i class="ti ti-clipboard-list text-primary"></i>
+                                {{ taskTitle }}
+                            </h6>
+                            <div class="assigned-users" *ngIf="historyData[taskTitle][0]?.task?.users?.length">
+                                <span class="badge bg-soft-info text-info fs-11 rounded-pill px-2 me-1" *ngFor="let u of historyData[taskTitle][0].task.users">
+                                    <i class="ti ti-user me-1"></i>{{ u.firstName }} {{ u.lastName }}
+                                </span>
+                            </div>
+                        </div>
                         
                         <div class="status-timeline">
                             <div *ngFor="let entry of historyData[taskTitle]" class="timeline-item">

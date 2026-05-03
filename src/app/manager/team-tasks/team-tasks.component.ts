@@ -54,11 +54,7 @@ export class TeamTasksComponent implements OnInit {
         if (userId) {
             this.teamLeaderService.getEmployees().subscribe(res => this.employees = res);
             this.teamLeaderService.getProjectsByUserId(userId).subscribe(res => {
-                // Filter: Only allow tasks for ACTIVE/Ongoing projects
-                this.projects = res.filter(p => {
-                    const s = (p.status || '').toUpperCase();
-                    return s !== 'COMPLETED' && s !== 'DONE' && s !== 'TERMINE' && s !== 'TERMINEE';
-                });
+                this.projects = res;
                 // Auto-select from query param
                 this.route.queryParams.subscribe(params => {
                     this.selectedProjectId = params['projectId'] ? +params['projectId'] : (res[0]?.id ?? undefined);

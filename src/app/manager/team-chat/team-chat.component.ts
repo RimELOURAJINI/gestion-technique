@@ -51,20 +51,29 @@ export class TeamChatComponent implements OnInit, OnDestroy {
       this.initialMemberId = params['memberId'] ? +params['memberId'] : null;
     });
 
+    // Load official team for ID (needed for global messages)
     this.teamLeaderService.getMyTeam(this.currentUserId).subscribe({
       next: (res) => {
         this.team = res;
-        this.members = res.users || [];
-        this.isLoading = false;
         this.loadMessages();
-        // Auto-select member from query param
+      },
+      error: (err) => console.error('Error loading team', err)
+    });
+
+    // Load active collaborators (Official + Active Task assigned) for sidebar
+    this.teamLeaderService.getActiveCollaborators(this.currentUserId).subscribe({
+      next: (users) => {
+        this.members = users || [];
+        this.isLoading = false;
+        
+        // Auto-select member from query param if available
         if (this.initialMemberId) {
           const found = this.members.find((m: any) => m.id === this.initialMemberId);
           if (found) this.selectContact(found);
         }
       },
       error: (err) => {
-        console.error('Error loading team', err);
+        console.error('Error loading active collaborators', err);
         this.isLoading = false;
       }
     });

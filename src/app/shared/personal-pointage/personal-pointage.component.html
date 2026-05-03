@@ -60,26 +60,7 @@
                 </div>
             </div>
 
-            <!-- Weekly Summary -->
-            <div class="border-top pt-4">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <h6 class="fw-bold text-dark mb-0 fs-14">Résumé de la semaine</h6>
-                    <span class="text-muted fs-12">Derniers 7 jours</span>
-                </div>
-                <div class="d-flex align-items-end gap-2" style="height: 60px;">
-                    <div *ngFor="let entry of weeklyHistory" class="flex-fill bg-light rounded-top position-relative group-hover-parent" 
-                         [style.height.%]="80" [title]="entry.date | date:'dd/MM'">
-                        <div class="bg-primary bg-opacity-50 rounded-top w-100 position-absolute bottom-0" 
-                             [style.height.%]="70"></div>
-                    </div>
-                    <div *ngIf="weeklyHistory.length === 0" class="w-100 text-center py-2 text-muted fs-12">
-                        Aucun historique récent disponible
-                    </div>
-                </div>
-                <div class="d-flex justify-content-between mt-2 px-1">
-                    <span *ngFor="let entry of weeklyHistory" class="text-muted fs-10 text-uppercase">{{ entry.checkIn | date:'EEE' }}</span>
-                </div>
-            </div>
+
         </div>
 
     </div>

@@ -15,6 +15,7 @@ export class ManagerApprovalsComponent implements OnInit {
   stats: any = { pendingReclamations: 0 };
   pendingLeaves: any[] = [];
   pendingReclamations: any[] = [];
+  selectedReclamation: any = null;
   isLoading = true;
 
   constructor(
@@ -41,10 +42,20 @@ export class ManagerApprovalsComponent implements OnInit {
     // Load Real Leaves
     this.hrService.getPendingTeamLeaves(managerId).subscribe(data => {
       this.pendingLeaves = data;
-      this.isLoading = false;
+      this.checkLoadingState();
     });
+    
+    // Load Real Reclamations
+    this.statsService.getPendingReclamations(managerId).subscribe(data => {
+        this.pendingReclamations = data;
+        this.checkLoadingState();
+    });
+  }
 
-    // Add logic for pending tasks or reclamations if needed
+  private checkLoadingState(): void {
+      // Small helper to set isLoading false only when both are loaded if desired, 
+      // but here we can just set it to false as they come in.
+      this.isLoading = false;
   }
 
   processLeave(leaveId: number, status: string): void {
@@ -54,5 +65,13 @@ export class ManagerApprovalsComponent implements OnInit {
     this.hrService.processLeave(leaveId, managerId, status).subscribe(() => {
         this.loadData(managerId);
     });
+  }
+
+  viewReclamation(rec: any): void {
+      this.selectedReclamation = rec;
+  }
+
+  closeReclamationDetail(): void {
+      this.selectedReclamation = null;
   }
 }
