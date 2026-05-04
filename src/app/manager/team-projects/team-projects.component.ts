@@ -19,6 +19,7 @@ export class TeamProjectsComponent implements OnInit {
     isLoading = true;
     showSupportModal = false;
     selectedSupportProject: Project | null = null;
+    basePath: string = '/manager';
 
     constructor(
         private teamLeaderService: TeamLeaderService,
@@ -27,6 +28,7 @@ export class TeamProjectsComponent implements OnInit {
     ) { }
 
     ngOnInit() {
+        this.basePath = this.authService.isCommercialLeader() ? '/commercial-leader' : '/manager';
         this.loadProjects();
     }
 

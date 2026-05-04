@@ -36,7 +36,7 @@
                             <span class="fs-15 fw-bold text-dark me-1">{{team.users ? team.users.length : 0}}</span>
                             <span class="fs-14 text-muted">Membres</span>
                         </div>
-                        <a [routerLink]="['/manager/team-chat']" class="btn btn-dark rounded-pill px-4 ms-2 shadow-sm">
+                        <a [routerLink]="[basePath + '/team-chat']" class="btn btn-dark rounded-pill px-4 ms-2 shadow-sm">
                             <i class="ti ti-messages me-1"></i> Chat de Groupe
                         </a>
                     </div>
@@ -79,7 +79,7 @@
                             </a>
                         </div>
                         <div class="col-6">
-                            <a [routerLink]="['/manager/team-chat']" [queryParams]="{memberId: user.id}" class="btn btn-soft-primary btn-sm w-100 rounded-pill">
+                            <a [routerLink]="[basePath + '/team-chat']" [queryParams]="{memberId: user.id}" class="btn btn-soft-primary btn-sm w-100 rounded-pill">
                                 <i class="ti ti-message-2 me-1"></i> Chat
                             </a>
                         </div>

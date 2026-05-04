@@ -24,8 +24,8 @@
             <p class="text-light fs-14 mb-0">Vous avez {{stats.activeTasks}} tâches actives à superviser.</p>
         </div>
         <div class="d-flex align-items-center flex-wrap gap-2">
-            <a routerLink="/manager/projects" class="btn btn-primary btn-sm">Mes Projets</a>
-            <a routerLink="/manager/tasks" class="btn btn-light btn-sm">Gérer les Tâches</a>
+            <a [routerLink]="basePath + '/projects'" class="btn btn-primary btn-sm">Mes Projets</a>
+            <a [routerLink]="basePath + '/tasks'" class="btn btn-light btn-sm">Gérer les Tâches</a>
         </div>
     </div>
 </div>
@@ -181,13 +181,13 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let p of myProjects" class="cursor-pointer">
-                                <td class="ps-3 py-3" [routerLink]="['/manager/projects', p.id]">
+                                <td class="ps-3 py-3" [routerLink]="[basePath + '/projects', p.id]">
                                     <h6 class="mb-0 fw-bold fs-14">{{p.name}}</h6>
                                 </td>
-                                <td class="py-3" [routerLink]="['/manager/projects', p.id]">
+                                <td class="py-3" [routerLink]="[basePath + '/projects', p.id]">
                                     <span class="text-muted fs-13">{{p.expectedEndDate | date:'dd MMM yyyy'}}</span>
                                 </td>
-                                <td class="py-3" [routerLink]="['/manager/projects', p.id]">
+                                <td class="py-3" [routerLink]="[basePath + '/projects', p.id]">
                                     <div class="avatar-group">
                                         <div class="avatar avatar-xs bg-soft-primary text-primary rounded-circle bd-2 border-white d-flex align-items-center justify-content-center" title="Membres">
                                             <i class="ti ti-users fs-10"></i>
@@ -198,7 +198,7 @@
                                     <button class="btn btn-soft-primary btn-sm btn-icon rounded-circle me-1" (click)="openProjectTickets(p); $event.stopPropagation()">
                                         <i class="ti ti-headset"></i>
                                     </button>
-                                    <button class="btn btn-soft-light btn-sm btn-icon rounded-circle" [routerLink]="['/manager/projects', p.id]">
+                                    <button class="btn btn-soft-light btn-sm btn-icon rounded-circle" [routerLink]="[basePath + '/projects', p.id]">
                                         <i class="ti ti-chevron-right"></i>
                                     </button>
                                 </td>
@@ -215,7 +215,7 @@
         <div class="card flex-fill">
             <div class="card-header d-flex align-items-center justify-content-between py-3">
                 <h5 class="mb-0 fs-16 fw-bold">{{ isCommercialLeader ? 'Leaderboard Commerciaux' : 'Dernières Tâches' }}</h5>
-                <a [routerLink]="isCommercialLeader ? '/commercial-leader/team' : '/manager/tasks'" class="btn btn-sm btn-light">Voir tout</a>
+                <a [routerLink]="isCommercialLeader ? '/commercial-leader/team' : basePath + '/tasks'" class="btn btn-sm btn-light">Voir tout</a>
             </div>
             <div class="card-body p-0">
                 <!-- Leaderboard (Comm Leader) -->

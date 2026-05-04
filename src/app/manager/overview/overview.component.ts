@@ -39,6 +39,7 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
   isCommercialLeader: boolean = false;
   today: Date = new Date();
   myProjects: Project[] = [];
+  basePath: string = '/manager';
   recentTasks: Task[] = [];
   isLoading = true;
 
@@ -64,6 +65,7 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.isCommercialLeader = this.authService.isCommercialLeader();
+    this.basePath = this.isCommercialLeader ? '/commercial-leader' : '/manager';
     this.loadDashboardData();
   }
 

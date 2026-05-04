@@ -16,6 +16,7 @@ import { Team, User } from '../../models/models';
 export class MyTeamComponent implements OnInit {
   team: Team | null = null;
   isLoading = true;
+  basePath: string = '/manager';
   errorMessage = '';
 
   constructor(
@@ -25,6 +26,7 @@ export class MyTeamComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.basePath = this.authService.isCommercialLeader() ? '/commercial-leader' : '/manager';
     const userId = this.authService.getUserId();
     if (!userId) {
       this.isLoading = false;
