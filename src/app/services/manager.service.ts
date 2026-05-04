@@ -80,8 +80,16 @@ export class TeamLeaderService {
     return this.http.get<Reclamation[]>(`${this.baseUrl}/reclamations/project/${projectId}`);
   }
 
+  getReclamationsByManager(managerId: number): Observable<Reclamation[]> {
+    return this.http.get<Reclamation[]>(`${this.baseUrl}/reclamations/manager/${managerId}`);
+  }
+
   getEmployees(): Observable<User[]> {
     return this.http.get<User[]>(`${this.baseUrl}/users/role/ROLE_EMPLOYEE`);
+  }
+
+  getCommercials(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.baseUrl}/users/role/ROLE_COMMERCIAL`);
   }
 
   getTasksByUserId(userId: number): Observable<Task[]> {

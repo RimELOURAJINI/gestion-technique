@@ -155,6 +155,7 @@ export const routes: Routes = [
       { path: 'team-chat', component: TeamChatComponent },
       { path: 'daily-report', component: ManagerDailyReportComponent },
       { path: 'team', loadComponent: () => import('./manager/my-team/my-team.component').then(m => m.MyTeamComponent) },
+      { path: 'history', component: HistoryComponent },
       { path: 'settings', component: FeaturePlaceholderComponent, data: { title: 'Paramètres Leader Commercial', description: 'Préférences leader commercial et options de pilotage.' } },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }
     ]

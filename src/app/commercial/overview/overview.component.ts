@@ -7,6 +7,7 @@ import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
 import { AiService } from '../../services/ai.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DealService } from '../../services/deal.service';
 
 @Component({
   selector: 'app-commercial-overview',
@@ -33,7 +34,8 @@ export class CommercialOverviewComponent implements OnInit {
     private authService: AuthService,
     private adminService: AdminService,
     private aiService: AiService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private dealService: DealService
   ) {}
 
   ngOnInit(): void {
@@ -45,12 +47,21 @@ export class CommercialOverviewComponent implements OnInit {
   }
 
   loadStats() {
+    const userId = this.authService.getUserId();
+    if (!userId) return;
+
     this.adminService.getAllProjects().subscribe(projects => {
-      this.stats.activeProjects = projects.filter(p => p.status === 'ACTIVE' || p.status === 'IN_PROGRESS').length;
+      this.stats.activeProjects = projects.filter(p => 
+        (p.status === 'ACTIVE' || p.status === 'IN_PROGRESS' || p.status === 'NOT_STARTED') && 
+        p.commercial?.id === userId
+      ).length;
     });
     
-    this.stats.deals = 5; 
-    this.stats.pipeline = 125000; 
+    this.dealService.getDealsByCommercial(userId).subscribe((deals: any[]) => {
+      this.stats.deals = deals.length;
+      this.stats.pipeline = deals.reduce((acc: number, d: any) => acc + (d.budget || 0), 0);
+      this.stats.wonDeals = deals.filter((d: any) => d.status === 'WON' || d.status === 'VALIDATED').length;
+    });
   }
 
   refreshAiStats() {

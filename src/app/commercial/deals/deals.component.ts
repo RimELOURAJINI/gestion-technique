@@ -262,7 +262,7 @@ export class DealsComponent implements OnInit {
   loadDeals() {
     if (this.currentUserId) {
       if (this.authService.isCommercialLeader()) {
-        this.dealService.getAllDeals().subscribe(res => {
+        this.dealService.getDealsForLeader().subscribe(res => {
           this.deals = res;
         });
       } else {

@@ -193,4 +193,9 @@ export class AuthService {
   getUserRoles(): string[] {
     return this.currentUserValue?.roles || [];
   }
+
+  getUserRole(): string | null {
+    const roles = this.getUserRoles();
+    return roles.length > 0 ? roles[0] : null;
+  }
 }

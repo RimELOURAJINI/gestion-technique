@@ -55,4 +55,8 @@ export class DealService {
   deleteDeal(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
+
+  getDealsForLeader(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/leader`);
+  }
 }

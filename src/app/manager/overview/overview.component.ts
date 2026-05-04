@@ -86,8 +86,8 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
 
     // Load Deals if Commercial Leader
     if (this.isCommercialLeader) {
-        this.dealService.getAllDeals().subscribe(deals => {
-            this.stats.pipelineValue = deals.reduce((acc, deal) => acc + (deal.amount || 0), 0);
+        this.dealService.getDealsForLeader().subscribe(deals => {
+            this.stats.pipelineValue = deals.reduce((acc, deal) => acc + (deal.budget || 0), 0);
             const wonDeals = deals.filter(d => d.status === 'WON').length;
             this.stats.winRate = deals.length > 0 ? Math.round((wonDeals / deals.length) * 100) : 0;
             // Re-render chart if data changed

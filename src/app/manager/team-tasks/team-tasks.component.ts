@@ -51,8 +51,15 @@ export class TeamTasksComponent implements OnInit {
 
     ngOnInit() {
         const userId = this.authService.getUserId();
+        const userRole = this.authService.getUserRole();
+        
         if (userId) {
-            this.teamLeaderService.getEmployees().subscribe(res => this.employees = res);
+            if (userRole === 'ROLE_COMMERCIAL_LEADER') {
+                this.teamLeaderService.getCommercials().subscribe(res => this.employees = res);
+            } else {
+                this.teamLeaderService.getEmployees().subscribe(res => this.employees = res);
+            }
+
             this.teamLeaderService.getProjectsByUserId(userId).subscribe(res => {
                 this.projects = res;
                 // Auto-select from query param

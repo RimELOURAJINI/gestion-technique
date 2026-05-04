@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { EmployeeService } from '../../services/employee.service';
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
+import { TeamLeaderService } from '../../services/manager.service';
 import { Reclamation, Project } from '../../models/models';
 
 @Component({
@@ -99,7 +100,7 @@ import { Reclamation, Project } from '../../models/models';
                   <button class="btn btn-sm btn-outline-primary me-2" (click)="viewDetails(r)">
                     Détails
                   </button>
-                  <button *ngIf="isAdmin && r.status === 'PENDING'" class="btn btn-sm btn-success" (click)="respond(r)">
+                  <button *ngIf="(isAdmin || authService.isCommercialLeader() || authService.isTeamLeader()) && r.status === 'PENDING'" class="btn btn-sm btn-success" (click)="respond(r)">
                     Répondre
                   </button>
                 </td>
@@ -176,13 +177,16 @@ export class ReclamationHubComponent implements OnInit {
   constructor(
     private employeeService: EmployeeService,
     private adminService: AdminService,
-    private authService: AuthService
+    public authService: AuthService,
+    private teamLeaderService: TeamLeaderService
   ) {}
 
   ngOnInit() {
     this.currentUserId = this.authService.getUserId();
-    const roles = this.authService.getUserRoles();
-    this.isAdmin = roles.includes('ROLE_ADMIN');
+    this.isAdmin = this.authService.isAdmin();
+    const isCommercialLeader = this.authService.isCommercialLeader();
+    const isTeamLeader = this.authService.isTeamLeader();
+    const isManager = this.isAdmin || isCommercialLeader || isTeamLeader;
 
     this.loadData();
   }
@@ -190,6 +194,12 @@ export class ReclamationHubComponent implements OnInit {
   loadData() {
     if (this.isAdmin) {
       this.adminService.getReclamations().subscribe(res => this.reclamations = res);
+    } else if (this.authService.isCommercialLeader() || this.authService.isTeamLeader()) {
+      const userId = this.authService.getUserId();
+      if (userId) {
+        this.teamLeaderService.getReclamationsByManager(userId).subscribe(res => this.reclamations = res);
+        this.employeeService.getMyProjects(userId).subscribe(res => this.myProjects = res);
+      }
     } else if (this.currentUserId) {
       this.employeeService.getMyReclamations(this.currentUserId).subscribe(res => this.reclamations = res);
       this.employeeService.getMyProjects(this.currentUserId).subscribe(res => this.myProjects = res);
@@ -225,14 +235,16 @@ export class ReclamationHubComponent implements OnInit {
 
     const status = confirm('Accepter cette réclamation ?') ? 'ACCEPTED' : 'REVIEWED';
     
-    this.adminService.updateReclamationStatus(r.id!, status, response).subscribe({
-      next: (updated) => {
+    const service = (this.isAdmin) ? this.adminService : this.teamLeaderService;
+
+    service.updateReclamationStatus(r.id!, status, response).subscribe({
+      next: (updated: any) => {
         alert('Réponse envoyée !');
         r.status = updated.status;
         r.response = updated.response;
         if (this.selectedReclam?.id === r.id) this.selectedReclam = r;
       },
-      error: (err) => alert('Erreur lors de la mise à jour.')
+      error: (err: any) => alert('Erreur lors de la mise à jour.')
     });
   }
 
