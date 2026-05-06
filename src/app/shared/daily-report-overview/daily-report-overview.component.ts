@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { DailyReportService } from '../../services/daily-report.service';
 import { DailyReportSummary, DailyReport } from '../../models/models';
 import { DailyReportFormComponent } from '../daily-report-form/daily-report-form.component';
@@ -7,7 +8,7 @@ import { DailyReportFormComponent } from '../daily-report-form/daily-report-form
 @Component({
   selector: 'app-daily-report-overview',
   standalone: true,
-  imports: [CommonModule, DailyReportFormComponent],
+  imports: [CommonModule, DailyReportFormComponent, FormsModule],
   templateUrl: './daily-report-overview.component.html',
   styleUrl: './daily-report-overview.component.css'
 })
@@ -22,6 +23,8 @@ export class DailyReportOverviewComponent implements OnInit, OnChanges {
   myReport: DailyReport | null = null;
   isLoading = true;
   today = new Date();
+  selectedDate: string = new Date().toISOString().split('T')[0];
+  searchTerm: string = '';
 
   // Detail modal
   selectedReport: DailyReport | null = null;
@@ -36,6 +39,10 @@ export class DailyReportOverviewComponent implements OnInit, OnChanges {
     this.load();
   }
 
+  onDateChange(): void {
+    this.load();
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['userId'] || changes['managerId'] || changes['mode']) {
       this.load();
@@ -44,13 +51,22 @@ export class DailyReportOverviewComponent implements OnInit, OnChanges {
 
   load(): void {
     this.isLoading = true;
+    const dateParam = this.selectedDate;
+
     if (this.mode === 'admin') {
-      this.dailyReportService.getAllReports().subscribe({
+      this.dailyReportService.getAllReports(dateParam).subscribe({
         next: (data) => { this.summaries = data; this.isLoading = false; },
         error: () => { this.isLoading = false; }
       });
+      // Also load own report for Admin history
+      if (this.userId) {
+        this.dailyReportService.getMyReport(this.userId, dateParam).subscribe({
+          next: (r) => this.myReport = r,
+          error: () => {}
+        });
+      }
     } else if (this.mode === 'team' && this.managerId) {
-      this.dailyReportService.getTeamReports(this.managerId).subscribe({
+      this.dailyReportService.getTeamReports(this.managerId, dateParam).subscribe({
         next: (data: any[]) => { 
           this.summaries = data.map(item => {
             if (item.userName !== undefined) {
@@ -74,17 +90,31 @@ export class DailyReportOverviewComponent implements OnInit, OnChanges {
       });
       // Also load own report
       if (this.userId) {
-        this.dailyReportService.getMyReport(this.userId).subscribe({
+        this.dailyReportService.getMyReport(this.userId, dateParam).subscribe({
           next: (r) => this.myReport = r,
           error: () => {}
         });
       }
     } else if (this.mode === 'self' && this.userId) {
-      this.dailyReportService.getMyReport(this.userId).subscribe({
+      this.dailyReportService.getMyReport(this.userId, dateParam).subscribe({
         next: (r) => { this.myReport = r; this.isLoading = false; },
         error: () => { this.isLoading = false; }
       });
     }
+  }
+
+  get userNames(): string[] {
+    const names = this.summaries.map(s => s.userName);
+    return Array.from(new Set(names)).sort();
+  }
+
+  get filteredSummaries(): DailyReportSummary[] {
+    if (!this.searchTerm || this.searchTerm === 'all') return this.summaries;
+    const term = this.searchTerm.toLowerCase().trim();
+    return this.summaries.filter(s => 
+      s.userName.toLowerCase().includes(term) || 
+      this.getRoleLabel(s.userRole).toLowerCase().includes(term)
+    );
   }
 
   get submittedCount(): number {
@@ -139,5 +169,10 @@ export class DailyReportOverviewComponent implements OnInit, OnChanges {
       'ROLE_COMMERCIAL_LEADER': 'Leader Commercial'
     };
     return map[role] || role;
+  }
+
+  isToday(): boolean {
+    const todayStr = new Date().toISOString().split('T')[0];
+    return this.selectedDate === todayStr;
   }
 }

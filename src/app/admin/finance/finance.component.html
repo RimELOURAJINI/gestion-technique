@@ -74,33 +74,28 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr *ngFor="let project of recentProjects">
                             <td class="ps-4">
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar-xs bg-soft-primary text-primary rounded me-2 d-flex align-items-center justify-content-center fs-10 fw-bold">ERP</div>
-                                    <span>Cloud ERP Migration</span>
+                                    <div class="avatar-xs bg-soft-primary text-primary rounded me-2 d-flex align-items-center justify-content-center fs-10 fw-bold">
+                                        {{ project.name.substring(0, 3).toUpperCase() }}
+                                    </div>
+                                    <span>{{ project.name }}</span>
                                 </div>
                             </td>
-                            <td>IT Infrastructure</td>
-                            <td class="fw-bold">45,000 DT</td>
-                            <td><span class="badge bg-soft-success text-success rounded-pill px-2">Validé</span></td>
+                            <td>{{ project.description?.substring(0, 30) || 'Aucune description' }}...</td>
+                            <td class="fw-bold">{{ project.budget | number:'1.0-0' }} DT</td>
+                            <td>
+                                <span class="badge rounded-pill px-2" [ngClass]="project.status === 'COMPLETED' ? 'bg-soft-success text-success' : 'bg-soft-warning text-warning'">
+                                    {{ project.status }}
+                                </span>
+                            </td>
                             <td class="text-end pe-4">
                                 <button class="btn btn-sm btn-icon border-0"><i class="ti ti-dots-vertical"></i></button>
                             </td>
                         </tr>
-                        <tr>
-                            <td class="ps-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-xs bg-soft-info text-info rounded me-2 d-flex align-items-center justify-content-center fs-10 fw-bold">SEC</div>
-                                    <span>Cybersecurity Audit</span>
-                                </div>
-                            </td>
-                            <td>Compliance</td>
-                            <td class="fw-bold">12,500 DT</td>
-                            <td><span class="badge bg-soft-warning text-warning rounded-pill px-2">En attente</span></td>
-                            <td class="text-end pe-4">
-                                <button class="btn btn-sm btn-icon border-0"><i class="ti ti-dots-vertical"></i></button>
-                            </td>
+                        <tr *ngIf="recentProjects.length === 0">
+                            <td colspan="5" class="text-center py-4 text-muted">Aucun projet avec budget trouvé.</td>
                         </tr>
                     </tbody>
                 </table>

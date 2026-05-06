@@ -11,11 +11,28 @@
             </div>
             <div class="col-auto float-end ms-auto">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Ajouter une tâche personnelle..." [(ngModel)]="newTaskTitle" (keyup.enter)="addPersonalTask()">
-                        <button class="btn btn-primary" type="button" (click)="addPersonalTask()">
-                            <i class="ti ti-plus"></i>
+                    <!-- Date Search -->
+                    <div class="input-icon-start position-relative">
+                        <span class="input-icon-addon"><i class="ti ti-calendar-search"></i></span>
+                        <input type="date" class="form-control" [(ngModel)]="searchDate" placeholder="Chercher par date">
+                        <button *ngIf="searchDate" class="btn btn-sm btn-link text-danger position-absolute end-0 top-0 mt-1" (click)="searchDate = ''">
+                            <i class="ti ti-x"></i>
                         </button>
+                    </div>
+                    
+                    <!-- Add New Personal Task -->
+                    <div class="mb-4">
+                        <div class="input-group shadow-sm">
+                            <select class="form-select flex-grow-0 bg-light border-0" style="width: auto; max-width: 120px;" [(ngModel)]="newTaskPriority">
+                                <option value="HIGH">🔥 Haute</option>
+                                <option value="MEDIUM">⚡ Moyenne</option>
+                                <option value="LOW">🧊 Basse</option>
+                            </select>
+                            <input type="text" class="form-control border-0" placeholder="Ajouter une nouvelle tâche personnelle..." [(ngModel)]="newTaskTitle" (keyup.enter)="addPersonalTask()">
+                            <button class="btn btn-primary px-4" type="button" (click)="addPersonalTask()">
+                                <i class="ti ti-plus me-1"></i>Ajouter
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -25,7 +42,7 @@
 
     <div class="row">
         <!-- Assigned Tasks (from Projects) -->
-        <div class="col-md-6">
+        <div class="col-md-6" *ngIf="!isAdmin">
             <div class="card todo-card border-top border-4 border-primary">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0"><i class="ti ti-briefcase me-2 text-primary"></i>Tâches Projets</h5>
@@ -68,7 +85,7 @@
         </div>
 
         <!-- Personal Tasks -->
-        <div class="col-md-6">
+        <div [ngClass]="isAdmin ? 'col-12' : 'col-md-6'">
             <div class="card todo-card border-top border-4 border-info">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0"><i class="ti ti-user-check me-2 text-info"></i>Tâches Personnelles</h5>

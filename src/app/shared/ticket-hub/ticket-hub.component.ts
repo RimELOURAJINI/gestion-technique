@@ -114,6 +114,10 @@ export class TicketHubComponent implements OnInit, OnChanges {
 
   selectTicket(ticket: Ticket) {
     this.selectedTicket = ticket;
+    if (ticket.id && !ticket.isRead) {
+      ticket.isRead = true;
+      this.ticketService.markAsRead(ticket.id).subscribe();
+    }
   }
 
   selectTicketById(id: number) {

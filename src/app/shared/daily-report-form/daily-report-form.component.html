@@ -30,7 +30,7 @@
     </div>
 
     <!-- Submitted: Read-only View -->
-    <div *ngIf="!isLoading && isSubmitted" class="submitted-view">
+    <div *ngIf="!isLoading && isSubmitted && !isEditing" class="submitted-view">
       <div class="alert alert-success d-flex align-items-center gap-2 mb-4 rounded-3">
         <i class="ti ti-circle-check fs-18"></i>
         <div>
@@ -56,17 +56,23 @@
         <div class="section-content">{{ existingReport?.notes || '—' }}</div>
       </div>
 
-      <div class="mt-4 p-3 bg-soft-info rounded-3 fs-12 text-info">
+      <div class="mt-4">
+        <button class="btn btn-outline-primary w-100 fw-semibold" (click)="toggleEdit()">
+          <i class="ti ti-edit me-2"></i>Modifier mon rapport
+        </button>
+      </div>
+
+      <div class="mt-3 p-3 bg-soft-info rounded-3 fs-12 text-info">
         <i class="ti ti-info-circle me-1"></i>
-        Ce rapport a été soumis et transmis à l'IA. Il n'est plus modifiable.
+        Vous pouvez modifier votre rapport jusqu'à la fin de la journée.
       </div>
     </div>
 
-    <!-- Form: Not yet submitted -->
-    <div *ngIf="!isLoading && !isSubmitted">
+    <!-- Form: Not yet submitted or Editing -->
+    <div *ngIf="!isLoading && (!isSubmitted || isEditing)">
       <p class="text-muted fs-13 mb-4">
         <i class="ti ti-info-circle me-1 text-primary"></i>
-        Renseignez chaque section. Ces données seront analysées par l'IA pour aider à la prise de décision.
+        {{ isEditing ? 'Modification de votre rapport. N'oubliez pas d'enregistrer vos changements.' : 'Renseignez chaque section. Ces données seront analysées par l'IA pour aider à la prise de décision.' }}
       </p>
 
       <!-- [TÂCHES ACCOMPLIES] -->
@@ -142,14 +148,23 @@
       </div>
 
       <!-- Submit Button -->
-      <button
-        class="btn btn-primary w-100 fw-semibold py-2 mt-2"
-        (click)="submitReport()"
-        [disabled]="isSubmitting">
-        <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
-        <i *ngIf="!isSubmitting" class="ti ti-send me-2"></i>
-        {{ isSubmitting ? 'Soumission en cours...' : 'Soumettre mon rapport' }}
-      </button>
+      <div class="d-flex gap-2">
+        <button
+          *ngIf="isEditing"
+          class="btn btn-light fw-semibold py-2 mt-2 flex-grow-1"
+          (click)="isEditing = false"
+          [disabled]="isSubmitting">
+          Annuler
+        </button>
+        <button
+          class="btn btn-primary fw-semibold py-2 mt-2 flex-grow-1"
+          (click)="submitReport()"
+          [disabled]="isSubmitting">
+          <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+          <i *ngIf="!isSubmitting" class="ti ti-send me-2"></i>
+          {{ isSubmitting ? 'Soumission en cours...' : (isEditing ? 'Mettre à jour' : 'Soumettre mon rapport') }}
+        </button>
+      </div>
     </div>
 
   </div>

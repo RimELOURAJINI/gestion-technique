@@ -129,5 +129,13 @@ export class EmployeeService {
   getTodoCount(userId: number): Observable<{count: number}> {
     return this.http.get<{count: number}>(`${this.baseUrl}/tasks/user/${userId}/todo-count`);
   }
+
+  getInterventionStats(userId: number): Observable<{notesCount: number, unreadTicketsCount: number}> {
+    return this.http.get<{notesCount: number, unreadTicketsCount: number}>(`${this.baseUrl}/tasks/user/${userId}/intervention-stats`);
+  }
+
+  markNotesAsRead(taskId: number, userId: number): Observable<any> {
+    return this.http.post(`${this.baseUrl}/tasks/${taskId}/notes/read?userId=${userId}`, {});
+  }
 }
 

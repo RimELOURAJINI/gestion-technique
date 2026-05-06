@@ -97,6 +97,7 @@ export const routes: Routes = [
       { path: 'my-leaves', component: EmployeeLeavesComponent },
       { path: 'primes', component: AdminPrimesComponent },
       { path: 'history', component: HistoryComponent },
+      { path: 'todo', component: TodoListComponent },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }
     ]
   },
@@ -140,6 +141,7 @@ export const routes: Routes = [
       { path: 'projects', component: TeamProjectsComponent },
       { path: 'projects/:id', component: UnifiedProjectDetailComponent },
       { path: 'tasks', component: TeamTasksComponent },
+      { path: 'my-tasks', component: MyTasksComponent },
       { path: 'deals', component: CommercialDealsComponent },
       { path: 'tickets', component: TicketsComponent },
       { path: 'reclamations', component: ReclamationHubComponent },
@@ -196,6 +198,7 @@ export const routes: Routes = [
       { path: 'overview', component: CommercialOverviewComponent },
       { path: 'projects', component: CommercialProjectsComponent },
       { path: 'projects/:id', component: UnifiedProjectDetailComponent },
+      { path: 'tasks', component: MyTasksComponent },
       { path: 'settings', component: FeaturePlaceholderComponent, data: { title: 'Paramètres Commercial', description: 'Préférences commercial et options de suivi.' } },
       { path: 'deals', component: CommercialDealsComponent },
       { path: 'tickets', component: CommercialTicketsComponent },

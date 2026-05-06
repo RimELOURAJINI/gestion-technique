@@ -10,6 +10,7 @@ import { AiService } from '../../services/ai.service';
 import { PersonalPointageComponent } from '../../shared/personal-pointage/personal-pointage.component';
 import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
 import { DealService } from '../../services/deal.service';
+import { EmployeeService } from '../../services/employee.service';
 
 declare var initDashboardCharts: any;
 declare var ApexCharts: any;
@@ -39,6 +40,10 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
   isCommercialLeader: boolean = false;
   today: Date = new Date();
   myProjects: Project[] = [];
+  personalTaskStats = {
+    notesCount: 0,
+    unreadTickets: 0
+  };
   basePath: string = '/manager';
   recentTasks: Task[] = [];
   isLoading = true;
@@ -60,6 +65,7 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
     private aiService: AiService,
     private adminService: AdminService,
     private dealService: DealService,
+    private employeeService: EmployeeService,
     private router: Router
   ) {}
 
@@ -137,7 +143,11 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
     
     // Load Projects
     this.teamLeaderService.getProjectsByUserId(userId).subscribe(projects => {
-      this.myProjects = projects;
+      // Filter out completed projects for the list
+      this.myProjects = projects.filter(p => {
+          const s = (p.status || '').toUpperCase();
+          return s !== 'COMPLETED' && s !== 'DONE' && s !== 'TERMINE' && s !== 'TERMINEE' && s !== 'DELIVERED';
+      });
       // Only count ongoing projects for the dashboard stat card
       this.stats.projects = projects.filter(p => {
           const s = (p.status || '').toUpperCase();
@@ -202,6 +212,12 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
         });
       });
     });
+
+    // Load Personal Intervention Stats for Insights
+    this.employeeService.getInterventionStats(userId).subscribe(stats => {
+        this.personalTaskStats.unreadTickets = stats.unreadTicketsCount;
+        this.personalTaskStats.notesCount = stats.notesCount;
+    });
   }
 
   renderTeamPerformanceChart() {
@@ -263,7 +279,9 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
     this.isAiLoading = true;
     this.aiMessage = '';
     
-    this.aiService.getAIStatisticsStream(userId, '', 'insights').subscribe({
+    const interventionContext = `IMPORTANT: L'utilisateur a ${this.personalTaskStats.notesCount} notes sur ses tâches et ${this.personalTaskStats.unreadTickets} tickets non lus. Recommandez-lui d'aller les voir pour assurer le suivi.`;
+    
+    this.aiService.getAIStatisticsStream(userId, interventionContext, 'insights').subscribe({
       next: (chunk) => {
         this.isAiLoading = false;
         this.aiMessage += chunk;

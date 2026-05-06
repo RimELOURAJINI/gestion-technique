@@ -29,6 +29,7 @@ export class EmployeeDashboardComponent implements OnInit {
   reportSubmitted: boolean = true;
   newPrimesCount: number = 0;
   activeTicketsCount: number = 0;
+  unreadInterventionCount: number = 0;
   todayTasks: any[] = [];
   todoCount: number = 0;
   tasksMenuOpen: boolean = false;
@@ -82,6 +83,7 @@ export class EmployeeDashboardComponent implements OnInit {
       this.loadPrimes();
       this.loadActiveTicketsCount();
       this.loadTodayTasks();
+      this.loadInterventionStats();
     });
 
     // Auto-open menu if on tasks page
@@ -92,6 +94,7 @@ export class EmployeeDashboardComponent implements OnInit {
     if (this.router.url.includes('/employee/home') || this.router.url.includes('/employee/performance')) {
       this.dashboardMenuOpen = true;
     }
+    this.loadInterventionStats();
   }
 
   ngOnDestroy(): void {
@@ -174,8 +177,22 @@ export class EmployeeDashboardComponent implements OnInit {
     if (userId) {
       this.ticketService.getUnansweredTicketsCountForUser(userId).subscribe(count => {
         this.activeTicketsCount = count;
+        this.updateTotalInterventionCount();
       });
     }
+  }
+
+  loadInterventionStats(): void {
+    const userId = this.authService.getUserId();
+    if (!userId) return;
+
+    this.employeeService.getInterventionStats(userId).subscribe(stats => {
+        this.unreadInterventionCount = stats.notesCount + stats.unreadTicketsCount;
+    });
+  }
+
+  updateTotalInterventionCount(): void {
+    // This is now handled by loadInterventionStats
   }
 
   loadTodayTasks(): void {

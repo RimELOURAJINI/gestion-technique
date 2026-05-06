@@ -27,6 +27,7 @@ export class DailyReportFormComponent implements OnInit, OnChanges {
   existingReport: DailyReport | null = null;
   isLoading = false;
   isSubmitting = false;
+  isEditing = false;
   successMessage = '';
   errorMessage = '';
   today = new Date();
@@ -42,6 +43,7 @@ export class DailyReportFormComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isOpen'] && changes['isOpen'].currentValue === true && this.userId) {
       this.loadMyReport();
+      this.isEditing = false; // Reset editing mode when reopening
     }
   }
 
@@ -66,6 +68,10 @@ export class DailyReportFormComponent implements OnInit, OnChanges {
     return !!this.existingReport;
   }
 
+  toggleEdit(): void {
+    this.isEditing = true;
+  }
+
   submitReport(): void {
     if (!this.report.tasksAccomplished.trim() && !this.report.problemsEncountered.trim()) {
       this.errorMessage = 'Veuillez renseigner au moins les tâches accomplies.';
@@ -84,6 +90,7 @@ export class DailyReportFormComponent implements OnInit, OnChanges {
       next: (result) => {
         this.existingReport = result;
         this.isSubmitting = false;
+        this.isEditing = false;
         this.successMessage = 'Rapport soumis avec succès !';
         this.submitted.emit(result);
         setTimeout(() => this.successMessage = '', 4000);

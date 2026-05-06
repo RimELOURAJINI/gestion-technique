@@ -167,7 +167,7 @@
                             <span class="sidebar-text">Team Tasks</span>
                         </a>
                     </li>
-                    <li class="sidebar-item">
+                    <li class="sidebar-item" *ngIf="authService.isCommercialLeader()">
                         <a class="sidebar-link" [routerLink]="basePath + '/deals'" routerLinkActive="active">
                             <i class="ti ti-briefcase sidebar-icon"></i>
                             <span class="sidebar-text">Pipeline & Deals</span>
@@ -237,7 +237,15 @@
                             <span class="sidebar-badge" *ngIf="newPrimesCount > 0">{{newPrimesCount}}</span>
                         </a>
                     </li>
+                    <li class="sidebar-item" *ngIf="managerRole.includes('Commercial')">
+                        <a class="sidebar-link" [routerLink]="basePath + '/my-tasks'" routerLinkActive="active">
+                            <i class="ti ti-list-check sidebar-icon"></i>
+                            <span class="sidebar-text">Mes Tâches</span>
+                            <span class="sidebar-badge bg-danger" *ngIf="unreadInterventionCount > 0">{{unreadInterventionCount}}</span>
+                        </a>
+                    </li>
                 </ul>
+
             </div>
             
             <div class="sidebar-divider"></div>

@@ -1,12 +1,20 @@
 <!-- Page Header -->
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
     <div>
-        <h4 class="mb-1">Attribution des Tâches</h4>
-        <p class="mb-0 text-muted small">Assignez des missions et objectifs aux chefs d'équipe.</p>
+        <h4 class="mb-1">Gestion Globale des Tâches</h4>
+        <p class="mb-0 text-muted small">Supervisez et CRUD toutes les tâches du système, tous projets et utilisateurs confondus.</p>
     </div>
     <div class="d-flex align-items-center gap-2">
+        <div class="btn-group btn-group-sm">
+            <button class="btn btn-outline-primary" [class.active]="activeTab === 'kanban'" (click)="activeTab = 'kanban'">
+                <i class="ti ti-layout-kanban me-1"></i>Vue Kanban
+            </button>
+            <button class="btn btn-outline-primary" [class.active]="activeTab === 'assignment'" (click)="activeTab = 'assignment'">
+                <i class="ti ti-users me-1"></i>Attribution
+            </button>
+        </div>
         <button class="btn btn-primary d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#taskModal" (click)="resetTaskForm()">
-            <i class="ti ti-square-rounded-plus-filled me-2"></i>NOUVELLE TÂCHE
+            <i class="ti ti-plus me-1"></i>NOUVELLE TÂCHE
         </button>
     </div>
 </div>
@@ -16,71 +24,141 @@
     <div class="spinner-border text-primary" role="status"></div>
 </div>
 
-<div *ngIf="!isLoading" class="row">
-    <div class="col-md-12">
-        <div class="card main-card">
-            <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <h5 class="mb-0 fs-16 fw-bold">Chefs d'Équipe — Attribution</h5>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-nowrap mb-0">
-                        <thead class="thead-light">
-                            <tr>
-                                <th>Chef d'Équipe</th>
-                                <th>Email</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let mgr of managers">
-                                <td>
+<div *ngIf="!isLoading">
+    
+    <!-- KANBAN VIEW -->
+    <div *ngIf="activeTab === 'kanban'" class="kanban-wrapper" cdkDropListGroup>
+        <div class="row g-3">
+            <!-- Columns: TODO, IN_PROGRESS, TEST, DONE -->
+            <div class="col-md-3" *ngFor="let col of ['TODO', 'IN_PROGRESS', 'TEST', 'DONE']">
+                <div class="kanban-column bg-light rounded p-2">
+                    <div class="d-flex align-items-center justify-content-between mb-3 px-1">
+                        <h6 class="fw-bold mb-0 text-uppercase fs-12">{{ col.replace('_', ' ') }}</h6>
+                        <span class="badge rounded-pill bg-white text-dark border">{{ 
+                            col === 'TODO' ? todoTasks.length : 
+                            col === 'IN_PROGRESS' ? inProgressTasks.length :
+                            col === 'TEST' ? testTasks.length : doneTasks.length
+                        }}</span>
+                    </div>
+
+                    <div class="kanban-list" style="min-height: 500px;" 
+                         cdkDropList 
+                         [cdkDropListData]="col === 'TODO' ? todoTasks : col === 'IN_PROGRESS' ? inProgressTasks : col === 'TEST' ? testTasks : doneTasks"
+                         (cdkDropListDropped)="onDrop($event, col)">
+                        
+                        <div class="card mb-2 border-0 shadow-sm kanban-card" 
+                             *ngFor="let task of (col === 'TODO' ? todoTasks : col === 'IN_PROGRESS' ? inProgressTasks : col === 'TEST' ? testTasks : doneTasks)" 
+                             cdkDrag (click)="openTaskDetail(task)">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="badge fs-9" [ngClass]="getPriorityBadge(task.priority)">{{ task.priority }}</span>
+                                    <div class="dropdown" (click)="$event.stopPropagation()">
+                                        <a href="javascript:void(0);" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></a>
+                                        <div class="dropdown-menu dropdown-menu-end">
+                                            <a class="dropdown-item" href="javascript:void(0);" (click)="openEditTask(task)" data-bs-toggle="modal" data-bs-target="#taskModal"><i class="ti ti-edit me-1"></i>Modifier</a>
+                                            <a class="dropdown-item text-danger" href="javascript:void(0);" (click)="deleteTask(task.id)"><i class="ti ti-trash me-1"></i>Supprimer</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="fs-13 fw-bold mb-1">{{ task.title }}</h6>
+                                <p class="text-muted fs-11 mb-2">{{ task.project?.name || 'Sans projet' }}</p>
+                                
+                                <!-- Notes & Tickets Buttons -->
+                                <div class="d-flex gap-2 mt-2 pt-2 border-top">
+                                    <div class="position-relative flex-grow-1">
+                                        <button class="btn btn-xs btn-outline-info w-100 py-1 fs-10" (click)="openTaskDetail(task); $event.stopPropagation()">
+                                            <i class="ti ti-notes me-1"></i>Notes
+                                        </button>
+                                        <span class="badge rounded-pill bg-info position-absolute top-0 start-100 translate-middle border border-white" *ngIf="task.notesCount && task.notesCount > 0" style="font-size: 8px; padding: 2px 4px;">
+                                            {{task.notesCount}}
+                                        </span>
+                                    </div>
+                                    <div class="position-relative flex-grow-1">
+                                        <button class="btn btn-xs btn-outline-danger w-100 py-1 fs-10" (click)="openTaskDetail(task); $event.stopPropagation()">
+                                            <i class="ti ti-ticket me-1"></i>Tickets
+                                        </button>
+                                        <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle border border-white" *ngIf="task.openTicketsCount && task.openTicketsCount > 0" style="font-size: 8px; padding: 2px 4px;">
+                                            {{task.openTicketsCount}}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-center justify-content-between mt-2 pt-2 border-top">
                                     <div class="d-flex align-items-center">
-                                        <div class="avatar avatar-md avatar-rounded bg-soft-primary flex-shrink-0 me-2 border border-primary">
-                                            <span class="fs-12 fw-bold text-primary">
-                                                {{mgr.firstName.charAt(0)}}{{mgr.lastName.charAt(0)}}
-                                            </span>
+                                        <div class="avatar-group" *ngIf="task.users && task.users.length > 0">
+                                            <div class="avatar avatar-xs" *ngFor="let u of task.users | slice:0:1">
+                                                <img [src]="'https://ui-avatars.com/api/?name=' + u.firstName + '&background=random'" class="rounded-circle" [title]="u.firstName">
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h6 class="mb-0 fw-medium fs-14">{{mgr.firstName}} {{mgr.lastName}}</h6>
-                                            <span class="fs-12 text-muted">Team Leader</span>
+                                        <span class="fs-10 text-muted ms-1" *ngIf="task.users && task.users.length > 0">{{ task.users[0].firstName }}</span>
+                                    </div>
+                                    <small class="text-muted fs-10" *ngIf="task.deadline"><i class="ti ti-calendar me-1"></i>{{ task.deadline | date:'dd MMM' }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ASSIGNMENT VIEW (Table) -->
+    <div *ngIf="activeTab === 'assignment'" class="row">
+        <div class="col-md-12">
+            <div class="card main-card">
+                <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <h5 class="mb-0 fs-16 fw-bold">Attribution aux Chefs d'Équipe</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-nowrap mb-0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Collaborateur</th>
+                                    <th>Role</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let mgr of managers">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-md avatar-rounded bg-soft-primary flex-shrink-0 me-2 border border-primary">
+                                                <span class="fs-12 fw-bold text-primary">
+                                                    {{mgr.firstName.charAt(0)}}{{mgr.lastName.charAt(0)}}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0 fw-medium fs-14">{{mgr.firstName}} {{mgr.lastName}}</h6>
+                                                <span class="fs-12 text-muted">{{mgr.email}}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="fs-14 text-dark">{{mgr.email}}</span>
-                                </td>
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-outline-dark btn-sm d-inline-flex align-items-center"
-                                        (click)="selectedManagerId = mgr.id"
-                                        data-bs-toggle="modal" data-bs-target="#taskModal">
-                                        <i class="ti ti-plus me-1"></i>Assigner
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr *ngIf="managers.length === 0">
-                                <td colspan="3" class="text-center py-5">
-                                    <div class="text-muted">
-                                        <i class="ti ti-alert-circle fs-32 d-block mb-2 text-warning"></i>
-                                        <p class="mb-0">Aucun Team Manager trouvé. Créez d'abord un utilisateur avec le rôle ROLE_TEAM_LEADER.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                    </td>
+                                    <td><span class="badge bg-soft-info text-info">Chef d'Équipe</span></td>
+                                    <td class="text-end">
+                                        <button type="button" class="btn btn-outline-dark btn-sm d-inline-flex align-items-center"
+                                            (click)="selectedManagerId = mgr.id"
+                                            data-bs-toggle="modal" data-bs-target="#taskModal">
+                                            <i class="ti ti-plus me-1"></i>Assigner une tâche
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal: Create / Assign Task -->
+<!-- Modal: Create / Edit Task -->
 <div class="modal fade" id="taskModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header bg-dark py-3">
                 <h5 class="modal-title fw-bold text-white">
-                    <i class="ti ti-clipboard-check me-2 text-primary"></i>Assigner une Tâche Système
+                    <i class="ti ti-clipboard-check me-2 text-primary"></i>{{ editingTask ? 'Modifier la Tâche' : 'Nouvelle Tâche Système' }}
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" (click)="resetTaskForm()"></button>
             </div>
@@ -88,15 +166,27 @@
                 <div class="row g-3">
                     <div class="col-12">
                         <label class="form-label fw-bold">Titre de la Tâche <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" [(ngModel)]="newTask.title"
-                            placeholder="Ex: Mise à jour du module de reporting">
+                        <input type="text" class="form-control" [(ngModel)]="newTask.title" placeholder="Ex: Rapport mensuel de performance">
                     </div>
                     <div class="col-12">
                         <label class="form-label fw-bold">Description / Cahier de Charge</label>
-                        <textarea class="form-control" rows="4" [(ngModel)]="newTask.description"
-                            placeholder="Décrivez les attentes, critères d'acceptation..."></textarea>
+                        <textarea class="form-control" rows="4" [(ngModel)]="newTask.description" placeholder="Attentes, critères..."></textarea>
                     </div>
                     <div class="col-sm-6">
+                        <label class="form-label fw-bold">Assigner à <span class="text-danger">*</span></label>
+                        <select class="form-select" [(ngModel)]="selectedManagerId">
+                            <option [ngValue]="null">-- Choisir un utilisateur --</option>
+                            <option *ngFor="let u of allUsers" [value]="u.id">{{u.firstName}} {{u.lastName}} ({{u.email}})</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label fw-bold">Projet Associé</label>
+                        <select class="form-select" [(ngModel)]="selectedProjectId">
+                            <option [ngValue]="null">-- Aucun projet --</option>
+                            <option *ngFor="let p of projects" [value]="p.id">{{p.name}}</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
                         <label class="form-label fw-bold">Priorité</label>
                         <select class="form-select" [(ngModel)]="newTask.priority">
                             <option value="LOW">Basse</option>
@@ -104,61 +194,27 @@
                             <option value="HIGH">Haute</option>
                         </select>
                     </div>
-                    <div class="col-sm-6">
-                        <label class="form-label fw-bold">Date Limite</label>
-                        <div class="input-icon position-relative">
-                            <span class="input-icon-addon"><i class="ti ti-calendar-event"></i></span>
-                            <input type="date" class="form-control" [(ngModel)]="newTask.deadline">
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <label class="form-label fw-bold">Chef d'Équipe <span class="text-danger">*</span></label>
-                        <select class="form-select" [(ngModel)]="selectedManagerId">
-                            <option [ngValue]="null">-- Sélectionnez un chef --</option>
-                            <option *ngFor="let mgr of managers" [value]="mgr.id">
-                                {{mgr.firstName}} {{mgr.lastName}}
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-sm-6">
-                        <label class="form-label fw-bold">Projet Associé <small class="text-muted">(optionnel)</small></label>
-                        <select class="form-select" [(ngModel)]="selectedProjectId">
-                            <option [ngValue]="null">-- Aucun --</option>
-                            <option *ngFor="let p of projects" [value]="p.id">{{p.name}}</option>
-                        </select>
-                    </div>
                     <div class="col-sm-4">
-                        <label class="form-label fw-bold">Type de Tâche</label>
+                        <label class="form-label fw-bold">Type</label>
                         <select class="form-select" [(ngModel)]="newTask.type">
-                            <option value="FEATURE">Nouvelle Fonctionnalité</option>
-                            <option value="BUG">Correction de Bug</option>
+                            <option value="FEATURE">Feature</option>
+                            <option value="BUG">Bug</option>
                             <option value="MAINTENANCE">Maintenance</option>
-                            <option value="RESEARCH">Recherche</option>
                         </select>
                     </div>
                     <div class="col-sm-4">
-                        <label class="form-label fw-bold">Heures Estimées</label>
-                        <input type="number" class="form-control" [(ngModel)]="newTask.estimatedHours" min="0">
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="form-label fw-bold">Score Qualité <small class="text-muted">(IA)</small></label>
-                        <select class="form-select" [(ngModel)]="newTask.qualityScore">
-                            <option [ngValue]="0">Non évalué</option>
-                            <option [ngValue]="1">1 - Très Bas</option>
-                            <option [ngValue]="2">2 - Bas</option>
-                            <option [ngValue]="3">3 - Moyen</option>
-                            <option [ngValue]="4">4 - Bon</option>
-                            <option [ngValue]="5">5 - Excellent</option>
-                        </select>
+                        <label class="form-label fw-bold">Échéance</label>
+                        <input type="date" class="form-control" [(ngModel)]="newTask.deadline">
                     </div>
                 </div>
             </div>
             <div class="modal-footer border-0 bg-light-50">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal" (click)="resetTaskForm()">Annuler</button>
-                <button type="button" class="btn btn-dark px-4" (click)="createTask()" data-bs-dismiss="modal">
-                    <i class="ti ti-check me-1"></i>Assigner la Tâche
-                </button>
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+                <button *ngIf="!editingTask" type="button" class="btn btn-dark px-4" (click)="createTask()" data-bs-dismiss="modal">Assigner</button>
+                <button *ngIf="editingTask" type="button" class="btn btn-primary px-4" (click)="saveUpdate()" data-bs-dismiss="modal">Enregistrer</button>
             </div>
         </div>
     </div>
 </div>
+
+<app-task-detail *ngIf="selectedTaskId" [taskId]="selectedTaskId" (close)="selectedTaskId = null; loadTasks()"></app-task-detail>

@@ -4,7 +4,11 @@
         <h4 class="mb-1">Gestion des Projets</h4>
         <p class="mb-0 text-muted small">Consultez et gérez l'ensemble des projets de l'organisation.</p>
     </div>
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-outline-secondary d-inline-flex align-items-center shadow-sm"
+            (click)="toggleCompleted()">
+            <i class="ti ti-history me-2"></i>{{ showCompleted ? 'Projets Actifs' : 'Historique (Terminés)' }}
+        </button>
         <button type="button" class="btn btn-primary d-inline-flex align-items-center shadow-sm"
             data-bs-toggle="modal" data-bs-target="#projectModal" (click)="resetForm()">
             <i class="ti ti-square-rounded-plus-filled me-2"></i>NOUVEAU PROJET
@@ -175,10 +179,10 @@
                         </select>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Budget</label>
+                        <label class="form-label fw-semibold">Coût / Budget</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="ti ti-currency-euro"></i></span>
-                            <input type="number" class="form-control" [(ngModel)]="newProject.budget" placeholder="Budget du projet">
+                            <input type="number" class="form-control" [(ngModel)]="newProject.budget" placeholder="Coût ou Budget du projet">
                         </div>
                     </div>
                     <div class="col-md-6">

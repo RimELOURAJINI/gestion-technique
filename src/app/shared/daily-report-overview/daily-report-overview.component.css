@@ -9,6 +9,46 @@
 .stat-label { font-size: 12px; color: #64748b; margin-top: 4px; }
 
 /* My Report Card */
+.daily-report-overview {
+  padding: 1rem 0;
+}
+
+.date-search-bar {
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0,0,0,0.05);
+  background-color: #fff;
+}
+
+.date-search-bar:hover {
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08) !important;
+}
+
+.date-input, .search-select {
+  width: auto;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  background-color: #fff;
+  transition: all 0.2s;
+}
+
+.date-input:focus, .search-select:focus {
+  border-color: #5d87ff;
+  box-shadow: 0 0 0 0.2rem rgba(93, 135, 255, 0.1);
+  outline: none;
+}
+
+.icon-circle-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .my-report-card {
   background: linear-gradient(135deg, #f8faff 0%, #fff 100%);
   border: 1.5px solid #e2e8f0;

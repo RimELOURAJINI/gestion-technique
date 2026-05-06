@@ -25,13 +25,7 @@
                     <i class="ti ti-arrow-bar-to-right"></i>
                 </button> 
                 
-                <!-- Search -->
-                <div class="me-auto d-flex align-items-center header-search d-lg-flex d-none">
-                    <div class="input-icon position-relative me-2">
-                       <input type="text" class="form-control" placeholder="Rechercher projet / client...">
-                       <span class="input-icon-addon d-inline-flex p-0 header-search-icon"><i class="ti ti-command"></i></span>
-                    </div>
-                </div>
+                <!-- Search removed as requested -->
                 
             </div>
 
@@ -147,6 +141,13 @@
                         <a class="sidebar-link" routerLink="/commercial/deals" routerLinkActive="active">
                             <i class="ti ti-medal sidebar-icon"></i>
                             <span class="sidebar-text">Mes Deals</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" routerLink="/commercial/tasks" routerLinkActive="active">
+                            <i class="ti ti-list-check sidebar-icon"></i>
+                            <span class="sidebar-text">Mes Tâches</span>
+                            <span class="sidebar-badge bg-danger" *ngIf="unreadInterventionCount > 0">{{unreadInterventionCount}}</span>
                         </a>
                     </li>
                     <li class="sidebar-item">

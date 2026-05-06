@@ -37,6 +37,10 @@ export class TicketService {
     return this.http.get<Ticket[]>(`${this.baseUrl}/employee/${userId}`);
   }
 
+  getTicketsByDealId(dealId: number): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.baseUrl}/deal/${dealId}`);
+  }
+
   getUnansweredTicketsCountForUser(userId: number): Observable<number> {
     return this.http.get<number>(`${this.baseUrl}/user/${userId}/unansweredCount`);
   }
@@ -77,5 +81,9 @@ export class TicketService {
 
   getParticipants(ticketId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/${ticketId}/participants`);
+  }
+
+  markAsRead(ticketId: number): Observable<any> {
+    return this.http.post(`${this.baseUrl}/${ticketId}/read`, {});
   }
 }

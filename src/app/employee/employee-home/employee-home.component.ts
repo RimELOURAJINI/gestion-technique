@@ -40,6 +40,7 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
   // Aide à la décision IA (Niveau d'énergie)
   currentMood: string = localStorage.getItem('employee_mood') || 'Normal';
   tasksContextStr: string = '';
+  personalInterventionStats = { notesCount: 0, unreadTickets: 0 };
 
   // Pointage (Presence)
   activeAttendance: any = null;
@@ -109,6 +110,12 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
           this.stats.productivityScore = data.score;
         },
         error: () => { }
+      });
+
+      // Load Intervention Stats for AI
+      this.employeeService.getInterventionStats(userId).subscribe(stats => {
+          this.personalInterventionStats.unreadTickets = stats.unreadTicketsCount;
+          this.personalInterventionStats.notesCount = stats.notesCount;
       });
     }
   }
@@ -277,7 +284,9 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
     this.isAiLoading = true;
     this.aiMessage = '';
     
-    this.aiService.getAIStatisticsStream(userId, '', 'insights').subscribe({
+    const interventionContext = `IMPORTANT: Vous avez ${this.personalInterventionStats.notesCount} notes sur vos tâches et ${this.personalInterventionStats.unreadTickets} tickets non lus. S'il vous plaît, mentionnez-les et recommandez de les consulter.`;
+    
+    this.aiService.getAIStatisticsStream(userId, interventionContext, 'insights').subscribe({
       next: (chunk) => {
         this.isAiLoading = false;
         this.aiMessage += chunk;

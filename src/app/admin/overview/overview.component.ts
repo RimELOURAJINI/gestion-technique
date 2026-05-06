@@ -11,6 +11,8 @@ import { FormsModule } from '@angular/forms';
 import { PersonalPointageComponent } from '../../shared/personal-pointage/personal-pointage.component';
 import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
 import { HrService } from '../../services/hr.service';
+import { EmployeeService } from '../../services/employee.service';
+import { TicketService } from '../../services/ticket.service';
 
 declare var initDashboardCharts: any;
 declare var ApexCharts: any;
@@ -40,6 +42,7 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
   recentReclamations: Reclamation[] = [];
   isLoading = true;
   today: Date = new Date();
+  personalInterventionStats = { notesCount: 0, unreadTickets: 0 };
 
   isAiLoading = false;
   aiMessage = '';
@@ -61,7 +64,9 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
     private aiService: AiService,
     private hrService: HrService,
     private sanitizer: DomSanitizer,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private employeeService: EmployeeService,
+    private ticketService: TicketService
   ) {}
 
   ngOnInit() {
@@ -136,16 +141,23 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
       this.recentReclamations = reclamations.slice(-5).reverse();
     });
 
-    // New: Load Today's Attendance Rate
-    const today = new Date();
-    this.hrService.getAllAttendanceByDate(today).subscribe(attendance => {
+    this.hrService.getAllAttendanceByDate(this.today).subscribe(attendance => {
       this.adminService.getUsersByRole('ROLE_EMPLOYEE').subscribe(employees => {
         const totalEmployees = employees.length || 1;
         const presentCount = attendance.length;
-        this.stats.attendanceRate = Math.round((presentCount / totalEmployees) * 100);
+        this.stats.attendanceRate = Math.min(100, Math.round((presentCount / totalEmployees) * 100));
         this.isLoading = false;
       });
     });
+
+    // Load Personal Intervention Stats for AI
+    const userId = this.authService.getUserId();
+    if (userId) {
+        this.employeeService.getInterventionStats(userId).subscribe(stats => {
+            this.personalInterventionStats.unreadTickets = stats.unreadTicketsCount;
+            this.personalInterventionStats.notesCount = stats.notesCount;
+        });
+    }
   }
 
   renderDynamicCharts(projects: Project[], completed: number, delayed: number, inProgress: number) {
@@ -219,8 +231,11 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
     this.isAiLoading = true;
     this.aiMessage = '';
     
+    const interventionContext = this.personalInterventionStats.unreadTickets > 0 ? 
+        `IMPORTANT: En plus de l'analyse globale, notez que vous avez ${this.personalInterventionStats.unreadTickets} tickets personnels en attente. Recommandez de les traiter.` : '';
+    
     // On lance la génération au format Stream ("insights")
-    this.aiService.getAIStatisticsStream(userId, '', 'insights').subscribe({
+    this.aiService.getAIStatisticsStream(userId, interventionContext, 'insights').subscribe({
       next: (chunk) => {
         this.isAiLoading = false;
         this.aiMessage += chunk;

@@ -150,6 +150,7 @@ export class TicketChatComponent implements OnInit, OnDestroy, OnChanges {
     if (this.ticket) {
       this.resolvedTicket = this.ticket;
       this.loadData();
+      this.ticketService.markAsRead(this.resolvedTicket.id).subscribe();
       this.refreshInterval = setInterval(() => this.loadMessages(), 5000);
     } else if (this.ticketId) {
       this.ticketService.getTicketById(this.ticketId).subscribe({
@@ -157,6 +158,7 @@ export class TicketChatComponent implements OnInit, OnDestroy, OnChanges {
           this.resolvedTicket = res;
           this.ticket = res;
           this.loadData();
+          this.ticketService.markAsRead(this.resolvedTicket.id).subscribe();
           this.refreshInterval = setInterval(() => this.loadMessages(), 5000);
         },
         error: () => { this.loading = false; }

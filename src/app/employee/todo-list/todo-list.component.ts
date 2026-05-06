@@ -20,13 +20,16 @@ export class TodoListComponent implements OnInit {
   
   // For adding personal task
   newTaskTitle = '';
+  newTaskPriority = 'MEDIUM';
   
   // Search
   searchTerm = '';
+  searchDate = ''; // YYYY-MM-DD
   
   // For managing subtasks of a selected task
   selectedTask: Task | null = null;
   newSubtaskTitle = '';
+  isAdmin = false;
 
   constructor(
     private employeeService: EmployeeService,
@@ -34,6 +37,7 @@ export class TodoListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.isAdmin = this.authService.isAdmin();
     this.loadData();
     
     // Subscribe to global search
@@ -105,12 +109,13 @@ export class TodoListComponent implements OnInit {
     const task: Task = {
       title: this.newTaskTitle,
       status: 'TODO',
-      priority: 'MEDIUM',
+      priority: this.newTaskPriority,
       description: 'Tâche personnelle'
     };
 
     this.employeeService.createTask(userId, task).subscribe(() => {
       this.newTaskTitle = '';
+      this.newTaskPriority = 'MEDIUM';
       this.loadData();
     });
   }
@@ -191,21 +196,45 @@ export class TodoListComponent implements OnInit {
 
   // --- Search Filtering ---
   get filteredTodayTasks(): Task[] {
-    if (!this.searchTerm.trim()) return this.todayTasks;
-    const term = this.searchTerm.toLowerCase();
-    return this.todayTasks.filter(t => 
-      t.title.toLowerCase().includes(term) || 
-      (t.project && t.project.name.toLowerCase().includes(term)) ||
-      (t.subtasks && t.subtasks.some(s => s.title.toLowerCase().includes(term)))
-    );
+    let filtered = this.todayTasks;
+    
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(t => 
+        t.title.toLowerCase().includes(term) || 
+        (t.project && t.project.name.toLowerCase().includes(term)) ||
+        (t.subtasks && t.subtasks.some(s => s.title.toLowerCase().includes(term)))
+      );
+    }
+
+    if (this.searchDate) {
+      filtered = filtered.filter(t => {
+        if (!t.deadline) return false;
+        return new Date(t.deadline).toISOString().substring(0, 10) === this.searchDate;
+      });
+    }
+
+    return filtered;
   }
 
   get filteredPersonalTasks(): Task[] {
-    if (!this.searchTerm.trim()) return this.personalTasks;
-    const term = this.searchTerm.toLowerCase();
-    return this.personalTasks.filter(t => 
-      t.title.toLowerCase().includes(term) ||
-      (t.subtasks && t.subtasks.some(s => s.title.toLowerCase().includes(term)))
-    );
+    let filtered = this.personalTasks;
+
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(t => 
+        t.title.toLowerCase().includes(term) ||
+        (t.subtasks && t.subtasks.some(s => s.title.toLowerCase().includes(term)))
+      );
+    }
+
+    if (this.searchDate) {
+      filtered = filtered.filter(t => {
+        if (!t.deadline) return false;
+        return new Date(t.deadline).toISOString().substring(0, 10) === this.searchDate;
+      });
+    }
+
+    return filtered;
   }
 }

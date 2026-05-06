@@ -7,11 +7,15 @@ import { AuthService } from '../../services/auth.service';
 import { Project, Task, Reclamation, SubTask } from '../../models/models';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Subscription } from 'rxjs';
+import { TaskDetailComponent } from '../../shared/task-detail/task-detail.component';
+import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
+import { TaskDetailService } from '../../services/task-detail.service';
+import { TicketService } from '../../services/ticket.service';
 
 @Component({
   selector: 'app-my-tasks',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, DragDropModule],
+  imports: [CommonModule, FormsModule, RouterModule, DragDropModule, TaskDetailComponent, ProjectSupportModalComponent],
   templateUrl: './my-tasks.component.html',
   styleUrl: './my-tasks.component.css'
 })
@@ -23,11 +27,16 @@ export class MyTasksComponent implements OnInit {
   allProjects: Project[] = [];
   viewMode: 'table' | 'kanban' = 'kanban';
   kanbanColumns = ['TODO', 'IN_PROGRESS', 'TEST', 'DONE'];
+  selectedTaskId: number | null = null;
 
   todoTasks: Task[] = [];
   inProgressTasks: Task[] = [];
   testTasks: Task[] = [];
   doneTasks: Task[] = [];
+  
+  showSupportModal = false;
+  selectedSupportTask: Task | null = null;
+  currentProjectForSupport: Project | null = null;
 
   onDrop(event: CdkDragDrop<Task[]>, newStatus: string) {
     if (event.previousContainer === event.container) {
@@ -93,9 +102,31 @@ export class MyTasksComponent implements OnInit {
   constructor(
     private employeeService: EmployeeService,
     private authService: AuthService,
+    private taskDetailService: TaskDetailService,
+    private ticketService: TicketService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
+
+  goToTaskTickets(taskId: number | undefined) {
+    if (!taskId) return;
+    const role = this.authService.getUserRole()?.toLowerCase();
+    let basePath = '/employee';
+    if (role?.includes('commercial')) basePath = '/commercial';
+    this.router.navigate([`${basePath}/tickets`], { queryParams: { taskId: taskId } });
+  }
+
+  openSupportModal(task: Task, event: Event) {
+    event.stopPropagation();
+    this.selectedSupportTask = task;
+    this.currentProjectForSupport = task.project || null;
+    this.showSupportModal = true;
+  }
+
+  closeSupportModal() {
+    this.showSupportModal = false;
+    this.selectedSupportTask = null;
+  }
 
   ngOnInit(): void {
     this.searchSub = this.employeeService.searchQuery$.subscribe(query => {
@@ -145,11 +176,17 @@ export class MyTasksComponent implements OnInit {
             ...t,
             subtasks: t.id && saved[t.id] ? saved[t.id] : []
           }));
+          this.loadCounts();
           this.groupTasks();
         },
         (err: any) => console.error('Error loading tasks', err)
       );
     }
+  }
+
+  loadCounts() {
+    // Counts are now pre-populated by the backend in the Task object
+    // (notesCount and openTicketsCount)
   }
 
   groupTasks(): void {
@@ -187,8 +224,13 @@ export class MyTasksComponent implements OnInit {
   // ===== DETAIL MODAL =====
   openTaskDetail(task: Task): void {
     if (task.id) {
-      this.router.navigate(['/employee/tasks', task.id]);
+      this.selectedTaskId = task.id;
     }
+  }
+
+  closeTaskDetail(): void {
+    this.selectedTaskId = null;
+    this.loadTasks();
   }
 
   toggleView(mode: 'table' | 'kanban'): void {

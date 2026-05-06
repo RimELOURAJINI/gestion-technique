@@ -8,6 +8,7 @@ import { TeamChatService } from '../../services/team-chat.service';
 import { DailyReportService } from '../../services/daily-report.service';
 import { PrimeService } from '../../services/prime.service';
 import { TicketService } from '../../services/ticket.service';
+import { EmployeeService } from '../../services/employee.service';
 import { interval, Subscription } from 'rxjs';
 
 @Component({
@@ -26,6 +27,7 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
   reportSubmitted: boolean = true;
   newPrimesCount: number = 0;
   activeTicketsCount: number = 0;
+  unreadInterventionCount: number = 0;
   projectsMenuOpen: boolean = true;
   private notificationSub?: Subscription;
   private chatCountSub?: Subscription;
@@ -37,6 +39,7 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
     private dailyReportService: DailyReportService,
     private primeService: PrimeService,
     private ticketService: TicketService,
+    private employeeService: EmployeeService,
     public router: Router
   ) { }
 
@@ -61,8 +64,10 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
             this.loadUnreadChatCount(currentId);
             this.loadPrimes(currentId);
             this.loadActiveTicketsCount(currentId);
+            this.loadInterventionStats(currentId);
           }
         });
+        this.loadInterventionStats(user.id);
       }
     }
   }
@@ -133,6 +138,17 @@ export class CommercialDashboardComponent implements OnInit, OnDestroy {
   loadActiveTicketsCount(userId: number): void {
     this.ticketService.getUnansweredTicketsCountForUser(userId).subscribe(count => {
       this.activeTicketsCount = count;
+      this.updateTotalInterventionCount();
     });
+  }
+
+  loadInterventionStats(userId: number): void {
+    this.employeeService.getInterventionStats(userId).subscribe(stats => {
+        this.unreadInterventionCount = stats.notesCount + stats.unreadTicketsCount;
+    });
+  }
+
+  updateTotalInterventionCount(): void {
+    // Handled by loadInterventionStats
   }
 }

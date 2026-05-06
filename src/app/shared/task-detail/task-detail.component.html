@@ -1,0 +1,190 @@
+<div class="task-detail-overlay" (click)="onClose()">
+  <div class="task-detail-card shadow-2xl" (click)="$event.stopPropagation()">
+    
+    <!-- Premium Header -->
+    <div class="modal-glass-header d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <div class="avatar avatar-md bg-white-transparent rounded-circle d-flex align-items-center justify-content-center text-white shadow-sm">
+          <i class="ti ti-layout-kanban fs-24"></i>
+        </div>
+        <div>
+          <h5 class="mb-0 fw-bold text-white letter-spacing-tight">Détails de la Tâche</h5>
+          <span class="fs-12 text-white-50">Visualisation complète & collaboration</span>
+        </div>
+      </div>
+      <button class="btn btn-icon btn-white-transparent rounded-circle" (click)="onClose()">
+        <i class="ti ti-x fs-18"></i>
+      </button>
+    </div>
+
+    <div class="card-body-scroll">
+      
+      <div *ngIf="isLoading" class="p-5 text-center">
+        <div class="spinner-border text-indigo" role="status" style="width: 3rem; height: 3rem;"></div>
+        <p class="text-muted mt-3 fw-medium">Analyse des données en cours...</p>
+      </div>
+
+      <div *ngIf="!isLoading && task">
+        
+        <!-- Task Hero Section -->
+        <div class="row g-5 mb-5">
+          <div class="col-md-8">
+            <div class="mb-4">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge bg-soft-indigo text-indigo px-3 py-1 fs-11 text-uppercase fw-bold letter-spacing-wider">
+                  <i class="ti ti-folder me-1"></i> {{ task.project?.name || 'Projet Global' }}
+                </span>
+                <span class="badge" [ngClass]="{
+                  'bg-soft-danger text-danger': task.priority === 'HIGH',
+                  'bg-soft-warning text-warning': task.priority === 'MEDIUM',
+                  'bg-soft-success text-success': task.priority === 'LOW'
+                }">
+                  <i class="ti ti-bolt me-1"></i> {{ task.priority }}
+                </span>
+              </div>
+              <h2 class="fw-800 text-slate-900 mb-3">{{ task.title }}</h2>
+              <div class="note-input-wrapper bg-slate-50">
+                <p class="text-slate-600 fs-15 lh-relaxed mb-0">{{ task.description || "Aucune description détaillée n'a été saisie pour cette tâche." }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="card border-0 bg-slate-50 rounded-4 h-100">
+              <div class="card-body p-4">
+                <div class="mb-4">
+                  <label class="text-slate-400 small text-uppercase fw-800 d-block mb-2">Statut de Traitement</label>
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="status-indicator" [ngClass]="'status-' + task.status.toLowerCase()"></div>
+                    <span class="fw-bold text-slate-800 fs-18">{{ task.status }}</span>
+                  </div>
+                </div>
+                <div class="mb-4">
+                  <label class="text-slate-400 small text-uppercase fw-800 d-block mb-2">Responsable</label>
+                  <div class="d-flex align-items-center gap-2" *ngFor="let u of task.users">
+                    <div class="avatar avatar-xs bg-indigo text-white rounded-circle d-flex align-items-center justify-content-center fw-bold">
+                      {{u.firstName.charAt(0)}}
+                    </div>
+                    <span class="fw-bold text-slate-700">{{u.firstName}} {{u.lastName}}</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-slate-400 small text-uppercase fw-800 d-block mb-2">Échéance</label>
+                  <div class="d-flex align-items-center gap-2 text-danger fw-bold">
+                    <i class="ti ti-calendar-event"></i>
+                    <span>{{ task.deadline | date:'dd MMM yyyy' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRACKING SECTION -->
+        <div class="mb-5 bg-slate-50 p-4 rounded-4 border border-slate-100">
+          <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="icon-box bg-indigo text-white rounded-3 shadow-indigo p-2 d-flex align-items-center justify-content-center">
+              <i class="ti ti-chart-bar fs-20"></i>
+            </div>
+            <h5 class="mb-0 fw-bold text-slate-800">Performance par Status</h5>
+          </div>
+          
+          <div class="row g-3">
+            <div class="col-6 col-md-3" *ngFor="let s of getAvailableStatuses()">
+              <div class="duration-card h-100">
+                <div class="status-dot mb-2" [ngClass]="'dot-' + s.toLowerCase()"></div>
+                <span class="small text-slate-500 fw-800 text-uppercase" style="font-size: 0.65rem;">{{ s }}</span>
+                <div class="duration-value fs-5">{{ getStatusDuration(s) }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-5">
+          
+          <!-- NOTES SECTION -->
+          <div class="col-md-7">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+              <div class="d-flex align-items-center gap-3">
+                <div class="icon-box bg-emerald text-white rounded-3 shadow-emerald p-2 d-flex align-items-center justify-content-center">
+                  <i class="ti ti-message-2 fs-20"></i>
+                </div>
+                <h5 class="mb-0 fw-bold text-slate-800">Collaboration & Notes</h5>
+              </div>
+            </div>
+
+            <!-- Note Input -->
+            <div class="note-input-wrapper mb-4 shadow-sm" *ngIf="mode === 'manager' || mode === 'admin' || mode === 'commercial'">
+              <div class="d-flex align-items-start gap-3">
+                <div class="avatar avatar-sm bg-indigo text-white rounded-circle d-flex align-items-center justify-content-center fw-bold">
+                  {{ currentUser?.firstName?.charAt(0) }}
+                </div>
+                <div class="flex-grow-1">
+                  <textarea class="note-textarea" rows="3" placeholder="Écrire un commentaire ou une consigne..." [(ngModel)]="newNoteContent"></textarea>
+                  <div class="d-flex justify-content-end mt-3">
+                    <button class="btn btn-indigo px-4 rounded-pill fw-bold" [disabled]="!newNoteContent.trim()" (click)="addNote()">
+                      Publier la note
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="notes-feed">
+              <div *ngIf="notes.length === 0" class="text-center py-5 bg-slate-50 rounded-4">
+                <i class="ti ti-messages text-slate-300 fs-40 mb-2"></i>
+                <p class="text-slate-400 fw-medium">Aucun échange sur cette tâche pour le moment.</p>
+              </div>
+              
+              <div class="note-bubble" *ngFor="let n of notes">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fw-800 text-slate-800 fs-13">{{ n.author?.firstName }} {{ n.author?.lastName }}</span>
+                    <span class="badge bg-soft-slate text-slate-500 fs-10">MEMBER</span>
+                  </div>
+                  <span class="text-slate-400 fs-11 fw-medium">{{ n.createdAt | date:'dd MMM, HH:mm' }}</span>
+                </div>
+                <p class="mb-0 text-slate-700 fs-14 lh-relaxed">{{ n.content }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ACTIONS & TICKETS -->
+          <div class="col-md-5">
+            <div class="d-flex align-items-center gap-3 mb-4">
+              <div class="icon-box bg-orange text-white rounded-3 shadow-orange p-2 d-flex align-items-center justify-content-center">
+                <i class="ti ti-ticket fs-20"></i>
+              </div>
+              <h5 class="mb-0 fw-bold text-slate-800">Tickets & Résolution</h5>
+            </div>
+            
+            <div class="card border-0 bg-slate-900 text-white rounded-4 overflow-hidden mb-4">
+              <div class="card-body p-4 text-center">
+                <div class="mb-4">
+                  <i class="ti ti-help-hexagon fs-50 text-orange opacity-75"></i>
+                </div>
+                <h6 class="fw-bold mb-2">Bloqué ou besoin d'assistance ?</h6>
+                <p class="text-slate-400 small mb-4">Accédez au Ticket Hub pour signaler un problème technique ou commercial sur cette tâche.</p>
+                <button class="sidebar-action-btn btn-tickets" (click)="openTicketHub()">
+                  Ouvrir le Hub de Tickets <i class="ti ti-external-link"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="alert alert-soft-indigo border-0 rounded-4 p-4">
+              <div class="d-flex gap-3">
+                <i class="ti ti-info-circle fs-24 mt-1"></i>
+                <div>
+                  <h6 class="fw-bold mb-1">Rappel de collaboration</h6>
+                  <p class="small mb-0 opacity-75">Les notes sont visibles par tous les intervenants assignés ainsi que le management.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -74,6 +74,7 @@ export interface Task {
   subtasks?: SubTask[]; // frontend-only local subtasks
   reclamations?: Reclamation[]; // Added for detail views
   openTicketsCount?: number; // UI Badge count
+  notesCount?: number;       // Added for UI Badge count
 }
 
 export interface Ticket {
@@ -85,6 +86,7 @@ export interface Ticket {
   correctedBy?: string;
   status: string;
   priority: string;
+  isRead?: boolean;
   createdBy?: User;
   createdAt?: string;
   type?: string;
@@ -159,6 +161,24 @@ export interface AiBonusSuggestion {
   userName: string;
   justification: string;
   score: number;
+}
+
+export interface TaskNote {
+  id?: number;
+  task?: Task;
+  author?: User;
+  content: string;
+  createdAt?: string;
+  isRead?: boolean;
+}
+
+export interface TaskStatusHistory {
+  id?: number;
+  task?: Task;
+  status: string;
+  entryDate: string;
+  exitDate?: string;
+  durationMinutes?: number;
 }
 
 

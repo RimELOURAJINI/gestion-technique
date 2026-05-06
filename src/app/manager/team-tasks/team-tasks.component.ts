@@ -1,19 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { TeamLeaderService } from '../../services/manager.service';
 import { AuthService } from '../../services/auth.service';
 import { Task, User, Project, Ticket } from '../../models/models';
 import { TicketService } from '../../services/ticket.service';
+import { TaskDetailService } from '../../services/task-detail.service';
 import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
+import { TaskDetailComponent } from '../../shared/task-detail/task-detail.component';
 
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 @Component({
     selector: 'app-team-tasks',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule, ProjectSupportModalComponent, DragDropModule],
+    imports: [CommonModule, FormsModule, RouterModule, ProjectSupportModalComponent, DragDropModule, TaskDetailComponent],
     templateUrl: './team-tasks.component.html',
     styleUrl: './team-tasks.component.css'
 })
@@ -24,6 +26,7 @@ export class TeamTasksComponent implements OnInit {
 
     selectedProjectId?: number;
     isLoading = true;
+    selectedTaskId: number | null = null;
 
     todoTasks: Task[] = [];
     inProgressTasks: Task[] = [];
@@ -46,8 +49,18 @@ export class TeamTasksComponent implements OnInit {
         private teamLeaderService: TeamLeaderService,
         private authService: AuthService,
         private ticketService: TicketService,
-        private route: ActivatedRoute
+        private taskDetailService: TaskDetailService,
+        private route: ActivatedRoute,
+        private router: Router
     ) { }
+
+    goToTaskTickets(taskId: number | undefined) {
+        if (!taskId) return;
+        const role = this.authService.getUserRole();
+        let basePath = '/manager';
+        if (role === 'ROLE_COMMERCIAL_LEADER') basePath = '/commercial-leader';
+        this.router.navigate([`${basePath}/tickets`], { queryParams: { taskId: taskId } });
+    }
 
     ngOnInit() {
         const userId = this.authService.getUserId();
@@ -87,16 +100,8 @@ export class TeamTasksComponent implements OnInit {
     }
 
     loadTicketCounts() {
-        const userId = this.authService.getUserId();
-        if (!userId) return;
-        this.ticketService.getTicketsByManager(userId).subscribe({
-            next: (tickets: Ticket[]) => {
-                const openTickets = tickets.filter(t => t.status !== 'VALIDATED' && t.status !== 'fermé' && t.status !== 'CLOSED');
-                this.tasks.forEach(t => {
-                    t.openTicketsCount = openTickets.filter(ticket => ticket.task?.id === t.id).length;
-                });
-            }
-        });
+        // Counts are now pre-populated by the backend in the Task object
+        // (notesCount and openTicketsCount)
     }
 
     openSupportModal(task: Task, event: Event) {
@@ -109,6 +114,15 @@ export class TeamTasksComponent implements OnInit {
     closeSupportModal() {
         this.showSupportModal = false;
         this.selectedSupportTask = null;
+    }
+
+    openTaskDetail(taskId: number | undefined) {
+        if (taskId) this.selectedTaskId = taskId;
+    }
+
+    closeTaskDetail() {
+        this.selectedTaskId = null;
+        this.loadTasks(); // Refresh list to get status/note updates if any
     }
 
     organizeTasks() {

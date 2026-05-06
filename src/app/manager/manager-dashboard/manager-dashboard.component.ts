@@ -9,6 +9,7 @@ import { TeamChatService } from '../../services/team-chat.service';
 import { DailyReportService } from '../../services/daily-report.service';
 import { PrimeService } from '../../services/prime.service';
 import { TicketService } from '../../services/ticket.service';
+import { EmployeeService } from '../../services/employee.service';
 
 
 @Component({
@@ -30,6 +31,7 @@ export class ManagerDashboardComponent implements OnInit {
     reportSubmitted: boolean = true; // true = no warning dot shown
     newPrimesCount: number = 0;
     activeTicketsCount: number = 0;
+    unreadInterventionCount: number = 0;
     private notificationSub?: Subscription;
     private chatCountSub?: Subscription;
 
@@ -40,7 +42,8 @@ export class ManagerDashboardComponent implements OnInit {
         private teamChatService: TeamChatService,
         private dailyReportService: DailyReportService,
         private primeService: PrimeService,
-        private ticketService: TicketService
+        private ticketService: TicketService,
+        private employeeService: EmployeeService
     ) { }
 
 
@@ -77,9 +80,11 @@ export class ManagerDashboardComponent implements OnInit {
                         this.loadUnreadChatCount(currentId);
                         this.loadPrimes(currentId);
                         this.loadActiveTicketsCount(currentId);
+                        this.loadInterventionStats(currentId);
                     }
                 });
                 this.loadUnreadChatCount(user.id);
+                this.loadInterventionStats(user.id);
             }
         }
     }
@@ -143,6 +148,17 @@ export class ManagerDashboardComponent implements OnInit {
     loadActiveTicketsCount(userId: number): void {
         this.ticketService.getUnansweredTicketsCountForUser(userId).subscribe(count => {
             this.activeTicketsCount = count;
+            this.updateTotalInterventionCount();
         });
+    }
+
+    loadInterventionStats(userId: number) {
+        this.employeeService.getInterventionStats(userId).subscribe(stats => {
+            this.unreadInterventionCount = stats.notesCount + stats.unreadTicketsCount;
+        });
+    }
+
+    updateTotalInterventionCount() {
+        // Handled by loadInterventionStats
     }
 }

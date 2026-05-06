@@ -8,6 +8,8 @@ import { AuthService } from '../../services/auth.service';
 import { AiService } from '../../services/ai.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { DealService } from '../../services/deal.service';
+import { TicketService } from '../../services/ticket.service';
+import { EmployeeService } from '../../services/employee.service';
 
 @Component({
   selector: 'app-commercial-overview',
@@ -24,6 +26,7 @@ export class CommercialOverviewComponent implements OnInit {
     wonDeals: 0,
     pipeline: 0
   };
+  personalInterventionStats = { notesCount: 0, unreadTickets: 0 };
   
   aiMessage: string = '';
   aiMessageHtml: SafeHtml = '';
@@ -35,7 +38,9 @@ export class CommercialOverviewComponent implements OnInit {
     private adminService: AdminService,
     private aiService: AiService,
     private sanitizer: DomSanitizer,
-    private dealService: DealService
+    private dealService: DealService,
+    private ticketService: TicketService,
+    private employeeService: EmployeeService
   ) {}
 
   ngOnInit(): void {
@@ -62,6 +67,12 @@ export class CommercialOverviewComponent implements OnInit {
       this.stats.pipeline = deals.reduce((acc: number, d: any) => acc + (d.budget || 0), 0);
       this.stats.wonDeals = deals.filter((d: any) => d.status === 'WON' || d.status === 'VALIDATED').length;
     });
+
+    // Load Intervention Stats for AI
+    this.employeeService.getInterventionStats(userId).subscribe(stats => {
+        this.personalInterventionStats.unreadTickets = stats.unreadTicketsCount;
+        this.personalInterventionStats.notesCount = stats.notesCount;
+    });
   }
 
   refreshAiStats() {
@@ -71,7 +82,9 @@ export class CommercialOverviewComponent implements OnInit {
     this.isAiLoading = true;
     this.aiMessage = '';
     
-    this.aiService.getAIStatisticsStream(userId, '', 'insights').subscribe({
+    const interventionContext = `IMPORTANT: Vous avez ${this.personalInterventionStats.notesCount} notes sur vos tâches et ${this.personalInterventionStats.unreadTickets} tickets non lus. S'il vous plaît, mentionnez-les et recommandez de les consulter.`;
+    
+    this.aiService.getAIStatisticsStream(userId, interventionContext, 'insights').subscribe({
       next: (chunk: string) => {
         this.isAiLoading = false;
         this.aiMessage += chunk;

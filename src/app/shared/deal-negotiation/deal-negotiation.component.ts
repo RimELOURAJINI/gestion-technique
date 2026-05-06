@@ -32,8 +32,8 @@ import { TicketChatComponent } from '../ticket-chat/ticket-chat.component';
               <i class="ti ti-send fs-18"></i> Transmettre à l'Admin
             </button>
 
-            <!-- Action Admin : Visible si en attente de validation (Étape 2) -->
-            <button *ngIf="isAdmin && deal?.status === 'PENDING_ADMIN'" 
+            <!-- Action Admin : Toujours visible pour l'admin si pas encore validé -->
+            <button *ngIf="isAdmin && deal?.status !== 'VALIDATED'" 
                     class="btn btn-success d-flex align-items-center gap-2 px-4 shadow-sm" 
                     (click)="onValidate.emit(deal)">
               <i class="ti ti-check fs-18"></i> Valider & Créer Projet
@@ -93,9 +93,22 @@ import { TicketChatComponent } from '../ticket-chat/ticket-chat.component';
                     </div>
                   </div>
                   <div class="col-12 mt-2">
-                    <div class="p-3 bg-light rounded-3 fs-14 text-dark border-start border-primary border-4 text-break">
+                    <div class="p-3 bg-light rounded-3 fs-14 text-dark border-start border-primary border-4 text-break mb-3">
                       <label class="text-muted fs-10 text-uppercase fw-bold mb-1 d-block">Description des besoins :</label>
                       {{ deal?.description || "Aucune description détaillée n'a été fournie." }}
+                    </div>
+                    
+                    <!-- Duration Breakdown -->
+                    <div class="d-flex flex-column" *ngIf="deal?.statusDurations">
+                      <label class="text-muted fs-10 text-uppercase fw-bold mb-2">Temps passé par phase :</label>
+                      <div class="d-flex flex-wrap gap-2">
+                        <span *ngFor="let item of deal.statusDurations | keyvalue" 
+                              class="badge rounded-pill bg-white text-muted border border-secondary shadow-sm px-3 py-2 fs-12">
+                          <i class="ti ti-clock me-1 text-primary"></i>
+                          <span class="fw-bold me-1">{{ getStatusLabel($any(item.key).toString()) }}</span> 
+                          {{ formatDuration($any(item.value)) }}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -178,13 +191,19 @@ import { TicketChatComponent } from '../ticket-chat/ticket-chat.component';
     .bg-soft-warning { background-color: #fefce8; color: #a16207; }
     .bg-soft-danger { background-color: #fee2e2; color: #991b1b; }
     .bg-soft-success { background-color: #dcfce7; color: #166534; }
-    .chat-section { height: calc(100vh - 180px); }
+    .chat-section { height: 600px; max-height: 80vh; display: flex; flex-direction: column; }
     
     .workflow-steps .step { border-bottom-color: #e2e8f0; color: #94a3b8; }
     .workflow-steps .step.active { border-bottom-color: #0d6efd; color: #0d6efd; background-color: #f8fbff; }
     .workflow-steps .step.completed { border-bottom-color: #198754; color: #198754; }
 
-    :host ::ng-deep .chat-container { max-width: 100% !important; height: 100% !important; border-radius: 20px; border: none !important; box-shadow: none !important; }
+    :host ::ng-deep .chat-container { 
+      max-width: 100% !important; 
+      height: 100% !important; 
+      border-radius: 20px; 
+      border: 1px solid #e2e8f0 !important; 
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important; 
+    }
   `]
 })
 export class DealNegotiationComponent implements OnInit {
@@ -238,7 +257,7 @@ export class DealNegotiationComponent implements OnInit {
 
   getStepClass(stepNum: number) {
     const status = this.deal?.status;
-    const isStep1Statuses = ['CLIENT_INITIATED', 'NEGOTIATION', 'PENDING_CLIENT', 'DRAFT'];
+    const isStep1Statuses = ['CLIENT_INITIATED', 'NEGOTIATION', 'PENDING_CLIENT', 'PROPOSITION'];
     
     if (stepNum === 1) {
       if (isStep1Statuses.includes(status)) return 'active';
@@ -258,7 +277,7 @@ export class DealNegotiationComponent implements OnInit {
 
   getStatusClass(status: string) {
     switch(status) {
-      case 'DRAFT':
+      case 'PROPOSITION':
       case 'CLIENT_INITIATED':
       case 'PENDING_CLIENT':
       case 'NEGOTIATION': return 'bg-soft-primary text-primary';
@@ -271,7 +290,7 @@ export class DealNegotiationComponent implements OnInit {
 
   getStatusLabel(status: string) {
     switch(status) {
-      case 'DRAFT': return 'Brouillon';
+      case 'PROPOSITION': return 'Proposition';
       case 'CLIENT_INITIATED': return 'Négociation Initiée';
       case 'PENDING_CLIENT': return 'En attente Client';
       case 'NEGOTIATION': return 'Discussion en cours';
@@ -280,5 +299,16 @@ export class DealNegotiationComponent implements OnInit {
       case 'REJECTED': return 'Refusé';
       default: return status;
     }
+  }
+
+  formatDuration(mins: number): string {
+    if (!mins) return '0m';
+    const d = Math.floor(mins / (60 * 24));
+    const h = Math.floor((mins % (60 * 24)) / 60);
+    const m = mins % 60;
+    
+    if (d > 0) return `${d}j ${h}h`;
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m}m`;
   }
 }

@@ -31,10 +31,15 @@ import { DealNegotiationComponent } from '../../shared/deal-negotiation/deal-neg
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let deal of deals">
+                  <tr *ngFor="let deal of deals" class="clickable-row transition" (click)="openChat(deal)">
                     <td class="ps-4">
                       <div class="d-flex flex-column">
-                        <span class="fw-bold text-dark fs-14">{{ deal.name }}</span>
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="fw-bold text-dark fs-14">{{ deal.name }}</span>
+                          <span class="badge bg-soft-secondary text-muted fs-9 px-2" *ngIf="deal.statusDurations && deal.statusDurations[deal.status]" title="Durée dans ce statut">
+                            <i class="ti ti-clock"></i> {{ formatDuration(deal.statusDurations[deal.status]) }}
+                          </span>
+                        </div>
                         <small class="text-muted fs-11">Budget: {{ deal.budget | number:'1.2-2' }} €</small>
                       </div>
                     </td>
@@ -50,13 +55,20 @@ import { DealNegotiationComponent } from '../../shared/deal-negotiation/deal-neg
                       </span>
                     </td>
                     <td>
-                      <div *ngIf="deal.status === 'PENDING_ADMIN'">
-                        <select class="form-select form-select-sm fs-12 border-primary" multiple [(ngModel)]="deal.selectedTeamIds" style="width: 180px; height: 60px;">
-                          <option *ngFor="let team of teams" [ngValue]="team.id">{{ team.name }}</option>
-                        </select>
-                        <small class="text-muted fs-10 d-block mt-1">Ctrl+clic pour multiple</small>
+                      <div *ngIf="deal.status === 'PENDING_ADMIN'" class="team-selection-area">
+                        <div class="d-flex flex-wrap gap-1 mb-1" style="max-width: 250px;">
+                          <div *ngFor="let team of teams" 
+                               (click)="toggleTeam(deal, team.id)"
+                               class="badge team-badge pointer transition"
+                               [class.bg-primary]="isTeamSelected(deal, team.id)"
+                               [class.bg-soft-secondary]="!isTeamSelected(deal, team.id)"
+                               [class.text-dark]="!isTeamSelected(deal, team.id)">
+                            {{ team.name }}
+                          </div>
+                        </div>
+                        <small class="text-muted fs-10 d-block" *ngIf="!deal.selectedTeamIds?.length">Sélectionnez les équipes</small>
                       </div>
-                      <div *ngIf="deal.status === 'VALIDATED'" class="fs-12 text-muted">
+                      <div *ngIf="deal.status === 'VALIDATED'" class="fs-12 text-success fw-medium">
                          <i class="ti ti-users me-1"></i> Équipes assignées
                       </div>
                     </td>
@@ -107,6 +119,13 @@ import { DealNegotiationComponent } from '../../shared/deal-negotiation/deal-neg
     .fs-11 { font-size: 0.6875rem; }
     .fs-14 { font-size: 0.875rem; }
     .btn-soft-primary { background-color: #e0f2fe; color: #0369a1; border: none; }
+    .team-badge { cursor: pointer; padding: 6px 10px; font-weight: 500; font-size: 10px; border-radius: 6px; }
+    .bg-soft-secondary { background-color: #f1f5f9; color: #475569; }
+    .pointer { cursor: pointer; }
+    .transition { transition: all 0.2s ease-in-out; }
+    .team-badge:hover { transform: scale(1.05); }
+    .clickable-row { cursor: pointer; }
+    .clickable-row:hover { background-color: #f8fafc; }
   `]
 })
 export class DealsComponent implements OnInit {
@@ -135,6 +154,22 @@ export class DealsComponent implements OnInit {
     this.adminService.getAllTeams().subscribe((res: any) => {
       this.teams = res.teams ? res.teams : res;
     });
+  }
+
+  isTeamSelected(deal: any, teamId: number): boolean {
+    return deal.selectedTeamIds && deal.selectedTeamIds.includes(teamId);
+  }
+
+  toggleTeam(deal: any, teamId: number) {
+    if (!deal.selectedTeamIds) {
+      deal.selectedTeamIds = [];
+    }
+    const index = deal.selectedTeamIds.indexOf(teamId);
+    if (index > -1) {
+      deal.selectedTeamIds.splice(index, 1);
+    } else {
+      deal.selectedTeamIds.push(teamId);
+    }
   }
 
   validateDeal(deal: any) {
@@ -183,6 +218,7 @@ export class DealsComponent implements OnInit {
 
   getStatusLabel(status: string) {
     switch(status) {
+      case 'PROPOSITION': return 'Proposition';
       case 'CLIENT_INITIATED': return 'Initié (Client)';
       case 'NEGOTIATION': return 'En Négociation';
       case 'PENDING_ADMIN': return 'À Valider';
@@ -190,5 +226,16 @@ export class DealsComponent implements OnInit {
       case 'REJECTED': return 'Refusé';
       default: return status;
     }
+  }
+
+  formatDuration(mins: number): string {
+    if (!mins) return '0m';
+    const d = Math.floor(mins / (60 * 24));
+    const h = Math.floor((mins % (60 * 24)) / 60);
+    const m = mins % 60;
+    
+    if (d > 0) return `${d}j ${h}h`;
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m}m`;
   }
 }

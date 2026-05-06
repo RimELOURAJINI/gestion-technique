@@ -16,10 +16,12 @@ import { ProjectSupportModalComponent } from '../../shared/project-support-modal
     styleUrl: './project-management.component.css'
 })
 export class ProjectManagementComponent implements OnInit {
+    allProjects: Project[] = [];
     projects: Project[] = [];
     teams: Team[] = [];
     managers: User[] = [];
     isLoading = true;
+    showCompleted = false;
 
     // New / Edit project form
     editingProject: any = null;
@@ -43,7 +45,18 @@ export class ProjectManagementComponent implements OnInit {
     loadAll() {
         this.isLoading = true;
         this.adminService.getAllProjects().subscribe({
-            next: (res) => { this.projects = res; this.isLoading = false; },
+            next: (res) => { 
+                this.allProjects = res.map(p => {
+                    // Unify status strings to 'COMPLETED'
+                    const s = (p.status || '').toUpperCase();
+                    if (s === 'DONE' || s === 'TERMINE' || s === 'TERMINEE' || s === 'DELIVERED') {
+                        p.status = 'COMPLETED';
+                    }
+                    return p;
+                });
+                this.applyFilter();
+                this.isLoading = false; 
+            },
             error: () => this.isLoading = false
         });
         this.adminService.getAllTeams().subscribe({
@@ -55,6 +68,19 @@ export class ProjectManagementComponent implements OnInit {
             next: (res) => this.managers = res,
             error: (err) => console.error(err)
         });
+    }
+
+    applyFilter() {
+        if (this.showCompleted) {
+            this.projects = this.allProjects.filter(p => p.status === 'COMPLETED');
+        } else {
+            this.projects = this.allProjects.filter(p => p.status !== 'COMPLETED');
+        }
+    }
+
+    toggleCompleted() {
+        this.showCompleted = !this.showCompleted;
+        this.applyFilter();
     }
 
     saveProject() {
