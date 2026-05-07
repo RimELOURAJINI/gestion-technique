@@ -16,6 +16,9 @@
             </div>
         </div>
         <div class="d-flex gap-2">
+            <button class="btn btn-outline-warning d-inline-flex align-items-center px-4" (click)="openNotes()">
+                <i class="ti ti-notes me-2"></i>NOTES
+            </button>
             <button class="btn btn-primary d-inline-flex align-items-center px-4" (click)="openSupport()">
                 <i class="ti ti-headset me-2"></i>SUPPORT & TICKETS
             </button>
@@ -218,3 +221,11 @@
 
 <!-- Support Modal placeholder -->
 <app-project-support-modal *ngIf="showSupportModal" [project]="project" (onClose)="showSupportModal = false"></app-project-support-modal>
+
+<!-- Notes Panel -->
+<app-notes-panel
+  *ngIf="showNotesPanel && project"
+  mode="project"
+  [entityId]="project!.id"
+  (close)="showNotesPanel = false">
+</app-notes-panel>

@@ -90,8 +90,7 @@
                         </div>
                         <div class="d-flex gap-2 mt-2 pt-2 border-top">
                             <div class="position-relative flex-grow-1">
-                                <button class="btn btn-xs btn-soft-indigo w-100 py-1" (click)="openTaskDetail(task.id); $event.stopPropagation()">
-                                    <i class="ti ti-notes fs-11 me-1"></i>Notes
+                                <button class="btn btn-xs btn-soft-indigo w-100 py-1" (click)="openNotes(task.id, $event)"><i class="ti ti-notes fs-11 me-1"></i>Notes
                                 </button>
                                 <span class="badge-pulse" *ngIf="task.notesCount && task.notesCount > 0">{{task.notesCount}}</span>
                             </div>
@@ -155,8 +154,7 @@
                         
                         <div class="d-flex gap-2 mt-2 pt-2 border-top">
                             <div class="position-relative flex-grow-1">
-                                <button class="btn btn-xs btn-soft-indigo w-100 py-1" (click)="openTaskDetail(task.id); $event.stopPropagation()">
-                                    <i class="ti ti-notes fs-11 me-1"></i>Notes
+                                <button class="btn btn-xs btn-soft-indigo w-100 py-1" (click)="openNotes(task.id, $event)"><i class="ti ti-notes fs-11 me-1"></i>Notes
                                 </button>
                                 <span class="badge-pulse" *ngIf="task.notesCount && task.notesCount > 0">{{task.notesCount}}</span>
                             </div>
@@ -220,8 +218,7 @@
                         
                         <div class="d-flex gap-2 mt-2 pt-2 border-top">
                             <div class="position-relative flex-grow-1">
-                                <button class="btn btn-xs btn-soft-indigo w-100 py-1" (click)="openTaskDetail(task.id); $event.stopPropagation()">
-                                    <i class="ti ti-notes fs-11 me-1"></i>Notes
+                                <button class="btn btn-xs btn-soft-indigo w-100 py-1" (click)="openNotes(task.id, $event)"><i class="ti ti-notes fs-11 me-1"></i>Notes
                                 </button>
                                 <span class="badge-pulse" *ngIf="task.notesCount && task.notesCount > 0">{{task.notesCount}}</span>
                             </div>
@@ -282,8 +279,7 @@
                         </div>
                         <div class="d-flex gap-2 mt-2 pt-2 border-top">
                             <div class="position-relative flex-grow-1">
-                                <button class="btn btn-xs btn-soft-indigo w-100 py-1" (click)="openTaskDetail(task.id); $event.stopPropagation()">
-                                    <i class="ti ti-notes fs-11 me-1"></i>Notes
+                                <button class="btn btn-xs btn-soft-indigo w-100 py-1" (click)="openNotes(task.id, $event)"><i class="ti ti-notes fs-11 me-1"></i>Notes
                                 </button>
                                 <span class="badge-pulse" *ngIf="task.notesCount && task.notesCount > 0">{{task.notesCount}}</span>
                             </div>
@@ -418,3 +414,11 @@
     [mode]="'manager'" 
     (close)="closeTaskDetail()">
 </app-task-detail>
+
+<app-notes-panel
+  *ngIf="notesTaskId"
+  mode="task"
+  [entityId]="notesTaskId"
+  (close)="closeNotes()">
+</app-notes-panel>
+

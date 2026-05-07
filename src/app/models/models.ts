@@ -181,4 +181,10 @@ export interface TaskStatusHistory {
   durationMinutes?: number;
 }
 
-
+export interface ProjectNote {
+  id?: number;
+  project?: Project;
+  author?: User;
+  content: string;
+  createdAt?: string;
+}

@@ -1,0 +1,87 @@
+<div class="notes-panel-overlay" (click)="close.emit()"></div>
+
+<div class="notes-panel-drawer">
+  <!-- Header -->
+  <div class="notes-header">
+    <div class="d-flex align-items-center gap-2">
+      <div class="notes-icon-wrap">
+        <i class="ti ti-notes"></i>
+      </div>
+      <div>
+        <h5 class="mb-0 fw-bold">Notes</h5>
+        <small class="text-muted">{{ notes.length }} note(s) enregistrée(s)</small>
+      </div>
+    </div>
+    <button class="btn btn-icon btn-sm btn-ghost" (click)="close.emit()">
+      <i class="ti ti-x fs-18"></i>
+    </button>
+  </div>
+
+  <!-- New Note Form -->
+  <div class="notes-form">
+    <div class="textarea-wrap">
+      <textarea
+        class="form-control notes-textarea"
+        rows="3"
+        placeholder="Écrire une note... (visible par tous les membres)"
+        [(ngModel)]="newContent">
+      </textarea>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mt-2">
+      <small class="text-muted fs-11"><i class="ti ti-eye me-1"></i>Visible par tous les rôles</small>
+      <button class="btn btn-primary btn-sm px-4 rounded-pill" (click)="addNote()" [disabled]="!newContent.trim()">
+        <i class="ti ti-send me-1"></i> Publier
+      </button>
+    </div>
+  </div>
+
+  <hr class="my-0 opacity-25">
+
+  <!-- Notes List -->
+  <div class="notes-list" *ngIf="!isLoading">
+    <div *ngIf="notes.length === 0" class="notes-empty">
+      <i class="ti ti-notes fs-40 text-muted opacity-50"></i>
+      <p class="text-muted mt-2">Aucune note pour l'instant.<br>Soyez le premier à en ajouter !</p>
+    </div>
+
+    <div class="note-item" *ngFor="let note of notes">
+      <!-- Author Avatar + Name -->
+      <div class="note-author-row">
+        <div class="note-avatar">{{ getAuthorInitials(note) }}</div>
+        <div class="flex-grow-1">
+          <span class="note-author-name">{{ getAuthorName(note) }}</span>
+          <span class="note-date">{{ note.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <!-- Actions (all users can edit/delete) -->
+        <div class="note-actions">
+          <button class="btn btn-icon btn-xs text-primary" title="Modifier" (click)="startEdit(note)">
+            <i class="ti ti-pencil fs-14"></i>
+          </button>
+          <button class="btn btn-icon btn-xs text-danger" title="Supprimer" (click)="deleteNote(note)">
+            <i class="ti ti-trash fs-14"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Note Content -->
+      <div class="note-content" *ngIf="!isEditing(note)">{{ note.content }}</div>
+
+      <!-- Edit Form -->
+      <div class="note-edit-form" *ngIf="isEditing(note)">
+        <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="editContent"></textarea>
+        <div class="d-flex gap-2 mt-2">
+          <button class="btn btn-sm btn-success rounded-pill px-3" (click)="saveEdit()">
+            <i class="ti ti-check me-1"></i>Sauvegarder
+          </button>
+          <button class="btn btn-sm btn-light rounded-pill" (click)="cancelEdit()">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="text-center py-4" *ngIf="isLoading">
+    <div class="spinner-border spinner-border-sm text-primary"></div>
+    <p class="text-muted mt-2 fs-12">Chargement des notes...</p>
+  </div>
+</div>

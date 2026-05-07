@@ -66,7 +66,7 @@
                                 <!-- Notes & Tickets Buttons -->
                                 <div class="d-flex gap-2 mt-2 pt-2 border-top">
                                     <div class="position-relative flex-grow-1">
-                                        <button class="btn btn-xs btn-outline-info w-100 py-1 fs-10" (click)="openTaskDetail(task); $event.stopPropagation()">
+                                        <button class="btn btn-xs btn-outline-info w-100 py-1 fs-10" (click)="openNotes(task, $event)">
                                             <i class="ti ti-notes me-1"></i>Notes
                                         </button>
                                         <span class="badge rounded-pill bg-info position-absolute top-0 start-100 translate-middle border border-white" *ngIf="task.notesCount && task.notesCount > 0" style="font-size: 8px; padding: 2px 4px;">
@@ -218,3 +218,11 @@
 </div>
 
 <app-task-detail *ngIf="selectedTaskId" [taskId]="selectedTaskId" (close)="selectedTaskId = null; loadTasks()"></app-task-detail>
+
+<!-- Notes Drawer -->
+<app-notes-panel
+  *ngIf="notesTaskId"
+  mode="task"
+  [entityId]="notesTaskId"
+  (close)="closeNotes()">
+</app-notes-panel>

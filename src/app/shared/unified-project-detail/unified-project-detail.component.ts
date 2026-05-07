@@ -5,11 +5,12 @@ import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
 import { Project } from '../../models/models';
 import { ProjectSupportModalComponent } from '../project-support-modal/project-support-modal.component';
+import { NotesPanelComponent } from '../notes-panel/notes-panel.component';
 
 @Component({
   selector: 'app-unified-project-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, ProjectSupportModalComponent],
+  imports: [CommonModule, RouterModule, ProjectSupportModalComponent, NotesPanelComponent],
   templateUrl: './unified-project-detail.component.html',
   styleUrls: ['./unified-project-detail.component.css']
 })
@@ -17,6 +18,7 @@ export class UnifiedProjectDetailComponent implements OnInit {
   project: Project | null = null;
   isLoading = true;
   showSupportModal = false;
+  showNotesPanel = false;
   
   timeProgress = 0;
   budgetProgress = 0;
@@ -86,6 +88,10 @@ export class UnifiedProjectDetailComponent implements OnInit {
 
   openSupport(): void {
     this.showSupportModal = true;
+  }
+
+  openNotes(): void {
+    this.showNotesPanel = true;
   }
 
   getStatusBadgeClass(status?: string): string {

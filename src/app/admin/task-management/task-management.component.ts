@@ -5,11 +5,12 @@ import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from 
 import { AdminService } from '../../services/admin.service';
 import { User, Task, Project } from '../../models/models';
 import { TaskDetailComponent } from '../../shared/task-detail/task-detail.component';
+import { NotesPanelComponent } from '../../shared/notes-panel/notes-panel.component';
 
 @Component({
     selector: 'app-task-management',
     standalone: true,
-    imports: [CommonModule, FormsModule, DragDropModule, TaskDetailComponent],
+    imports: [CommonModule, FormsModule, DragDropModule, TaskDetailComponent, NotesPanelComponent],
     templateUrl: './task-management.component.html',
     styleUrl: './task-management.component.css'
 })
@@ -29,6 +30,7 @@ export class TaskManagementComponent implements OnInit {
 
     editingTask: Task | null = null;
     selectedTaskId: number | null = null;
+    notesTaskId: number | null = null;
     newTask: any = { title: '', description: '', status: 'TODO', priority: 'MEDIUM', deadline: '', startDate: '', type: 'FEATURE', estimatedHours: 0, qualityScore: 0 };
     selectedManagerId: number | null = null;
     selectedProjectId: number | null = null;
@@ -132,6 +134,15 @@ export class TaskManagementComponent implements OnInit {
 
     openTaskDetail(task: Task) {
         this.selectedTaskId = task.id || null;
+    }
+
+    openNotes(task: Task, event: Event) {
+        event.stopPropagation();
+        this.notesTaskId = task.id || null;
+    }
+
+    closeNotes() {
+        this.notesTaskId = null;
     }
 
     resetTaskForm() {

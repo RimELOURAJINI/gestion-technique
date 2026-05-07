@@ -9,13 +9,13 @@ import { TicketService } from '../../services/ticket.service';
 import { TaskDetailService } from '../../services/task-detail.service';
 import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
 import { TaskDetailComponent } from '../../shared/task-detail/task-detail.component';
-
+import { NotesPanelComponent } from '../../shared/notes-panel/notes-panel.component';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 @Component({
     selector: 'app-team-tasks',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule, ProjectSupportModalComponent, DragDropModule, TaskDetailComponent],
+    imports: [CommonModule, FormsModule, RouterModule, ProjectSupportModalComponent, DragDropModule, TaskDetailComponent, NotesPanelComponent],
     templateUrl: './team-tasks.component.html',
     styleUrl: './team-tasks.component.css'
 })
@@ -44,6 +44,9 @@ export class TeamTasksComponent implements OnInit {
     showSupportModal = false;
     selectedSupportTask: Task | null = null;
     currentProjectForSupport: Project | null = null;
+
+    // Notes Panel
+    notesTaskId: number | null = null;
 
     constructor(
         private teamLeaderService: TeamLeaderService,
@@ -122,7 +125,16 @@ export class TeamTasksComponent implements OnInit {
 
     closeTaskDetail() {
         this.selectedTaskId = null;
-        this.loadTasks(); // Refresh list to get status/note updates if any
+        this.loadTasks();
+    }
+
+    openNotes(taskId: number | undefined, event: Event) {
+        event.stopPropagation();
+        if (taskId) this.notesTaskId = taskId;
+    }
+
+    closeNotes() {
+        this.notesTaskId = null;
     }
 
     organizeTasks() {

@@ -11,11 +11,12 @@ import { TaskDetailComponent } from '../../shared/task-detail/task-detail.compon
 import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
 import { TaskDetailService } from '../../services/task-detail.service';
 import { TicketService } from '../../services/ticket.service';
+import { NotesPanelComponent } from '../../shared/notes-panel/notes-panel.component';
 
 @Component({
   selector: 'app-my-tasks',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, DragDropModule, TaskDetailComponent, ProjectSupportModalComponent],
+  imports: [CommonModule, FormsModule, RouterModule, DragDropModule, TaskDetailComponent, ProjectSupportModalComponent, NotesPanelComponent],
   templateUrl: './my-tasks.component.html',
   styleUrl: './my-tasks.component.css'
 })
@@ -37,6 +38,9 @@ export class MyTasksComponent implements OnInit {
   showSupportModal = false;
   selectedSupportTask: Task | null = null;
   currentProjectForSupport: Project | null = null;
+
+  // Notes Panel
+  notesTaskId: number | null = null;
 
   onDrop(event: CdkDragDrop<Task[]>, newStatus: string) {
     if (event.previousContainer === event.container) {
@@ -231,6 +235,15 @@ export class MyTasksComponent implements OnInit {
   closeTaskDetail(): void {
     this.selectedTaskId = null;
     this.loadTasks();
+  }
+
+  openNotes(task: Task, event: Event): void {
+    event.stopPropagation();
+    if (task.id) this.notesTaskId = task.id;
+  }
+
+  closeNotes(): void {
+    this.notesTaskId = null;
   }
 
   toggleView(mode: 'table' | 'kanban'): void {

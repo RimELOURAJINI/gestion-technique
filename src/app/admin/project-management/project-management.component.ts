@@ -7,11 +7,12 @@ import { Project, Team, User } from '../../models/models';
 import { TicketService } from '../../services/ticket.service';
 import { AuthService } from '../../services/auth.service';
 import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
+import { NotesPanelComponent } from '../../shared/notes-panel/notes-panel.component';
 
 @Component({
     selector: 'app-project-management',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule, ProjectSupportModalComponent],
+    imports: [CommonModule, FormsModule, RouterModule, ProjectSupportModalComponent, NotesPanelComponent],
     templateUrl: './project-management.component.html',
     styleUrl: './project-management.component.css'
 })
@@ -35,6 +36,9 @@ export class ProjectManagementComponent implements OnInit {
     // Support Modal
     showSupportModal = false;
     selectedSupportProject: Project | null = null;
+
+    // Notes Panel
+    notesProjectId: number | null = null;
 
     constructor(private adminService: AdminService, private ticketService: TicketService, private authService: AuthService) { }
 
@@ -168,6 +172,15 @@ export class ProjectManagementComponent implements OnInit {
     closeSupportModal() {
         this.showSupportModal = false;
         this.selectedSupportProject = null;
+    }
+
+    openProjectNotes(project: Project, event: Event) {
+        event.stopPropagation();
+        this.notesProjectId = project.id;
+    }
+
+    closeProjectNotes() {
+        this.notesProjectId = null;
     }
 
     getProgress(project: Project): number {
