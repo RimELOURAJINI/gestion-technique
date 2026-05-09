@@ -79,18 +79,17 @@ export class MyProjectsComponent implements OnInit {
 
           this.projects = finalProjects;
           
-          // Logic: Project is ongoing if it's NOT COMPLETED OR the user has unfinished tasks OR has notifications
+          // Logic: Project is ongoing if it's NOT COMPLETED OR the user has unfinished tasks OR has unread notifications
           this.ongoingProjects = finalProjects.filter(p => {
-            const isCompleted = p.status === 'COMPLETED';
+            const isCompleted = p.status === 'COMPLETED' || p.status === 'DONE';
             const hasNotifications = (p.notesCount || 0) > 0 || (p.openTicketsCount || 0) > 0;
             return !isCompleted || unfinishedProjectIds.has(p.id!) || hasNotifications;
           });
           
-          // Project is in history if it's COMPLETED AND (no unfinished tasks AND no notifications)
+          // Logic: Project is in history if it's COMPLETED (it stays there even if it has notifications)
           this.historicalProjects = finalProjects.filter(p => {
-            const isCompleted = p.status === 'COMPLETED';
-            const hasNotifications = (p.notesCount || 0) > 0 || (p.openTicketsCount || 0) > 0;
-            return isCompleted && !unfinishedProjectIds.has(p.id!) && !hasNotifications;
+            const isCompleted = p.status === 'COMPLETED' || p.status === 'DONE';
+            return isCompleted;
           });
         });
       });

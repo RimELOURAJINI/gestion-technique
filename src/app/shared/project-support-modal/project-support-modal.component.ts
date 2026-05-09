@@ -6,6 +6,7 @@ import { TicketService } from '../../services/ticket.service';
 import { AuthService } from '../../services/auth.service';
 import { Project, Task, Ticket } from '../../models/models';
 import { TicketChatComponent } from '../ticket-chat/ticket-chat.component';
+import { TaskDetailService } from '../../services/task-detail.service';
 
 @Component({
   selector: 'app-project-support-modal',
@@ -46,13 +47,23 @@ export class ProjectSupportModalComponent implements OnInit {
   constructor(
     private ticketService: TicketService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private taskDetailService: TaskDetailService
   ) {}
 
   ngOnInit(): void {
     this.currentUserId = this.authService.getUserId();
     this.loadProjectTickets();
     this.loadMyProjects();
+    this.markAsRead();
+  }
+
+  markAsRead(): void {
+      if (this.currentUserId && this.project?.id) {
+          this.taskDetailService.markProjectNotesAsRead(this.project.id, this.currentUserId).subscribe({
+              error: (err) => console.error('Error marking tickets as read', err)
+          });
+      }
   }
 
   loadMyProjects(): void {
@@ -74,14 +85,18 @@ export class ProjectSupportModalComponent implements OnInit {
     if (!this.project && !this.task) return;
     this.isLoading = true;
     
-    this.ticketService.getAllTickets().subscribe({
+    const obs = this.task 
+      ? this.ticketService.getAllTickets() // Or add getTicketsByTaskId if needed, but for now we filter
+      : this.ticketService.getTicketsByProjectId(this.project!.id);
+
+    obs.subscribe({
       next: (res) => {
         if (this.task) {
           this.tickets = res.filter((t: any) => t.task?.id === this.task?.id && t.status !== 'VALIDATED');
           this.historicalTickets = res.filter((t: any) => t.task?.id === this.task?.id && t.status === 'VALIDATED');
-        } else if (this.project) {
-          this.tickets = res.filter((t: any) => t.project?.id === this.project?.id && t.status !== 'VALIDATED');
-          this.historicalTickets = res.filter((t: any) => t.project?.id === this.project?.id && t.status === 'VALIDATED');
+        } else {
+          this.tickets = res.filter((t: any) => t.status !== 'VALIDATED');
+          this.historicalTickets = res.filter((t: any) => t.status === 'VALIDATED');
         }
         this.isLoading = false;
         

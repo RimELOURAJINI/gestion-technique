@@ -11,6 +11,7 @@ import { PersonalPointageComponent } from '../../shared/personal-pointage/person
 import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
 import { DealService } from '../../services/deal.service';
 import { EmployeeService } from '../../services/employee.service';
+import { NotesPanelComponent } from '../../shared/notes-panel/notes-panel.component';
 
 declare var initDashboardCharts: any;
 declare var ApexCharts: any;
@@ -18,7 +19,7 @@ declare var ApexCharts: any;
 @Component({
   selector: 'app-manager-overview',
   standalone: true,
-  imports: [CommonModule, RouterModule, PersonalPointageComponent, ProjectSupportModalComponent],
+  imports: [CommonModule, RouterModule, PersonalPointageComponent, ProjectSupportModalComponent, NotesPanelComponent],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.css'
 })
@@ -53,6 +54,7 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
   
   showSupportModal = false;
   selectedProject: any = null;
+  notesProjectId: number | null = null;
 
   // Nouveaux paramètres contextuels (Prévention & Goulots)
   workloadStr = '';
@@ -144,15 +146,14 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
     // Load Projects
     this.teamLeaderService.getProjectsByUserId(userId).subscribe(projects => {
       // Filter out completed projects for the list
+      // Filter out completed projects for the list, unless they have unread notifications
       this.myProjects = projects.filter(p => {
           const s = (p.status || '').toUpperCase();
-          return s !== 'COMPLETED' && s !== 'DONE' && s !== 'TERMINE' && s !== 'TERMINEE' && s !== 'DELIVERED';
+          const isCompleted = s === 'COMPLETED' || s === 'DONE' || s === 'TERMINE' || s === 'TERMINEE' || s === 'DELIVERED';
+          return !isCompleted || (p.notesCount || 0) > 0 || (p.openTicketsCount || 0) > 0;
       });
-      // Only count ongoing projects for the dashboard stat card
-      this.stats.projects = projects.filter(p => {
-          const s = (p.status || '').toUpperCase();
-          return s !== 'COMPLETED' && s !== 'DONE' && s !== 'TERMINE' && s !== 'TERMINEE' && s !== 'DELIVERED';
-      }).length;
+      // Only count ongoing (or wake-up) projects for the dashboard stat card
+      this.stats.projects = this.myProjects.length;
       
       let allTasks: Task[] = [];
       let projectsProcessed = 0;
@@ -163,7 +164,7 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
       }
 
       projects.forEach(p => {
-        this.teamLeaderService.getTasksByProjectId(p.id).subscribe(tasks => {
+        this.teamLeaderService.getTasksByProjectId(p.id, userId).subscribe(tasks => {
           allTasks = [...allTasks, ...tasks];
           projectsProcessed++;
 
@@ -299,5 +300,14 @@ export class ManagerOverviewComponent implements OnInit, AfterViewInit {
   openProjectTickets(project: any) {
     this.selectedProject = project;
     this.showSupportModal = true;
+  }
+
+  openProjectNotes(project: Project) {
+    this.notesProjectId = project.id || null;
+  }
+
+  closeProjectNotes() {
+    this.notesProjectId = null;
+    this.loadDashboardData();
   }
 }

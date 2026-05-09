@@ -77,8 +77,14 @@ export class TeamProjectsComponent implements OnInit {
 
     closeSupportModal() {
         this.showSupportModal = false;
+        if (this.selectedSupportProject) {
+            this.selectedSupportProject.openTicketsCount = 0;
+            // Optimistically update visibility
+            this.updateProjectsVisibility();
+        }
         this.selectedSupportProject = null;
-        this.loadProjects();
+        // Refresh from backend just in case
+        setTimeout(() => this.loadProjects(), 500);
     }
 
     openProjectNotes(project: Project, event: Event) {
@@ -87,8 +93,24 @@ export class TeamProjectsComponent implements OnInit {
     }
 
     closeNotes() {
+        if (this.notesProjectId) {
+            const proj = this.projects.find(p => p.id === this.notesProjectId);
+            if (proj) {
+                proj.notesCount = 0;
+                this.updateProjectsVisibility();
+            }
+        }
         this.notesProjectId = null;
-        this.loadProjects();
+        setTimeout(() => this.loadProjects(), 500);
+    }
+
+    updateProjectsVisibility() {
+        this.projects = this.projects.filter(p => {
+            const s = (p.status || '').toUpperCase();
+            const isCompleted = s === 'COMPLETED' || s === 'DONE' || s === 'TERMINE' || s === 'TERMINEE' || s === 'DELIVERED';
+            const hasNotifications = (p.notesCount || 0) > 0 || (p.openTicketsCount || 0) > 0;
+            return !isCompleted || hasNotifications;
+        });
     }
 
     getProgress(project: Project): number {

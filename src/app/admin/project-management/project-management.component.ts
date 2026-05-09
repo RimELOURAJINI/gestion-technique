@@ -48,7 +48,8 @@ export class ProjectManagementComponent implements OnInit {
 
     loadAll() {
         this.isLoading = true;
-        this.adminService.getAllProjects().subscribe({
+        const currentUserId = this.authService.getUserId() || undefined;
+        this.adminService.getAllProjects(currentUserId).subscribe({
             next: (res) => { 
                 this.allProjects = res.map(p => {
                     // Unify status strings to 'COMPLETED'
@@ -78,7 +79,12 @@ export class ProjectManagementComponent implements OnInit {
         if (this.showCompleted) {
             this.projects = this.allProjects.filter(p => p.status === 'COMPLETED');
         } else {
-            this.projects = this.allProjects.filter(p => p.status !== 'COMPLETED');
+            // Logic: Show active projects OR completed projects that have unread notifications (notes/tickets)
+            this.projects = this.allProjects.filter(p => 
+                p.status !== 'COMPLETED' || 
+                (p.notesCount || 0) > 0 || 
+                (p.openTicketsCount || 0) > 0
+            );
         }
     }
 

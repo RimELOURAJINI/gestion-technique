@@ -21,8 +21,9 @@ export class TeamLeaderService {
   }
 
   // Tasks
-  getTasksByProjectId(projectId: number): Observable<Task[]> {
-    return this.http.get<Task[]>(`${this.baseUrl}/tasks/project/${projectId}`);
+  getTasksByProjectId(projectId: number, currentUserId?: number): Observable<Task[]> {
+    const url = currentUserId ? `${this.baseUrl}/tasks/project/${projectId}?currentUserId=${currentUserId}` : `${this.baseUrl}/tasks/project/${projectId}`;
+    return this.http.get<Task[]>(url);
   }
 
   addTaskToUser(userId: number, task: Task): Observable<any> {

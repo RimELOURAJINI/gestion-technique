@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { AdminService } from '../../services/admin.service';
 import { User, Task, Project } from '../../models/models';
+import { AuthService } from '../../services/auth.service';
 import { TaskDetailComponent } from '../../shared/task-detail/task-detail.component';
 import { NotesPanelComponent } from '../../shared/notes-panel/notes-panel.component';
 import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
@@ -41,28 +43,44 @@ export class TaskManagementComponent implements OnInit {
     showSupportModal = false;
     selectedSupportTask: Task | null = null;
 
-    constructor(private adminService: AdminService) { }
+    constructor(
+        private adminService: AdminService,
+        private route: ActivatedRoute,
+        private authService: AuthService
+    ) { }
 
     ngOnInit() {
-        this.loadAll();
+        this.route.queryParams.subscribe(params => {
+            if (params['projectId']) {
+                this.filterProjectId = +params['projectId'];
+            }
+            this.loadAll();
+        });
     }
 
     loadAll() {
         this.isLoading = true;
+        const currentUserId = this.authService.getUserId();
         this.adminService.getUsersByRole('ROLE_TEAM_LEADER').subscribe(res => this.managers = res);
         this.adminService.getAllUsers().subscribe(res => {
             this.allUsers = res.users ? res.users : res;
         });
-        this.adminService.getAllProjects().subscribe(res => this.projects = res);
+        const cUserId = currentUserId || undefined;
+        this.adminService.getAllProjects(cUserId).subscribe(res => this.projects = res);
         
-        this.loadTasks();
+        if (this.filterProjectId === 'ALL') {
+            this.loadTasks();
+        } else {
+            this.loadTasks(this.filterProjectId as number);
+        }
     }
 
     loadTasks(projectId?: number) {
         this.isLoading = true;
+        const currentUserId = this.authService.getUserId() || undefined;
         const taskObservable = projectId 
-            ? this.adminService.getTasksByProjectId(projectId) 
-            : this.adminService.getAllTasks();
+            ? this.adminService.getTasksByProjectId(projectId, currentUserId) 
+            : this.adminService.getAllTasks(currentUserId);
 
         taskObservable.subscribe({
             next: (res) => {

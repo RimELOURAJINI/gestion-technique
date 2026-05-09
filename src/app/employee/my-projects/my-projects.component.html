@@ -41,57 +41,73 @@
 	<!-- Projects Grid -->
 	<div class="row g-3">
 		<div class="col-xl-4 col-md-6 col-sm-12" *ngFor="let project of (activeTab === 'ongoing' ? ongoingProjects : historicalProjects)">
-			<div class="card project-card flex-fill clickable-card">
-				<div class="card-body">
-					<div class="d-flex align-items-start justify-content-between mb-3">
+			<div class="project-card-premium h-100">
+				<div class="card-header">
+					<div class="d-flex align-items-start justify-content-between">
 						<div class="d-flex align-items-center cursor-pointer" (click)="activeTab === 'history' ? openHistoryDetail(project) : openProjectDetail(project)">
-							<div class="avatar avatar-md bg-primary-light border border-primary-low me-2 d-flex align-items-center justify-content-center">
-								<i class="ti ti-briefcase text-primary fs-18"></i>
+							<div class="project-icon-box me-3">
+								<i class="ti ti-briefcase"></i>
 							</div>
 							<div>
-								<h6 class="mb-0 text-dark fw-bold text-truncate" style="max-width: 150px;" [title]="project.name">{{project.name}}</h6>
-								<span class="fs-12 text-muted">ID: #PRJ-{{project.id}}</span>
+								<h6 class="mb-1 fw-bold fs-15 text-truncate" style="max-width: 150px;" [title]="project.name">{{project.name}}</h6>
+								<span class="badge bg-soft-primary">#PRJ-{{project.id}}</span>
 							</div>
 						</div>
-						<span class="badge badge-pill" [ngClass]="{
-							'bg-pending': project.status === 'IN_PROGRESS' || project.status === 'ACTIVE',
-							'bg-success': project.status === 'COMPLETED',
-							'bg-secondary': !project.status
-						}">{{project.status === 'COMPLETED' ? 'Terminé' : (project.status === 'ACTIVE' || project.status === 'IN_PROGRESS' ? 'Actif' : (project.status || 'En attente'))}}</span>
+						<span class="badge text-white" [ngClass]="project.status === 'COMPLETED' ? 'bg-success' : 'bg-primary'">
+                            {{project.status === 'COMPLETED' ? 'Terminé' : 'Actif'}}
+                        </span>
 					</div>
+                </div>
+                
+                <div class="card-body p-4">
+					<p class="text-muted fs-13 line-clamp-2 mb-4 cursor-pointer" style="height: 40px;" 
+                       (click)="activeTab === 'history' ? openHistoryDetail(project) : openProjectDetail(project)">
+                        {{project.description || 'Pas de description.'}}
+                    </p>
 					
-					<p class="text-muted small text-truncate-2 mb-3 cursor-pointer" style="height: 40px;" (click)="activeTab === 'history' ? openHistoryDetail(project) : openProjectDetail(project)">{{project.description}}</p>
-					
-					<div class="project-progress mb-3 cursor-pointer" (click)="activeTab === 'history' ? openHistoryDetail(project) : openProjectDetail(project)">
-						<div class="d-flex justify-content-between align-items-center mb-1">
-							<span class="fs-12 text-muted">Progression</span>
-							<span class="fs-12 fw-bold text-dark">{{ project.progress || 0 }}%</span>
+					<div class="mb-4 cursor-pointer" (click)="activeTab === 'history' ? openHistoryDetail(project) : openProjectDetail(project)">
+						<div class="d-flex justify-content-between align-items-center mb-2">
+							<span class="extra-small-text text-muted">Ma Progression</span>
+							<span class="fs-12 fw-bold" [class.text-success]="project.status === 'COMPLETED'">{{ project.progress || 0 }}%</span>
 						</div>
-						<div class="progress progress-xs">
-							<div class="progress-bar bg-primary" role="progressbar" [style.width.%]="project.progress || 0"></div>
+						<div class="progress">
+							<div class="progress-bar" [class.bg-success]="project.status === 'COMPLETED'" [class.bg-primary]="project.status !== 'COMPLETED'"
+                                 role="progressbar" [style.width.%]="project.progress || 0"></div>
 						</div>
 					</div>
 
-					<div class="d-flex align-items-center justify-content-between pt-3 border-top mt-auto">
-						<div class="d-flex align-items-center text-muted fs-12 cursor-pointer" (click)="openProjectDetail(project)">
-							<i class="ti ti-calendar-event me-1"></i> 
-							<span>Limite: {{ project.deadline | date:'dd MMM' }}</span>
-						</div>
-                        <div class="d-flex gap-1">
-                            <button class="btn btn-sm btn-soft-info position-relative d-flex align-items-center" (click)="openProjectNotes(project, $event)">
-                                <i class="ti ti-notes me-1"></i> Notes
-                                <span class="badge badge-pulse" *ngIf="(project.notesCount || 0) > 0">{{ project.notesCount }}</span>
-                            </button>
-                            <button class="btn btn-sm btn-soft-primary position-relative d-flex align-items-center" (click)="openProjectSupport(project)">
-                                <i class="ti ti-headset me-1"></i> Tickets
-                                <span class="badge badge-pulse" *ngIf="(project.openTicketsCount || 0) > 0">{{ project.openTicketsCount }}</span>
-                            </button>
-                            <a [routerLink]="['/employee/tasks']" [queryParams]="{projectId: project.id}" class="btn btn-sm btn-outline-light d-flex align-items-center">
-                                <i class="ti ti-list-check me-1"></i> Tâches
+                    <div class="project-info-grid mb-0">
+                        <div class="project-info-item">
+                            <span class="extra-small-text text-muted d-block mb-1">Échéance</span>
+                            <span class="fs-13 fw-semibold"><i class="ti ti-calendar-event me-1 opacity-50"></i>{{ project.deadline | date:'dd MMM' }}</span>
+                        </div>
+                        <div class="project-info-item d-flex align-items-center justify-content-center">
+                            <a [routerLink]="['/employee/tasks']" [queryParams]="{projectId: project.id}" class="text-primary fw-bold fs-12 text-decoration-none">
+                                <i class="ti ti-list-check me-1"></i>Voir Tâches
                             </a>
                         </div>
-					</div>
-				</div>
+                    </div>
+                </div>
+
+                <div class="project-card-footer">
+                    <div class="d-flex justify-content-around">
+                        <button class="btn btn-icon btn-light rounded-circle position-relative" (click)="openProjectNotes(project, $event)" title="Notes">
+                            <i class="ti ti-notes fs-18"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" *ngIf="(project.notesCount || 0) > 0">
+                                {{ project.notesCount }}
+                            </span>
+                        </button>
+                        <button class="btn btn-icon btn-light rounded-circle position-relative" (click)="openProjectSupport(project)" title="Tickets">
+                            <i class="ti ti-headset fs-18"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" *ngIf="(project.openTicketsCount || 0) > 0">
+                                {{ project.openTicketsCount }}
+                            </span>
+                        </button>
+                        <button class="btn btn-icon btn-light rounded-circle" (click)="activeTab === 'history' ? openHistoryDetail(project) : openProjectDetail(project)" title="Détails">
+                            <i class="ti ti-external-link fs-18"></i>
+                        </button>
+                    </div>
+                </div>
 			</div>
 		</div>
 

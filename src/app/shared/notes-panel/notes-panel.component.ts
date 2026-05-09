@@ -67,8 +67,9 @@ export class NotesPanelComponent implements OnInit, OnChanges {
         error: () => { this.isLoading = false; }
       });
     } else {
-      this.noteService.getProjectNotes(this.entityId).subscribe({
-        next: (data: ProjectNote[]) => { 
+      this.noteService.getAllProjectRelatedNotes(this.entityId).subscribe({
+        next: (data: any[]) => { 
+            // Separate roots from replies for all notes
             const roots = data.filter(n => !n.parentNote);
             roots.forEach(root => {
                 root.replies = data.filter(child => child.parentNote && child.parentNote.id === root.id);

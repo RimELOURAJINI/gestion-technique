@@ -1,7 +1,11 @@
+/* Base card styling is now handled by global styles.css */
 .card {
-    border: none;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    border-radius: 0.75rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-premium) !important;
 }
 
 .avatar.lg {
@@ -16,10 +20,21 @@
     justify-content: center;
 }
 
-.bg-lightyellow { background-color: #fff9e6 !important; color: #ffc107 !important; }
-.bg-lightblue   { background-color: #e6f7ff !important; color: #1890ff !important; }
-.bg-lightgreen  { background-color: #f6ffed !important; color: #52c41a !important; }
-.bg-lightred    { background-color: #fff1f0 !important; color: #f5222d !important; }
+.stats-icon-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.bg-soft-primary { background-color: var(--primary-transparent) !important; color: var(--primary) !important; }
+.bg-soft-success { background-color: var(--success-transparent) !important; color: var(--success) !important; }
+.bg-soft-danger { background-color: var(--danger-transparent) !important; color: var(--danger) !important; }
+.bg-soft-warning { background-color: var(--warning-transparent) !important; color: var(--warning) !important; }
+.bg-soft-info { background-color: var(--info-transparent) !important; color: var(--info) !important; }
 
 /* ────────────────────────────────
    AI Content Formatting

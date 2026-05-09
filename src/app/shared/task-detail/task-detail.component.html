@@ -60,6 +60,13 @@
                   </div>
                 </div>
                 <div class="mb-4">
+                  <label class="text-slate-400 small text-uppercase fw-800 d-block mb-2">Durée Réelle Totale</label>
+                  <div class="d-flex align-items-center gap-2 text-indigo fw-bold fs-16">
+                    <i class="ti ti-clock-play"></i>
+                    <span>{{ getFormattedTotalDuration() }}</span>
+                  </div>
+                </div>
+                <div class="mb-4">
                   <label class="text-slate-400 small text-uppercase fw-800 d-block mb-2">Responsable</label>
                   <div class="d-flex align-items-center gap-2" *ngFor="let u of task.users">
                     <div class="avatar avatar-xs bg-indigo text-white rounded-circle d-flex align-items-center justify-content-center fw-bold">

@@ -35,23 +35,17 @@
 <div class="row row-gap-3 mb-4">
     <!-- Mes Projets / Deals -->
     <div class="col-xl-3 col-sm-6 d-flex">
-        <div class="card flex-fill mb-0 position-relative overflow-hidden">
-            <div class="card-body position-relative z-1">
-                <div class="d-flex align-items-start justify-content-between">
-                    <div *ngIf="!isCommercialLeader">
-                        <p class="fs-14 mb-1 text-muted">Mes Projets</p>
-                        <h2 class="mb-1 fs-20 fw-bold">{{stats.projects}}</h2>
-                        <p class="text-success mb-0 fs-13">Projets actifs</p>
+        <div class="card flex-fill stats-card-premium">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stats-icon-wrap bg-blue-degree-1">
+                        <i class="ti ti-briefcase" *ngIf="!isCommercialLeader"></i>
+                        <i class="ti ti-chart-bar" *ngIf="isCommercialLeader"></i>
                     </div>
-                    <div *ngIf="isCommercialLeader">
-                        <p class="fs-14 mb-1 text-muted">Valeur Pipeline</p>
-                        <h2 class="mb-1 fs-20 fw-bold text-primary">{{stats.pipelineValue | number:'1.0-0'}} TND</h2>
-                        <p class="text-primary mb-0 fs-13">Opportunités totales</p>
+                    <div>
+                        <p class="fs-12 mb-0 text-muted">{{ isCommercialLeader ? 'Valeur Pipeline' : 'Mes Projets' }}</p>
+                        <h4 class="mb-0 fw-bold">{{ isCommercialLeader ? (stats.pipelineValue | number:'1.0-0') + ' TND' : stats.projects }}</h4>
                     </div>
-                    <span class="avatar avatar-md rounded-circle bg-soft-primary border border-primary">
-                        <i class="ti ti-briefcase fs-16 text-primary" *ngIf="!isCommercialLeader"></i>
-                        <i class="ti ti-chart-bar fs-16 text-primary" *ngIf="isCommercialLeader"></i>
-                    </span>
                 </div>
             </div>
         </div>
@@ -59,23 +53,17 @@
 
     <!-- Tâches Actives / Win Rate -->
     <div class="col-xl-3 col-sm-6 d-flex">
-        <div class="card flex-fill mb-0 position-relative overflow-hidden">
-            <div class="card-body position-relative z-1">
-                <div class="d-flex align-items-start justify-content-between">
-                    <div *ngIf="!isCommercialLeader">
-                        <p class="fs-14 mb-1 text-muted">Tâches Actives</p>
-                        <h2 class="mb-1 fs-20 fw-bold text-info">{{stats.activeTasks}}</h2>
-                        <p class="text-info mb-0 fs-13">En cours</p>
+        <div class="card flex-fill stats-card-premium">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stats-icon-wrap bg-blue-degree-2">
+                        <i class="ti ti-list-check" *ngIf="!isCommercialLeader"></i>
+                        <i class="ti ti-target-arrow" *ngIf="isCommercialLeader"></i>
                     </div>
-                    <div *ngIf="isCommercialLeader">
-                        <p class="fs-14 mb-1 text-muted">Taux de Conversion</p>
-                        <h2 class="mb-1 fs-20 fw-bold text-info">{{stats.winRate}}%</h2>
-                        <p class="text-info mb-0 fs-13">Deals gagnés</p>
+                    <div>
+                        <p class="fs-12 mb-0 text-muted">{{ isCommercialLeader ? 'Taux de Conversion' : 'Tâches Actives' }}</p>
+                        <h4 class="mb-0 fw-bold">{{ isCommercialLeader ? stats.winRate + '%' : stats.activeTasks }}</h4>
                     </div>
-                    <span class="avatar avatar-md rounded-circle bg-soft-info border border-info">
-                        <i class="ti ti-list-check fs-16 text-info" *ngIf="!isCommercialLeader"></i>
-                        <i class="ti ti-target-arrow fs-16 text-info" *ngIf="isCommercialLeader"></i>
-                    </span>
                 </div>
             </div>
         </div>
@@ -83,18 +71,17 @@
 
     <!-- Tâches Terminées / Projets -->
     <div class="col-xl-3 col-sm-6 d-flex">
-        <div class="card flex-fill mb-0 position-relative overflow-hidden">
-            <div class="card-body position-relative z-1">
-                <div class="d-flex align-items-start justify-content-between">
-                    <div>
-                        <p class="fs-14 mb-1 text-muted">{{ isCommercialLeader ? 'Projets Commerciaux' : 'Tâches Terminées' }}</p>
-                        <h2 class="mb-1 fs-20 fw-bold text-success">{{ isCommercialLeader ? stats.projects : stats.completedTasks }}</h2>
-                        <p class="text-success mb-0 fs-13">{{ isCommercialLeader ? 'Accompagnement' : 'Objectifs atteints' }}</p>
+        <div class="card flex-fill stats-card-premium">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stats-icon-wrap bg-soft-success">
+                        <i class="ti ti-circle-check" *ngIf="!isCommercialLeader"></i>
+                        <i class="ti ti-presentation" *ngIf="isCommercialLeader"></i>
                     </div>
-                    <span class="avatar avatar-md rounded-circle bg-soft-success border border-success">
-                        <i class="ti ti-circle-check fs-16 text-success" *ngIf="!isCommercialLeader"></i>
-                        <i class="ti ti-presentation fs-16 text-success" *ngIf="isCommercialLeader"></i>
-                    </span>
+                    <div>
+                        <p class="fs-12 mb-0 text-muted">{{ isCommercialLeader ? 'Projets Commerciaux' : 'Tâches Terminées' }}</p>
+                        <h4 class="mb-0 fw-bold text-success">{{ isCommercialLeader ? stats.projects : stats.completedTasks }}</h4>
+                    </div>
                 </div>
             </div>
         </div>
@@ -102,17 +89,16 @@
 
     <!-- Mon Équipe -->
     <div class="col-xl-3 col-sm-6 d-flex">
-        <div class="card flex-fill mb-0 position-relative overflow-hidden">
-            <div class="card-body position-relative z-1">
-                <div class="d-flex align-items-start justify-content-between">
-                    <div>
-                        <p class="fs-14 mb-1 text-muted">{{ isCommercialLeader ? 'Force de Vente' : 'Mon Équipe' }}</p>
-                        <h2 class="mb-1 fs-20 fw-bold">{{stats.teamMembers}}</h2>
-                        <p class="text-purple mb-0 fs-13">Collaborateurs actifs</p>
+        <div class="card flex-fill stats-card-premium">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="stats-icon-wrap bg-blue-degree-3">
+                        <i class="ti ti-users-group"></i>
                     </div>
-                    <span class="avatar avatar-md rounded-circle bg-soft-purple border border-purple">
-                        <i class="ti ti-users-group fs-16 text-purple"></i>
-                    </span>
+                    <div>
+                        <p class="fs-12 mb-0 text-muted">{{ isCommercialLeader ? 'Force de Vente' : 'Mon Équipe' }}</p>
+                        <h4 class="mb-0 fw-bold">{{stats.teamMembers}}</h4>
+                    </div>
                 </div>
             </div>
         </div>
@@ -195,8 +181,15 @@
                                     </div>
                                 </td>
                                 <td class="pe-3 py-3 text-end">
+                                    <button class="btn btn-soft-info btn-sm btn-icon rounded-circle shadow-sm me-1 position-relative" (click)="openProjectNotes(p); $event.stopPropagation()" title="Notes">
+                                        <i class="ti ti-notes"></i>
+                                        <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle" *ngIf="(p.notesCount || 0) > 0" style="font-size: 8px; padding: 2px 4px;">{{p.notesCount}}</span>
+                                    </button>
                                     <button class="btn btn-soft-primary btn-sm btn-icon rounded-circle me-1" (click)="openProjectTickets(p); $event.stopPropagation()">
                                         <i class="ti ti-headset"></i>
+                                    </button>
+                                    <button class="btn btn-soft-warning btn-sm btn-icon rounded-circle me-1" [routerLink]="[basePath + '/tasks']" [queryParams]="{projectId: p.id}" (click)="$event.stopPropagation()" title="Tâches">
+                                        <i class="ti ti-list-check"></i>
                                     </button>
                                     <button class="btn btn-soft-light btn-sm btn-icon rounded-circle" [routerLink]="[basePath + '/projects', p.id]">
                                         <i class="ti ti-chevron-right"></i>
@@ -283,4 +276,13 @@
         </div>
     </div>
 </div>
+
+<app-project-support-modal *ngIf="showSupportModal" [project]="selectedProject" (onClose)="showSupportModal = false"></app-project-support-modal>
+
+<app-notes-panel
+  *ngIf="notesProjectId"
+  mode="project"
+  [entityId]="notesProjectId"
+  (close)="closeProjectNotes()">
+</app-notes-panel>
 

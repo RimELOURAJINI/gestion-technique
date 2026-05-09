@@ -13,6 +13,7 @@ import { ProjectSupportModalComponent } from '../../shared/project-support-modal
 import { HrService } from '../../services/hr.service';
 import { EmployeeService } from '../../services/employee.service';
 import { TicketService } from '../../services/ticket.service';
+import { NotesPanelComponent } from '../../shared/notes-panel/notes-panel.component';
 
 declare var initDashboardCharts: any;
 declare var ApexCharts: any;
@@ -20,7 +21,7 @@ declare var ApexCharts: any;
 @Component({
   selector: 'app-admin-overview',
   standalone: true,
-  imports: [CommonModule, PersonalPointageComponent, ProjectSupportModalComponent, RouterModule, FormsModule],
+  imports: [CommonModule, PersonalPointageComponent, ProjectSupportModalComponent, RouterModule, FormsModule, NotesPanelComponent],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.css'
 })
@@ -57,6 +58,7 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
   projects: Project[] = [];
   showSupportModal = false;
   selectedProject: any = null;
+  notesProjectId: number | null = null;
 
   constructor(
     private adminService: AdminService,
@@ -87,11 +89,13 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
     this.isLoading = true;
     
     // Load Projects
-    this.adminService.getAllProjects().subscribe((projects) => {
-      // Only count ongoing projects for the main stat card
+    const currentUserId = this.authService.getUserId() || undefined;
+    this.adminService.getAllProjects(currentUserId).subscribe((projects) => {
+      // Only count ongoing projects for the main stat card, unless they have unread notifications
       this.stats.projects = projects.filter(p => {
           const s = (p.status || '').toUpperCase();
-          return s !== 'COMPLETED' && s !== 'DONE' && s !== 'TERMINE' && s !== 'TERMINEE';
+          const isCompleted = s === 'COMPLETED' || s === 'DONE' || s === 'TERMINE' || s === 'TERMINEE';
+          return !isCompleted || (p.notesCount || 0) > 0 || (p.openTicketsCount || 0) > 0;
       }).length;
       this.projects = projects;
       this.recentProjects = projects.slice(-5).reverse();
@@ -294,5 +298,14 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
   openProjectTickets(project: any) {
     this.selectedProject = project;
     this.showSupportModal = true;
+  }
+
+  openProjectNotes(project: Project) {
+    this.notesProjectId = project.id || null;
+  }
+
+  closeProjectNotes() {
+    this.notesProjectId = null;
+    this.loadStats();
   }
 }

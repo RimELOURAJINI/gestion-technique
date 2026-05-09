@@ -87,20 +87,24 @@ export class TaskDetailComponent implements OnInit {
   }
 
   getStatusDuration(status: string): string {
-    const records = this.history.filter(h => h.status === status);
     let totalMinutes = 0;
-    records.forEach(r => {
-      if (r.durationMinutes) {
-        totalMinutes += r.durationMinutes;
-      } else if (!r.exitDate) {
-        // Still in this status
-        const now = new Date().getTime();
-        const entry = new Date(r.entryDate).getTime();
-        totalMinutes += Math.floor((now - entry) / 60000);
-      }
-    });
+    
+    if (this.task && this.task.statusDurations && this.task.statusDurations[status]) {
+      totalMinutes = this.task.statusDurations[status];
+    } else {
+      const records = this.history.filter(h => h.status === status);
+      records.forEach(r => {
+        if (r.durationMinutes) {
+          totalMinutes += r.durationMinutes;
+        } else if (!r.exitDate) {
+          const now = new Date().getTime();
+          const entry = new Date(r.entryDate).getTime();
+          totalMinutes += Math.floor((now - entry) / 60000);
+        }
+      });
+    }
 
-    if (totalMinutes === 0) return '0 min';
+    if (totalMinutes <= 0) return '0 min';
     if (totalMinutes < 60) return `${totalMinutes} min`;
     const hours = Math.floor(totalMinutes / 60);
     const mins = totalMinutes % 60;
@@ -109,6 +113,23 @@ export class TaskDetailComponent implements OnInit {
 
   getAvailableStatuses(): string[] {
     return ['TODO', 'IN_PROGRESS', 'TEST', 'DONE'];
+  }
+
+  getFormattedTotalDuration(): string {
+    if (!this.task) return '0 min';
+    let totalMins = this.task.totalDurationMinutes || 0;
+    
+    // Add current session if active
+    const s = this.task.status;
+    if (s === 'IN_PROGRESS' || s === 'DOING' || s === 'TEST') {
+      const start = this.task.lastStatusUpdate ? new Date(this.task.lastStatusUpdate) : new Date();
+      totalMins += Math.floor((new Date().getTime() - start.getTime()) / 60000);
+    }
+
+    if (totalMins <= 0) return '0 min';
+    const hours = Math.floor(totalMins / 60);
+    const mins = totalMins % 60;
+    return hours > 0 ? `${hours}h ${mins}m` : `${mins}min`;
   }
 
   onClose(): void {

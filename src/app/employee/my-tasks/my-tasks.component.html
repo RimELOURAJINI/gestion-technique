@@ -108,6 +108,11 @@
                              class="btn btn-sm btn-soft-danger" title="Supprimer">
                             <i class="ti ti-trash fs-16"></i>
                           </a>
+                          <a href="javascript:void(0);" (click)="openNotes(task, $event)" 
+                             class="btn btn-sm btn-soft-info position-relative" title="Notes">
+                            <i class="ti ti-notes fs-16"></i>
+                            <span class="badge badge-pulse" *ngIf="(task.notesCount || 0) > 0">{{ task.notesCount }}</span>
+                          </a>
                           <a href="javascript:void(0);" (click)="openTicketModal(task)" 
                              data-bs-toggle="modal" data-bs-target="#ticketModal" 
                              class="btn btn-sm btn-soft-warning" title="Signaler un problème">

@@ -53,6 +53,10 @@ export class TaskDetailService {
     return this.http.get<ProjectNote[]>(`${this.projectUrl}/${projectId}/notes`);
   }
 
+  getAllProjectRelatedNotes(projectId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.projectUrl}/${projectId}/all-notes`);
+  }
+
   addProjectNote(projectId: number, authorId: number, content: string, parentNoteId?: number): Observable<ProjectNote> {
     let url = `${this.projectUrl}/${projectId}/notes?authorId=${authorId}`;
     if (parentNoteId) url += `&parentNoteId=${parentNoteId}`;
@@ -68,6 +72,6 @@ export class TaskDetailService {
   }
 
   markProjectNotesAsRead(projectId: number, userId: number): Observable<void> {
-    return this.http.post<void>(`${this.projectUrl}/${projectId}/notes/read?userId=${userId}`, {});
+    return this.http.post<void>(`${this.projectUrl}/${projectId}/notes/mark-as-read?userId=${userId}`, {});
   }
 }

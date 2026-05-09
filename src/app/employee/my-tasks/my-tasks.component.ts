@@ -41,6 +41,7 @@ export class MyTasksComponent implements OnInit {
 
   // Notes Panel
   notesTaskId: number | null = null;
+  selectedProjectId: number | null = null;
 
   onDrop(event: CdkDragDrop<Task[]>, newStatus: string) {
     if (event.previousContainer === event.container) {
@@ -60,15 +61,24 @@ export class MyTasksComponent implements OnInit {
   }
 
   getDuration(task: Task): string {
-    if (!task.actualStartTime) return '';
-    const end = task.actualEndTime ? new Date(task.actualEndTime) : new Date();
-    const start = new Date(task.actualStartTime);
-    const diffMs = end.getTime() - start.getTime();
-    if (diffMs < 0) return '0m';
-    const diffMins = Math.floor(diffMs / 60000);
-    const hours = Math.floor(diffMins / 60);
-    const mins = diffMins % 60;
+    let totalMins = task.totalDurationMinutes || 0;
+    
+    // If currently active, add time since last status change
+    const s = (task.status || '').toUpperCase();
+    if (s === 'IN_PROGRESS' || s === 'DOING' || s === 'TEST') {
+      const start = task.lastStatusUpdate ? new Date(task.lastStatusUpdate) : new Date();
+      const diffMs = new Date().getTime() - start.getTime();
+      if (diffMs > 0) {
+        totalMins += Math.floor(diffMs / 60000);
+      }
+    }
+
+    if (totalMins <= 0) return s === 'IN_PROGRESS' || s === 'DOING' || s === 'TEST' ? '0m' : '';
+    
+    const hours = Math.floor(totalMins / 60);
+    const mins = totalMins % 60;
     const days = Math.floor(hours / 24);
+    
     if (days > 0) return `${days}j ${hours % 24}h`;
     if (hours > 0) return `${hours}h ${mins}m`;
     return `${mins}m`;
@@ -150,6 +160,7 @@ export class MyTasksComponent implements OnInit {
 
     this.route.queryParams.subscribe(params => {
       this.currentFilter = params['filter'] || '';
+      this.selectedProjectId = params['projectId'] ? +params['projectId'] : null;
       this.loadTasks();
       this.loadProjects();
     });
@@ -198,6 +209,10 @@ export class MyTasksComponent implements OnInit {
     const today = new Date().toISOString().split('T')[0];
 
     let filteredTasks = this.tasks;
+
+    if (this.selectedProjectId) {
+      filteredTasks = filteredTasks.filter(t => t.project?.id === this.selectedProjectId);
+    }
 
     if (this.currentFilter === 'today') {
       filteredTasks = filteredTasks.filter(t => {

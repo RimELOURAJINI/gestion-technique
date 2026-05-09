@@ -54,7 +54,12 @@
         <div class="note-author-row">
           <div class="note-avatar">{{ getAuthorInitials(note) }}</div>
           <div class="flex-grow-1">
-            <span class="note-author-name">{{ getAuthorName(note) }}</span>
+            <div class="d-flex align-items-center gap-2">
+              <span class="note-author-name">{{ getAuthorName(note) }}</span>
+              <span class="badge bg-soft-info text-info border border-info rounded-pill fs-10 px-2" *ngIf="$any(note).isTaskNote">
+                <i class="ti ti-checklist me-1"></i>Tâche: {{ $any(note).taskTitle }}
+              </span>
+            </div>
             <span class="note-date">{{ note.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
           </div>
           <div class="note-actions">

@@ -41,6 +41,10 @@ export class TicketService {
     return this.http.get<Ticket[]>(`${this.baseUrl}/deal/${dealId}`);
   }
 
+  getTicketsByProjectId(projectId: number): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.baseUrl}/project/${projectId}`);
+  }
+
   getUnansweredTicketsCountForUser(userId: number): Observable<number> {
     return this.http.get<number>(`${this.baseUrl}/user/${userId}/unansweredCount`);
   }

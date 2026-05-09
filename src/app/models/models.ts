@@ -43,6 +43,7 @@ export interface Project {
   memberCount?: number;
   involvedUsers?: User[];
   activeTasksCount?: number;
+  taskCount?: number;
 }
 
 export interface SubTask {
@@ -76,6 +77,9 @@ export interface Task {
   reclamations?: Reclamation[]; // Added for detail views
   openTicketsCount?: number; // UI Badge count
   notesCount?: number;       // Added for UI Badge count
+  totalDurationMinutes?: number;
+  lastStatusUpdate?: Date;
+  statusDurations?: { [key: string]: number };
 }
 
 export interface Ticket {
@@ -195,4 +199,8 @@ export interface ProjectNote {
   isDeleted?: boolean;
   parentNote?: ProjectNote;
   replies?: ProjectNote[];
+  isTaskNote?: boolean;
+  taskTitle?: string;
+  taskId?: number;
 }
+

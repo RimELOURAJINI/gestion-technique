@@ -13,8 +13,9 @@ export class AdminService {
   constructor(private http: HttpClient) { }
 
   // ========== PROJECTS ==========
-  getAllProjects(): Observable<Project[]> {
-    return this.http.get<Project[]>(`${this.baseUrl}/projects/all`);
+  getAllProjects(userId?: number): Observable<Project[]> {
+    const url = userId ? `${this.baseUrl}/projects/all?currentUserId=${userId}` : `${this.baseUrl}/projects/all`;
+    return this.http.get<Project[]>(url);
   }
 
   getProjectById(id: number): Observable<Project> {
@@ -57,8 +58,9 @@ export class AdminService {
   }
 
   // ========== TASKS ==========
-  getAllTasks(): Observable<Task[]> {
-    return this.http.get<Task[]>(`${this.baseUrl}/tasks/all`);
+  getAllTasks(userId?: number): Observable<Task[]> {
+    const url = userId ? `${this.baseUrl}/tasks/all?currentUserId=${userId}` : `${this.baseUrl}/tasks/all`;
+    return this.http.get<Task[]>(url);
   }
 
   createTask(task: any): Observable<any> {
@@ -84,8 +86,9 @@ export class AdminService {
     return this.http.put<Task>(`${this.baseUrl}/tasks/${taskId}`, task);
   }
 
-  getTasksByProjectId(projectId: number): Observable<Task[]> {
-    return this.http.get<Task[]>(`${this.baseUrl}/tasks/project/${projectId}`);
+  getTasksByProjectId(projectId: number, userId?: number): Observable<Task[]> {
+    const url = userId ? `${this.baseUrl}/tasks/project/${projectId}?currentUserId=${userId}` : `${this.baseUrl}/tasks/project/${projectId}`;
+    return this.http.get<Task[]>(url);
   }
 
   // ========== TEAMS ==========

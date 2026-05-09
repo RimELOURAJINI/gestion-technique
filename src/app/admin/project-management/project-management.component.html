@@ -24,28 +24,17 @@
 <!-- Project Cards Grid -->
 <div *ngIf="!isLoading" class="row">
     <div *ngFor="let project of projects" class="col-xxl-4 col-xl-4 col-lg-6 col-md-6 mb-4">
-        <div class="card main-card h-100 border-0 shadow-sm overflow-hidden clickable-card position-relative" [routerLink]="['/admin/projects', project.id]">
+        <div class="project-card-premium h-100" [routerLink]="['/admin/projects', project.id]">
             <!-- Card Header -->
-            <div class="card-header bg-white border-0 py-3">
+            <div class="card-header">
                 <div class="d-flex align-items-start justify-content-between">
                     <div class="d-flex align-items-center">
-                        <div class="avatar avatar-md bg-soft-primary rounded-circle me-3 border border-primary">
-                            <i class="ti ti-rocket text-primary fs-18"></i>
+                        <div class="project-icon-box me-3">
+                            <i class="ti ti-rocket"></i>
                         </div>
                         <div>
-                            <h6 class="mb-0 fw-bold fs-15 text-truncate" style="max-width: 180px;">{{project.name}}</h6>
-                            <div class="d-flex align-items-center gap-1 mt-1">
-                                <span class="badge bg-soft-info text-info fs-10 cursor-pointer hover-effect" 
-                                      [class.badge-pulse]="(project.notesCount || 0) > 0"
-                                      (click)="openProjectNotes(project, $event)">
-                                    <i class="ti ti-notes me-1"></i> {{project.notesCount || 0}} Notes
-                                </span>
-                                <span class="badge bg-soft-primary text-primary fs-10 cursor-pointer hover-effect" 
-                                      [class.badge-pulse]="(project.openTicketsCount || 0) > 0"
-                                      (click)="openSupportModal(project, $event)">
-                                    <i class="ti ti-headset me-1"></i> {{project.openTicketsCount || 0}} Tickets
-                                </span>
-                            </div>
+                            <h6 class="mb-1 fw-bold fs-15 text-truncate" style="max-width: 180px;">{{project.name}}</h6>
+                            <span class="badge bg-soft-primary">ID: #{{project.id}}</span>
                         </div>
                     </div>
                     <!-- Admin Dropdown Actions -->
@@ -76,21 +65,21 @@
             </div>
 
             <!-- Card Body -->
-            <div class="card-body">
+            <div class="card-body p-4">
                 <!-- Description -->
-                <p class="text-muted fs-13 mb-3 line-clamp-2" style="height: 40px;">
+                <p class="text-muted fs-13 mb-4 line-clamp-2" style="height: 40px;">
                     {{project.description || 'Aucune description fournie.'}}
                 </p>
 
                 <!-- Manager Info -->
-                <div class="mb-3 p-2 rounded bg-light border-dashed">
+                <div class="mb-4 p-3 rounded-3 bg-blue-degree-1 border border-dashed border-primary border-opacity-25">
                     <div *ngIf="project.manager" class="d-flex align-items-center">
-                        <div class="avatar avatar-xs rounded-circle bg-primary text-white me-2 fs-10 fw-bold">
+                        <div class="avatar avatar-sm rounded-circle bg-primary text-white me-3 d-flex align-items-center justify-content-center fw-bold">
                             {{project.manager.firstName.charAt(0)}}{{project.manager.lastName.charAt(0)}}
                         </div>
                         <div>
-                            <small class="text-muted d-block fs-10 text-uppercase fw-bold">Responsable</small>
-                            <span class="fs-12 fw-medium text-dark">{{project.manager.firstName}} {{project.manager.lastName}}</span>
+                            <small class="extra-small-text text-primary d-block mb-1">Responsable</small>
+                            <span class="fs-13 fw-semibold text-dark">{{project.manager.firstName}} {{project.manager.lastName}}</span>
                         </div>
                     </div>
                     <div *ngIf="!project.manager" class="text-center py-1">
@@ -100,56 +89,49 @@
 
                 <!-- Progress Bar -->
                 <div class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="fs-12 text-muted fw-medium">Consommation Budget</span>
-                        <span class="fs-12 fw-bold" [class.text-danger]="getProgress(project) > 90" [class.text-primary]="getProgress(project) <= 90">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="extra-small-text text-muted">Budget Consommé</span>
+                        <span class="fs-12 fw-bold" [class.text-danger]="getProgress(project) > 90">
                             {{ getProgress(project) }}%
                         </span>
                     </div>
-                    <div class="progress progress-xs mb-0" style="height: 6px;">
+                    <div class="progress">
                         <div class="progress-bar" [ngClass]="getProgress(project) > 90 ? 'bg-danger' : 'bg-primary'"
                             role="progressbar" [style.width.%]="getProgress(project)"></div>
                     </div>
                 </div>
 
-                <!-- Info Row -->
-                <div class="row g-2">
-                    <div class="col-6">
-                        <div class="p-2 border rounded bg-light-50">
-                            <small class="text-muted d-block fs-10 text-uppercase fw-bold mb-1">Budget</small>
-                            <span class="fs-12 fw-bold text-dark">{{project.budget | number:'1.0-0'}} TND</span>
-                        </div>
+                <!-- Info Grid -->
+                <div class="project-info-grid">
+                    <div class="project-info-item">
+                        <small class="extra-small-text text-muted d-block mb-1">Budget</small>
+                        <span class="fs-13 fw-bold text-dark">{{project.budget | number:'1.0-0'}} TND</span>
                     </div>
-                    <div class="col-6">
-                        <div class="p-2 border rounded bg-light-50">
-                            <small class="text-muted d-block fs-10 text-uppercase fw-bold mb-1">Échéance</small>
-                            <span class="fs-12 fw-medium text-dark"><i class="ti ti-calendar-event me-1"></i>{{project.expectedEndDate | date:'dd/MM/yy'}}</span>
-                        </div>
+                    <div class="project-info-item">
+                        <small class="extra-small-text text-muted d-block mb-1">Échéance</small>
+                        <span class="fs-13 fw-semibold text-dark"><i class="ti ti-calendar-event me-1 opacity-50"></i>{{project.expectedEndDate | date:'dd/MM/yy'}}</span>
                     </div>
                 </div>
             </div>
 
             <!-- Card Footer -->
-            <div class="card-footer bg-white border-0 pt-0 pb-3">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <div class="avatar-list-stacked d-flex align-items-center">
-                        <span class="fs-11 text-muted me-2">Équipes:</span>
-                        <span *ngFor="let team of project.teams | slice:0:3" class="badge bg-soft-secondary text-secondary fs-10 me-1">{{team.name}}</span>
-                        <span *ngIf="project.teams && project.teams.length > 3" class="text-muted fs-10">+{{project.teams.length - 3}}</span>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-between border-top pt-2">
-                    <a [routerLink]="['/admin/tasks']" [queryParams]="{projectId: project.id}" class="btn btn-sm btn-link text-muted hover-primary text-decoration-none px-1" (click)="$event.stopPropagation()">
-                        <i class="ti ti-list-check fs-16 me-1"></i> Tâches
+            <div class="project-card-footer">
+                <div class="d-flex justify-content-around">
+                    <button class="btn btn-icon btn-light rounded-circle position-relative" (click)="openProjectNotes(project, $event)" title="Notes">
+                        <i class="ti ti-notes fs-18"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" *ngIf="(project.notesCount || 0) > 0">
+                            {{ project.notesCount }}
+                        </span>
+                    </button>
+                    <button class="btn btn-icon btn-light rounded-circle position-relative" (click)="openSupportModal(project, $event)" title="Tickets">
+                        <i class="ti ti-headset fs-18"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" *ngIf="(project.openTicketsCount || 0) > 0">
+                            {{ project.openTicketsCount }}
+                        </span>
+                    </button>
+                    <a [routerLink]="['/admin/tasks']" [queryParams]="{projectId: project.id}" class="btn btn-icon btn-light rounded-circle" (click)="$event.stopPropagation()" title="Tâches">
+                        <i class="ti ti-list-check fs-18"></i>
                     </a>
-                    <button class="btn btn-sm btn-link text-info position-relative text-decoration-none px-1" (click)="openProjectNotes(project, $event)">
-                        <i class="ti ti-notes fs-16 me-1"></i> Notes
-                        <span class="badge" [class.badge-pulse]="(project.notesCount || 0) > 0" *ngIf="(project.notesCount || 0) > 0">{{ project.notesCount }}</span>
-                    </button>
-                    <button class="btn btn-sm btn-link text-primary position-relative text-decoration-none px-1" (click)="openSupportModal(project, $event)">
-                        <i class="ti ti-headset fs-16 me-1"></i> Tickets
-                        <span class="badge" [class.badge-pulse]="(project.openTicketsCount || 0) > 0" *ngIf="(project.openTicketsCount || 0) > 0">{{ project.openTicketsCount }}</span>
-                    </button>
                 </div>
             </div>
         </div>
