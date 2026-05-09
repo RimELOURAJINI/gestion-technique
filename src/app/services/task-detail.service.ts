@@ -20,8 +20,10 @@ export class TaskDetailService {
     return this.http.get<TaskNote[]>(`${this.baseUrl}/${taskId}/notes`);
   }
 
-  addNote(taskId: number, authorId: number, content: string): Observable<TaskNote> {
-    return this.http.post<TaskNote>(`${this.baseUrl}/${taskId}/notes?authorId=${authorId}`, content);
+  addNote(taskId: number, authorId: number, content: string, parentNoteId?: number): Observable<TaskNote> {
+    let url = `${this.baseUrl}/${taskId}/notes?authorId=${authorId}`;
+    if (parentNoteId) url += `&parentNoteId=${parentNoteId}`;
+    return this.http.post<TaskNote>(url, content);
   }
 
   updateNote(noteId: number, authorId: number, content: string): Observable<TaskNote> {
@@ -42,13 +44,19 @@ export class TaskDetailService {
     });
   }
 
+  markTaskNotesAsRead(taskId: number, userId: number): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/${taskId}/notes/read?userId=${userId}`, {});
+  }
+
   // =========== Project Notes ===========
   getProjectNotes(projectId: number): Observable<ProjectNote[]> {
     return this.http.get<ProjectNote[]>(`${this.projectUrl}/${projectId}/notes`);
   }
 
-  addProjectNote(projectId: number, authorId: number, content: string): Observable<ProjectNote> {
-    return this.http.post<ProjectNote>(`${this.projectUrl}/${projectId}/notes?authorId=${authorId}`, content);
+  addProjectNote(projectId: number, authorId: number, content: string, parentNoteId?: number): Observable<ProjectNote> {
+    let url = `${this.projectUrl}/${projectId}/notes?authorId=${authorId}`;
+    if (parentNoteId) url += `&parentNoteId=${parentNoteId}`;
+    return this.http.post<ProjectNote>(url, content);
   }
 
   updateProjectNote(noteId: number, authorId: number, content: string): Observable<ProjectNote> {
@@ -57,5 +65,9 @@ export class TaskDetailService {
 
   deleteProjectNote(noteId: number, authorId: number): Observable<void> {
     return this.http.delete<void>(`${this.projectUrl}/notes/${noteId}?authorId=${authorId}`);
+  }
+
+  markProjectNotesAsRead(projectId: number, userId: number): Observable<void> {
+    return this.http.post<void>(`${this.projectUrl}/${projectId}/notes/read?userId=${userId}`, {});
   }
 }

@@ -244,6 +244,7 @@ export class MyTasksComponent implements OnInit {
 
   closeNotes(): void {
     this.notesTaskId = null;
+    this.loadTasks(); // Refresh to update notesCount and stop blinking
   }
 
   toggleView(mode: 'table' | 'kanban'): void {

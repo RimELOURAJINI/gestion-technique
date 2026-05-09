@@ -7,20 +7,21 @@ import { Project } from '../../models/models';
 import { PersonalPointageComponent } from '../../shared/personal-pointage/personal-pointage.component';
 
 import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
+import { NotesPanelComponent } from '../../shared/notes-panel/notes-panel.component';
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, RouterModule, PersonalPointageComponent, ProjectSupportModalComponent],
+  imports: [CommonModule, RouterModule, PersonalPointageComponent, ProjectSupportModalComponent, NotesPanelComponent],
   templateUrl: './projects.component.html',
   styleUrl: './projects.component.css'
 })
 export class ProjectsComponent implements OnInit {
   projects: any[] = [];
   selectedProjectForSupport: any = null;
-  unreadTicketCounts: any = {};
   isLoading = true;
   showSupportModal = false;
+  notesProjectId: number | null = null;
 
   constructor(
     private adminService: AdminService,
@@ -31,39 +32,41 @@ export class ProjectsComponent implements OnInit {
   ngOnInit(): void {
     const userId = this.authService.getUserId();
     if (userId) {
-      this.loadProjects(userId);
-      this.loadTicketIndicators();
+      this.loadProjects();
     }
   }
 
-  loadProjects(userId: number) {
+  loadProjects() {
+    this.isLoading = true;
     this.adminService.getAllProjects().subscribe((res: any) => {
       this.projects = res;
       this.isLoading = false;
     });
   }
 
-  loadTicketIndicators() {
-    this.adminService.getProjectUnreadTicketCounts().subscribe({
-        next: (counts) => this.unreadTicketCounts = counts
-    });
-  }
 
   viewDetails(project: Project) {
     this.router.navigate(['/commercial/projects', project.id]);
   }
 
-  isProjectTicketActive(projectId: number): boolean {
-      return (this.unreadTicketCounts[projectId] || 0) > 0;
-  }
-
-  hasTickets(projectId: number): boolean {
-      return (this.unreadTicketCounts[projectId] || 0) > 0;
-  }
-
   openProjectSupport(project: any): void {
       this.selectedProjectForSupport = project;
       this.showSupportModal = true;
+  }
+
+  closeSupportModal(): void {
+      this.showSupportModal = false;
+      this.loadProjects();
+  }
+
+  openProjectNotes(project: any, event: Event): void {
+      event.stopPropagation();
+      this.notesProjectId = project.id;
+  }
+
+  closeNotes(): void {
+      this.notesProjectId = null;
+      this.loadProjects();
   }
 
   getStatusClass(status?: string): string {

@@ -35,12 +35,15 @@
                         <div>
                             <h6 class="mb-0 fw-bold fs-15 text-truncate" style="max-width: 180px;">{{project.name}}</h6>
                             <div class="d-flex align-items-center gap-1 mt-1">
-                                <span class="badge fs-10" [ngClass]="getStatusClass(project.status)">
-                                    {{project.status}}
-                                </span>
                                 <span class="badge bg-soft-info text-info fs-10 cursor-pointer hover-effect" 
+                                      [class.badge-pulse]="(project.notesCount || 0) > 0"
+                                      (click)="openProjectNotes(project, $event)">
+                                    <i class="ti ti-notes me-1"></i> {{project.notesCount || 0}} Notes
+                                </span>
+                                <span class="badge bg-soft-primary text-primary fs-10 cursor-pointer hover-effect" 
+                                      [class.badge-pulse]="(project.openTicketsCount || 0) > 0"
                                       (click)="openSupportModal(project, $event)">
-                                    <i class="ti ti-headset me-1"></i> Support
+                                    <i class="ti ti-headset me-1"></i> {{project.openTicketsCount || 0}} Tickets
                                 </span>
                             </div>
                         </div>
@@ -139,11 +142,13 @@
                     <a [routerLink]="['/admin/tasks']" [queryParams]="{projectId: project.id}" class="btn btn-sm btn-link text-muted hover-primary text-decoration-none px-1" (click)="$event.stopPropagation()">
                         <i class="ti ti-list-check fs-16 me-1"></i> Tâches
                     </a>
-                    <button class="btn btn-sm btn-link text-warning text-decoration-none px-1" (click)="openProjectNotes(project, $event)">
+                    <button class="btn btn-sm btn-link text-info position-relative text-decoration-none px-1" (click)="openProjectNotes(project, $event)">
                         <i class="ti ti-notes fs-16 me-1"></i> Notes
+                        <span class="badge" [class.badge-pulse]="(project.notesCount || 0) > 0" *ngIf="(project.notesCount || 0) > 0">{{ project.notesCount }}</span>
                     </button>
-                    <button class="btn btn-sm btn-link text-danger text-decoration-none px-1" (click)="openSupportModal(project)">
-                        <i class="ti ti-ticket fs-16 me-1"></i> Tickets
+                    <button class="btn btn-sm btn-link text-primary position-relative text-decoration-none px-1" (click)="openSupportModal(project, $event)">
+                        <i class="ti ti-headset fs-16 me-1"></i> Tickets
+                        <span class="badge" [class.badge-pulse]="(project.openTicketsCount || 0) > 0" *ngIf="(project.openTicketsCount || 0) > 0">{{ project.openTicketsCount }}</span>
                     </button>
                 </div>
             </div>

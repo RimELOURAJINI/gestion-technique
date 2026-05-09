@@ -172,6 +172,7 @@ export class ProjectManagementComponent implements OnInit {
     closeSupportModal() {
         this.showSupportModal = false;
         this.selectedSupportProject = null;
+        this.loadAll();
     }
 
     openProjectNotes(project: Project, event: Event) {
@@ -181,6 +182,7 @@ export class ProjectManagementComponent implements OnInit {
 
     closeProjectNotes() {
         this.notesProjectId = null;
+        this.loadAll();
     }
 
     getProgress(project: Project): number {

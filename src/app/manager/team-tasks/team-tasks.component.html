@@ -89,17 +89,18 @@
                             <span class="text-muted fs-9"><i class="ti ti-calendar-plus me-1"></i>Créé le: {{task.createdAt | date:'dd/MM HH:mm'}}</span>
                         </div>
                         <div class="d-flex gap-2 mt-2 pt-2 border-top">
-                            <div class="position-relative flex-grow-1">
-                                <button class="btn btn-xs btn-soft-indigo w-100 py-1" (click)="openNotes(task.id, $event)"><i class="ti ti-notes fs-11 me-1"></i>Notes
-                                </button>
-                                <span class="badge-pulse" *ngIf="task.notesCount && task.notesCount > 0">{{task.notesCount}}</span>
-                            </div>
-                            <div class="position-relative flex-grow-1">
-                                <button class="btn btn-xs btn-soft-orange w-100 py-1" (click)="openSupportModal(task, $event); $event.stopPropagation()">
-                                    <i class="ti ti-ticket fs-11 me-1"></i>Tickets
-                                </button>
-                                <span class="badge-pulse" *ngIf="task.openTicketsCount && task.openTicketsCount > 0">{{task.openTicketsCount}}</span>
-                            </div>
+                                <div class="position-relative flex-grow-1" (click)="openNotes(task.id, $event)">
+                                    <button class="btn btn-xs btn-soft-indigo w-100 py-1">
+                                        <i class="ti ti-notes fs-11 me-1"></i>Notes
+                                    </button>
+                                    <span class="badge-pulse" *ngIf="task.notesCount && task.notesCount > 0">{{task.notesCount}}</span>
+                                </div>
+                                <div class="position-relative flex-grow-1" (click)="openSupportModal(task, $event)">
+                                    <button class="btn btn-xs btn-soft-orange w-100 py-1">
+                                        <i class="ti ti-ticket fs-11 me-1"></i>Tickets
+                                    </button>
+                                    <span class="badge-pulse" *ngIf="task.openTicketsCount && task.openTicketsCount > 0">{{task.openTicketsCount}}</span>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -153,17 +154,18 @@
                         </div>
                         
                         <div class="d-flex gap-2 mt-2 pt-2 border-top">
-                            <div class="position-relative flex-grow-1">
-                                <button class="btn btn-xs btn-soft-indigo w-100 py-1" (click)="openNotes(task.id, $event)"><i class="ti ti-notes fs-11 me-1"></i>Notes
-                                </button>
-                                <span class="badge-pulse" *ngIf="task.notesCount && task.notesCount > 0">{{task.notesCount}}</span>
-                            </div>
-                            <div class="position-relative flex-grow-1">
-                                <button class="btn btn-xs btn-soft-orange w-100 py-1" (click)="openSupportModal(task, $event); $event.stopPropagation()">
-                                    <i class="ti ti-ticket fs-11 me-1"></i>Tickets
-                                </button>
-                                <span class="badge-pulse" *ngIf="task.openTicketsCount && task.openTicketsCount > 0">{{task.openTicketsCount}}</span>
-                            </div>
+                                <div class="position-relative flex-grow-1" (click)="openNotes(task.id, $event)">
+                                    <button class="btn btn-xs btn-soft-indigo w-100 py-1">
+                                        <i class="ti ti-notes fs-11 me-1"></i>Notes
+                                    </button>
+                                    <span class="badge-pulse" *ngIf="task.notesCount && task.notesCount > 0">{{task.notesCount}}</span>
+                                </div>
+                                <div class="position-relative flex-grow-1" (click)="openSupportModal(task, $event)">
+                                    <button class="btn btn-xs btn-soft-orange w-100 py-1">
+                                        <i class="ti ti-ticket fs-11 me-1"></i>Tickets
+                                    </button>
+                                    <span class="badge-pulse" *ngIf="task.openTicketsCount && task.openTicketsCount > 0">{{task.openTicketsCount}}</span>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -217,17 +219,18 @@
                         </div>
                         
                         <div class="d-flex gap-2 mt-2 pt-2 border-top">
-                            <div class="position-relative flex-grow-1">
-                                <button class="btn btn-xs btn-soft-indigo w-100 py-1" (click)="openNotes(task.id, $event)"><i class="ti ti-notes fs-11 me-1"></i>Notes
-                                </button>
-                                <span class="badge-pulse" *ngIf="task.notesCount && task.notesCount > 0">{{task.notesCount}}</span>
-                            </div>
-                            <div class="position-relative flex-grow-1">
-                                <button class="btn btn-xs btn-soft-orange w-100 py-1" (click)="openSupportModal(task, $event); $event.stopPropagation()">
-                                    <i class="ti ti-ticket fs-11 me-1"></i>Tickets
-                                </button>
-                                <span class="badge-pulse" *ngIf="task.openTicketsCount && task.openTicketsCount > 0">{{task.openTicketsCount}}</span>
-                            </div>
+                                <div class="position-relative flex-grow-1" (click)="openNotes(task.id, $event)">
+                                    <button class="btn btn-xs btn-soft-indigo w-100 py-1">
+                                        <i class="ti ti-notes fs-11 me-1"></i>Notes
+                                    </button>
+                                    <span class="badge-pulse" *ngIf="task.notesCount && task.notesCount > 0">{{task.notesCount}}</span>
+                                </div>
+                                <div class="position-relative flex-grow-1" (click)="openSupportModal(task, $event)">
+                                    <button class="btn btn-xs btn-soft-orange w-100 py-1">
+                                        <i class="ti ti-ticket fs-11 me-1"></i>Tickets
+                                    </button>
+                                    <span class="badge-pulse" *ngIf="task.openTicketsCount && task.openTicketsCount > 0">{{task.openTicketsCount}}</span>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -278,17 +281,18 @@
                             </small>
                         </div>
                         <div class="d-flex gap-2 mt-2 pt-2 border-top">
-                            <div class="position-relative flex-grow-1">
-                                <button class="btn btn-xs btn-soft-indigo w-100 py-1" (click)="openNotes(task.id, $event)"><i class="ti ti-notes fs-11 me-1"></i>Notes
-                                </button>
-                                <span class="badge-pulse" *ngIf="task.notesCount && task.notesCount > 0">{{task.notesCount}}</span>
-                            </div>
-                            <div class="position-relative flex-grow-1">
-                                <button class="btn btn-xs btn-soft-orange w-100 py-1" (click)="openSupportModal(task, $event); $event.stopPropagation()">
-                                    <i class="ti ti-ticket fs-11 me-1"></i>Tickets
-                                </button>
-                                <span class="badge-pulse" *ngIf="task.openTicketsCount && task.openTicketsCount > 0">{{task.openTicketsCount}}</span>
-                            </div>
+                                <div class="position-relative flex-grow-1" (click)="openNotes(task.id, $event)">
+                                    <button class="btn btn-xs btn-soft-indigo w-100 py-1">
+                                        <i class="ti ti-notes fs-11 me-1"></i>Notes
+                                    </button>
+                                    <span class="badge-pulse" *ngIf="task.notesCount && task.notesCount > 0">{{task.notesCount}}</span>
+                                </div>
+                                <div class="position-relative flex-grow-1" (click)="openSupportModal(task, $event)">
+                                    <button class="btn btn-xs btn-soft-orange w-100 py-1">
+                                        <i class="ti ti-ticket fs-11 me-1"></i>Tickets
+                                    </button>
+                                    <span class="badge-pulse" *ngIf="task.openTicketsCount && task.openTicketsCount > 0">{{task.openTicketsCount}}</span>
+                                </div>
                         </div>
                     </div>
                 </div>

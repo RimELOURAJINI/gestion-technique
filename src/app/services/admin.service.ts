@@ -84,6 +84,10 @@ export class AdminService {
     return this.http.put<Task>(`${this.baseUrl}/tasks/${taskId}`, task);
   }
 
+  getTasksByProjectId(projectId: number): Observable<Task[]> {
+    return this.http.get<Task[]>(`${this.baseUrl}/tasks/project/${projectId}`);
+  }
+
   // ========== TEAMS ==========
   getAllTeams(): Observable<Team[]> {
     return this.http.get<Team[]>(`${this.baseUrl}/teams/all`);

@@ -26,6 +26,21 @@
 
 <div *ngIf="!isLoading">
     
+    <!-- Filter Bar -->
+    <div class="row mb-3" *ngIf="activeTab === 'kanban'">
+        <div class="col-md-4 col-lg-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-2 d-flex align-items-center gap-2">
+                    <i class="ti ti-filter fs-18 text-primary ms-2"></i>
+                    <select class="form-select border-0 shadow-none fs-13 fw-medium" [(ngModel)]="filterProjectId" (change)="onFilterChange()">
+                        <option [ngValue]="'ALL'">Tous les projets</option>
+                        <option *ngFor="let p of projects" [ngValue]="p.id">{{ p.name }}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- KANBAN VIEW -->
     <div *ngIf="activeTab === 'kanban'" class="kanban-wrapper" cdkDropListGroup>
         <div class="row g-3">
@@ -63,18 +78,17 @@
                                 <h6 class="fs-13 fw-bold mb-1">{{ task.title }}</h6>
                                 <p class="text-muted fs-11 mb-2">{{ task.project?.name || 'Sans projet' }}</p>
                                 
-                                <!-- Notes & Tickets Buttons -->
                                 <div class="d-flex gap-2 mt-2 pt-2 border-top">
-                                    <div class="position-relative flex-grow-1">
-                                        <button class="btn btn-xs btn-outline-info w-100 py-1 fs-10" (click)="openNotes(task, $event)">
+                                    <div class="position-relative flex-grow-1" (click)="openNotes(task, $event)">
+                                        <button class="btn btn-xs btn-outline-info w-100 py-1 fs-10">
                                             <i class="ti ti-notes me-1"></i>Notes
                                         </button>
                                         <span class="badge rounded-pill bg-info position-absolute top-0 start-100 translate-middle border border-white" *ngIf="task.notesCount && task.notesCount > 0" style="font-size: 8px; padding: 2px 4px;">
                                             {{task.notesCount}}
                                         </span>
                                     </div>
-                                    <div class="position-relative flex-grow-1">
-                                        <button class="btn btn-xs btn-outline-danger w-100 py-1 fs-10" (click)="openTaskDetail(task); $event.stopPropagation()">
+                                    <div class="position-relative flex-grow-1" (click)="openSupportModal(task, $event)">
+                                        <button class="btn btn-xs btn-outline-danger w-100 py-1 fs-10">
                                             <i class="ti ti-ticket me-1"></i>Tickets
                                         </button>
                                         <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle border border-white" *ngIf="task.openTicketsCount && task.openTicketsCount > 0" style="font-size: 8px; padding: 2px 4px;">
@@ -226,3 +240,10 @@
   [entityId]="notesTaskId"
   (close)="closeNotes()">
 </app-notes-panel>
+
+<app-project-support-modal 
+    *ngIf="showSupportModal" 
+    [project]="selectedSupportTask?.project || null" 
+    [task]="selectedSupportTask"
+    (onClose)="closeSupportModal()">
+</app-project-support-modal>

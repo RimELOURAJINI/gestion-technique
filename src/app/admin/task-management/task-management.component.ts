@@ -6,11 +6,12 @@ import { AdminService } from '../../services/admin.service';
 import { User, Task, Project } from '../../models/models';
 import { TaskDetailComponent } from '../../shared/task-detail/task-detail.component';
 import { NotesPanelComponent } from '../../shared/notes-panel/notes-panel.component';
+import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
 
 @Component({
     selector: 'app-task-management',
     standalone: true,
-    imports: [CommonModule, FormsModule, DragDropModule, TaskDetailComponent, NotesPanelComponent],
+    imports: [CommonModule, FormsModule, DragDropModule, TaskDetailComponent, NotesPanelComponent, ProjectSupportModalComponent],
     templateUrl: './task-management.component.html',
     styleUrl: './task-management.component.css'
 })
@@ -34,6 +35,11 @@ export class TaskManagementComponent implements OnInit {
     newTask: any = { title: '', description: '', status: 'TODO', priority: 'MEDIUM', deadline: '', startDate: '', type: 'FEATURE', estimatedHours: 0, qualityScore: 0 };
     selectedManagerId: number | null = null;
     selectedProjectId: number | null = null;
+    filterProjectId: number | 'ALL' = 'ALL';
+
+    // Support Modal
+    showSupportModal = false;
+    selectedSupportTask: Task | null = null;
 
     constructor(private adminService: AdminService) { }
 
@@ -52,8 +58,13 @@ export class TaskManagementComponent implements OnInit {
         this.loadTasks();
     }
 
-    loadTasks() {
-        this.adminService.getAllTasks().subscribe({
+    loadTasks(projectId?: number) {
+        this.isLoading = true;
+        const taskObservable = projectId 
+            ? this.adminService.getTasksByProjectId(projectId) 
+            : this.adminService.getAllTasks();
+
+        taskObservable.subscribe({
             next: (res) => {
                 this.tasks = res;
                 this.refreshKanban();
@@ -63,7 +74,17 @@ export class TaskManagementComponent implements OnInit {
         });
     }
 
+    onFilterChange() {
+        if (this.filterProjectId === 'ALL') {
+            this.loadTasks();
+        } else {
+            this.loadTasks(this.filterProjectId as number);
+        }
+    }
+
     refreshKanban() {
+        // No client-side filtering needed anymore as we fetch from backend,
+        // but we keep the method for splitting tasks into columns.
         this.todoTasks = this.tasks.filter(t => t.status === 'TODO' || !t.status);
         this.inProgressTasks = this.tasks.filter(t => t.status === 'IN_PROGRESS');
         this.testTasks = this.tasks.filter(t => t.status === 'TEST');
@@ -143,6 +164,19 @@ export class TaskManagementComponent implements OnInit {
 
     closeNotes() {
         this.notesTaskId = null;
+        this.loadTasks(this.filterProjectId === 'ALL' ? undefined : this.filterProjectId as number);
+    }
+
+    openSupportModal(task: Task, event: Event) {
+        event.stopPropagation();
+        this.selectedSupportTask = task;
+        this.showSupportModal = true;
+    }
+
+    closeSupportModal() {
+        this.showSupportModal = false;
+        this.selectedSupportTask = null;
+        this.loadTasks(this.filterProjectId === 'ALL' ? undefined : this.filterProjectId as number);
     }
 
     resetTaskForm() {

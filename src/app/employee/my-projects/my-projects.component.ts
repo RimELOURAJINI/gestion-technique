@@ -7,11 +7,12 @@ import { Project } from '../../models/models';
 import { RouterModule, Router } from '@angular/router';
 
 import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
+import { NotesPanelComponent } from '../../shared/notes-panel/notes-panel.component';
 
 @Component({
   selector: 'app-my-projects',
   standalone: true,
-  imports: [CommonModule, RouterModule, ProjectSupportModalComponent],
+  imports: [CommonModule, RouterModule, ProjectSupportModalComponent, NotesPanelComponent],
   templateUrl: './my-projects.component.html',
   styleUrl: './my-projects.component.css'
 })
@@ -22,6 +23,8 @@ export class MyProjectsComponent implements OnInit {
   activeTab: 'ongoing' | 'history' = 'ongoing';
   showSupportModal = false;
   selectedProjectForSupport: any = null;
+
+  notesProjectId: number | null = null;
 
   showHistoryModal = false;
   selectedProjectForHistory: Project | null = null;
@@ -76,11 +79,19 @@ export class MyProjectsComponent implements OnInit {
 
           this.projects = finalProjects;
           
-          // Logic: Project is ongoing if it's NOT COMPLETED OR the user has unfinished tasks in it
-          this.ongoingProjects = finalProjects.filter(p => p.status !== 'COMPLETED' || unfinishedProjectIds.has(p.id!));
+          // Logic: Project is ongoing if it's NOT COMPLETED OR the user has unfinished tasks OR has notifications
+          this.ongoingProjects = finalProjects.filter(p => {
+            const isCompleted = p.status === 'COMPLETED';
+            const hasNotifications = (p.notesCount || 0) > 0 || (p.openTicketsCount || 0) > 0;
+            return !isCompleted || unfinishedProjectIds.has(p.id!) || hasNotifications;
+          });
           
-          // Project is in history if it's COMPLETED AND the user has no more unfinished tasks in it
-          this.historicalProjects = finalProjects.filter(p => p.status === 'COMPLETED' && !unfinishedProjectIds.has(p.id!));
+          // Project is in history if it's COMPLETED AND (no unfinished tasks AND no notifications)
+          this.historicalProjects = finalProjects.filter(p => {
+            const isCompleted = p.status === 'COMPLETED';
+            const hasNotifications = (p.notesCount || 0) > 0 || (p.openTicketsCount || 0) > 0;
+            return isCompleted && !unfinishedProjectIds.has(p.id!) && !hasNotifications;
+          });
         });
       });
     }
@@ -99,6 +110,16 @@ export class MyProjectsComponent implements OnInit {
   openProjectSupport(project: Project): void {
     this.selectedProjectForSupport = project;
     this.showSupportModal = true;
+  }
+
+  openProjectNotes(project: Project, event: Event): void {
+    event.stopPropagation();
+    if (project.id) this.notesProjectId = project.id;
+  }
+
+  closeNotes(): void {
+    this.notesProjectId = null;
+    this.loadProjects();
   }
 
   openHistoryDetail(project: Project): void {

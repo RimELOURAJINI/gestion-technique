@@ -176,3 +176,41 @@
   padding: 2px 6px;
   font-size: 0.75rem;
 }
+
+/* Threading & Replies */
+.note-replies {
+    background: rgba(0,0,0,0.015);
+    border-radius: 0 0 14px 14px;
+}
+
+.note-item.reply {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    border-radius: 0;
+    margin-bottom: 0;
+}
+
+.note-item.reply:last-child {
+    border-bottom: none;
+}
+
+.replying-to {
+    border-radius: 10px;
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border: none;
+}
+
+.note-actions {
+    opacity: 0.6; /* visible by default but dimmed */
+}
+
+.note-item:hover .note-actions {
+    opacity: 1;
+}
+
+.note-actions .btn-icon:hover {
+    background: rgba(0,0,0,0.05);
+    border-radius: 50%;
+}

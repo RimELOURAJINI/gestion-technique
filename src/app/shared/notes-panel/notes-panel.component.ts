@@ -27,6 +27,7 @@ export class NotesPanelComponent implements OnInit, OnChanges {
   editingNoteId: number | null = null;
   editContent = '';
   currentUser: User | null = null;
+  replyingToId: number | null = null;
 
   constructor(
     private noteService: TaskDetailService,
@@ -40,6 +41,7 @@ export class NotesPanelComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.currentUser = this.authService.currentUserValue as any;
     this.loadNotes();
+    this.markAsRead();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -53,14 +55,39 @@ export class NotesPanelComponent implements OnInit, OnChanges {
     this.isLoading = true;
     if (this.mode === 'task') {
       this.noteService.getTaskNotes(this.entityId).subscribe({
-        next: (data: TaskNote[]) => { this.taskNotes = data; this.isLoading = false; },
+        next: (data: TaskNote[]) => { 
+            // Build tree from flat list
+            const roots = data.filter(n => !n.parentNote);
+            roots.forEach(root => {
+                root.replies = data.filter(child => child.parentNote && child.parentNote.id === root.id);
+            });
+            this.taskNotes = roots; 
+            this.isLoading = false; 
+        },
         error: () => { this.isLoading = false; }
       });
     } else {
       this.noteService.getProjectNotes(this.entityId).subscribe({
-        next: (data: ProjectNote[]) => { this.projectNotes = data; this.isLoading = false; },
+        next: (data: ProjectNote[]) => { 
+            const roots = data.filter(n => !n.parentNote);
+            roots.forEach(root => {
+                root.replies = data.filter(child => child.parentNote && child.parentNote.id === root.id);
+            });
+            this.projectNotes = roots; 
+            this.isLoading = false; 
+        },
         error: () => { this.isLoading = false; }
       });
+    }
+  }
+
+  markAsRead(): void {
+    const userId = this.authService.getUserId();
+    if (!this.entityId || !userId) return;
+    if (this.mode === 'task') {
+      this.noteService.markTaskNotesAsRead(this.entityId, userId).subscribe();
+    } else {
+      this.noteService.markProjectNotesAsRead(this.entityId, userId).subscribe();
     }
   }
 
@@ -69,20 +96,45 @@ export class NotesPanelComponent implements OnInit, OnChanges {
     if (!this.newContent.trim() || !userId) return;
     const content = this.newContent.trim();
     if (this.mode === 'task') {
-      this.noteService.addNote(this.entityId, userId, content).subscribe({
+      this.noteService.addNote(this.entityId, userId, content, this.replyingToId || undefined).subscribe({
         next: (note: TaskNote) => {
-          this.taskNotes.unshift(note);
+          if (this.replyingToId) {
+            this.loadNotes(); // Refresh to show nested reply
+          } else {
+            this.taskNotes.unshift(note);
+          }
           this.newContent = '';
+          this.replyingToId = null;
         }
       });
     } else {
-      this.noteService.addProjectNote(this.entityId, userId, content).subscribe({
+      this.noteService.addProjectNote(this.entityId, userId, content, this.replyingToId || undefined).subscribe({
         next: (note: ProjectNote) => {
-          this.projectNotes.unshift(note);
+          if (this.replyingToId) {
+            this.loadNotes();
+          } else {
+            this.projectNotes.unshift(note);
+          }
           this.newContent = '';
+          this.replyingToId = null;
         }
       });
     }
+  }
+
+  startReply(note: TaskNote | ProjectNote): void {
+    this.replyingToId = note.id || null;
+    this.newContent = `@${this.getAuthorName(note)} `;
+    // Focus the textarea
+    setTimeout(() => {
+        const textarea = document.querySelector('.notes-form textarea') as HTMLTextAreaElement;
+        if (textarea) textarea.focus();
+    }, 100);
+  }
+
+  cancelReply(): void {
+    this.replyingToId = null;
+    this.newContent = '';
   }
 
   startEdit(note: TaskNote | ProjectNote): void {
@@ -101,17 +153,15 @@ export class NotesPanelComponent implements OnInit, OnChanges {
     const content = this.editContent.trim();
     if (this.mode === 'task') {
       this.noteService.updateNote(this.editingNoteId, userId, content).subscribe({
-        next: (updated: TaskNote) => {
-          const idx = this.taskNotes.findIndex(n => n.id === this.editingNoteId);
-          if (idx !== -1) this.taskNotes[idx] = updated;
+        next: () => {
+          this.loadNotes();
           this.editingNoteId = null;
         }
       });
     } else {
       this.noteService.updateProjectNote(this.editingNoteId, userId, content).subscribe({
-        next: (updated: ProjectNote) => {
-          const idx = this.projectNotes.findIndex(n => n.id === this.editingNoteId);
-          if (idx !== -1) this.projectNotes[idx] = updated;
+        next: () => {
+          this.loadNotes();
           this.editingNoteId = null;
         }
       });
@@ -124,28 +174,33 @@ export class NotesPanelComponent implements OnInit, OnChanges {
     if (!confirm('Supprimer cette note ?')) return;
     if (this.mode === 'task') {
       this.noteService.deleteNote(note.id, userId).subscribe({
-        next: () => { this.taskNotes = this.taskNotes.filter(n => n.id !== note.id); }
+        next: () => { this.loadNotes(); }
       });
     } else {
       this.noteService.deleteProjectNote(note.id, userId).subscribe({
-        next: () => { this.projectNotes = this.projectNotes.filter(n => n.id !== note.id); }
+        next: () => { this.loadNotes(); }
       });
     }
   }
 
   getAuthorInitials(note: TaskNote | ProjectNote): string {
-    const author = (note as any).author;
+    const author = note.author;
     if (!author) return '?';
     return `${(author.firstName || '')[0] || ''}${(author.lastName || '')[0] || ''}`.toUpperCase();
   }
 
   getAuthorName(note: TaskNote | ProjectNote): string {
-    const author = (note as any).author;
+    const author = note.author;
     if (!author) return 'Inconnu';
     return `${author.firstName} ${author.lastName}`;
   }
 
   isEditing(note: TaskNote | ProjectNote): boolean {
     return this.editingNoteId === note.id;
+  }
+
+  canModify(note: TaskNote | ProjectNote): boolean {
+    if (!this.currentUser || !note.author) return false;
+    return this.currentUser.id === note.author.id;
   }
 }

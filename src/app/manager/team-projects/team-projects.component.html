@@ -35,14 +35,18 @@
                         </div>
                         <div>
                             <h6 class="mb-0 fw-bold fs-15">{{project.name}}</h6>
-                            <span class="badge fs-10" [ngClass]="getStatusClass(project.status)">
-                                {{project.status || 'ACTIVE'}}
-                            </span>
-                            <span class="badge bg-soft-info text-info fs-10 ms-1 cursor-pointer hover-effect" 
-                                  *ngIf="project.openTicketsCount !== undefined"
-                                  (click)="openSupportModal(project, $event)">
-                                <i class="ti ti-headset me-1"></i> {{project.openTicketsCount}} Tickets
-                            </span>
+                            <div class="d-flex gap-1 mt-1">
+                                <span class="badge bg-soft-info text-info fs-10 cursor-pointer hover-effect" 
+                                      [class.badge-pulse]="(project.notesCount || 0) > 0"
+                                      (click)="openProjectNotes(project, $event)">
+                                    <i class="ti ti-notes me-1"></i> {{project.notesCount || 0}} Notes
+                                </span>
+                                <span class="badge bg-soft-primary text-primary fs-10 cursor-pointer hover-effect" 
+                                      [class.badge-pulse]="(project.openTicketsCount || 0) > 0"
+                                      (click)="openSupportModal(project, $event)">
+                                    <i class="ti ti-headset me-1"></i> {{project.openTicketsCount || 0}} Tickets
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -121,3 +125,9 @@
     [project]="selectedSupportProject" 
     (onClose)="closeSupportModal()">
 </app-project-support-modal>
+
+<app-notes-panel *ngIf="notesProjectId" 
+    [mode]="'project'" 
+    [entityId]="notesProjectId" 
+    (close)="closeNotes()">
+</app-notes-panel>

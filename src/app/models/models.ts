@@ -39,6 +39,7 @@ export interface Project {
   client?: User;
   commercial?: User;
   openTicketsCount?: number; // UI Badge count
+  notesCount?: number;       // UI Badge count
   memberCount?: number;
   involvedUsers?: User[];
   activeTasksCount?: number;
@@ -170,6 +171,9 @@ export interface TaskNote {
   content: string;
   createdAt?: string;
   isRead?: boolean;
+  isDeleted?: boolean;
+  parentNote?: TaskNote;
+  replies?: TaskNote[];
 }
 
 export interface TaskStatusHistory {
@@ -187,4 +191,8 @@ export interface ProjectNote {
   author?: User;
   content: string;
   createdAt?: string;
+  isRead?: boolean;
+  isDeleted?: boolean;
+  parentNote?: ProjectNote;
+  replies?: ProjectNote[];
 }

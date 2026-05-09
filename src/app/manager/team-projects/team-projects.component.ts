@@ -6,11 +6,12 @@ import { AuthService } from '../../services/auth.service';
 import { Project, Ticket } from '../../models/models';
 import { TicketService } from '../../services/ticket.service';
 import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
+import { NotesPanelComponent } from '../../shared/notes-panel/notes-panel.component';
 
 @Component({
     selector: 'app-team-projects',
     standalone: true,
-    imports: [CommonModule, RouterModule, ProjectSupportModalComponent],
+    imports: [CommonModule, RouterModule, ProjectSupportModalComponent, NotesPanelComponent],
     templateUrl: './team-projects.component.html',
     styleUrl: './team-projects.component.css'
 })
@@ -19,6 +20,7 @@ export class TeamProjectsComponent implements OnInit {
     isLoading = true;
     showSupportModal = false;
     selectedSupportProject: Project | null = null;
+    notesProjectId: number | null = null;
     basePath: string = '/manager';
 
     constructor(
@@ -38,12 +40,14 @@ export class TeamProjectsComponent implements OnInit {
             this.teamLeaderService.getProjectsByUserId(userId).subscribe({
                 next: (res) => {
                     // Only show ongoing projects (exclude COMPLETED, TERMINE, etc.)
-                    this.projects = res.filter(p => {
-                        const s = (p.status || '').toUpperCase();
-                        return !(s === 'COMPLETED' || s === 'DONE' || s === 'TERMINE' || s === 'TERMINEE' || s === 'DELIVERED');
-                    });
-                    this.loadTicketCounts(userId);
-                },
+                        this.projects = res.filter(p => {
+                            const s = (p.status || '').toUpperCase();
+                            const isCompleted = s === 'COMPLETED' || s === 'DONE' || s === 'TERMINE' || s === 'TERMINEE' || s === 'DELIVERED';
+                            const hasNotifications = (p.notesCount || 0) > 0 || (p.openTicketsCount || 0) > 0;
+                            return !isCompleted || hasNotifications;
+                        });
+                        this.isLoading = false;
+                    },
                 error: (err) => {
                     console.error('Error loading projects:', err);
                     this.isLoading = false;
@@ -74,6 +78,17 @@ export class TeamProjectsComponent implements OnInit {
     closeSupportModal() {
         this.showSupportModal = false;
         this.selectedSupportProject = null;
+        this.loadProjects();
+    }
+
+    openProjectNotes(project: Project, event: Event) {
+        event.stopPropagation();
+        if (project.id) this.notesProjectId = project.id;
+    }
+
+    closeNotes() {
+        this.notesProjectId = null;
+        this.loadProjects();
     }
 
     getProgress(project: Project): number {
