@@ -19,6 +19,10 @@ export class StatsService {
     return this.http.get(`${this.apiUrl}/admin/audit`);
   }
 
+  getAdminPerformance(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/admin/performance`);
+  }
+
   // Manager Stats
   getTeamWorkload(managerId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/manager/planning/${managerId}`);

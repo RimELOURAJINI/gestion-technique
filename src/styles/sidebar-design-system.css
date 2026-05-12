@@ -14,20 +14,20 @@
   /* Fond item au hover */
   --sidebar-item-hover-bg: #f1f5f9;
 
-  /* Couleur item actif - Indigo Pur */
-  --sidebar-item-active-color: #4f46e5;
+  /* Couleur item actif - Blue Pur */
+  --sidebar-item-active-color: #2563eb;
 
-  /* Fond item actif - Violet très léger pour le contraste */
-  --sidebar-item-active-bg: #eef2ff;
+  /* Fond item actif - Blue très léger pour le contraste */
+  --sidebar-item-active-bg: #eff6ff;
 
   /* Bordure gauche item actif */
-  --sidebar-item-active-border: #4f46e5;
+  --sidebar-item-active-border: #2563eb;
 
   /* Couleur des icônes au repos */
   --sidebar-icon-color: #64748b;
 
   /* Couleur des icônes actif/hover */
-  --sidebar-icon-active-color: #4f46e5;
+  --sidebar-icon-active-color: #2563eb;
 
   /* Couleur des séparateurs */
   --sidebar-divider-color: #e2e8f0;
@@ -35,7 +35,7 @@
   /* Couleur des labels de section */
   --sidebar-section-label-color: #94a3b8;
 
-  /* Fond badge/notification */
+  /* Fond badge/notification - Soft Red */
   --sidebar-badge-bg: #ef4444;
   --sidebar-badge-color: #ffffff;
 

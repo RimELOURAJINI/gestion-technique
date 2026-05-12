@@ -1,21 +1,21 @@
 <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
     <div class="card-body p-0">
-        <div class="bg-primary text-white p-3 d-flex align-items-center justify-content-between" [class.bg-success]="activeAttendance?.checkIn && !activeAttendance?.checkOut">
+        <div class="ergonomic-banner-header d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
-                <div class="avatar avatar-md bg-white bg-opacity-25 rounded-circle me-3 d-flex align-items-center justify-content-center shadow-sm">
+                <div class="avatar avatar-md rounded-circle me-3 d-flex align-items-center justify-content-center shadow-sm">
                     <i class="ti ti-clock-check fs-24" *ngIf="!activeAttendance?.checkIn || activeAttendance?.checkOut"></i>
                     <i class="ti ti-player-pause fs-24" *ngIf="activeAttendance?.checkIn && !activeAttendance?.checkOut"></i>
                 </div>
                 <div>
-                    <h5 class="mb-0 text-white fw-bold">Espace Pointage Personnel</h5>
-                    <p class="mb-0 text-white text-opacity-75 fs-12">
+                    <h5 class="mb-0 fw-bold">Espace Pointage Personnel</h5>
+                    <p class="mb-0 text-muted fs-12">
                         <span *ngIf="!activeAttendance?.checkIn || activeAttendance?.checkOut">Prêt pour votre journée ?</span>
                         <span *ngIf="activeAttendance?.checkIn && !activeAttendance?.checkOut">Session active depuis {{ activeAttendance.checkIn | date:'HH:mm' }}</span>
                     </p>
                 </div>
             </div>
             <div *ngIf="activeAttendance?.checkIn && !activeAttendance?.checkOut" class="d-flex align-items-center gap-2">
-                <div class="badge bg-white bg-opacity-25 text-white border border-white border-opacity-50 px-3 py-2 rounded-pill fs-14 fw-bold">
+                <div class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill fs-14 fw-bold">
                     <i class="ti ti-timer me-1"></i> {{ elapsedTime }}
                 </div>
             </div>

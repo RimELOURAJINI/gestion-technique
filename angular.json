@@ -25,7 +25,6 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css",
               "src/assets/assets/css/bootstrap.min.css",
               "src/assets/assets/plugins/daterangepicker/daterangepicker.css",
               "src/assets/assets/plugins/datatables/css/dataTables.bootstrap5.min.css",
@@ -33,7 +32,8 @@
               "src/assets/assets/plugins/tabler-icons/tabler-icons.min.css",
               "src/assets/assets/plugins/select2/css/select2.min.css",
               "src/assets/assets/plugins/simplebar/simplebar.min.css",
-              "src/assets/assets/css/style.css"
+              "src/assets/assets/css/style.css",
+              "src/styles.css"
             ],
             "scripts": [
               "src/assets/assets/js/jquery-3.7.1.min.js",

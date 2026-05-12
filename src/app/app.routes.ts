@@ -66,6 +66,7 @@ import { MyPrimesComponent } from './shared/my-primes/my-primes.component';
 import { HistoryComponent } from './shared/history/history.component';
 import { TaskHistoryComponent } from './employee/history/task-history.component';
 
+import { AdminPerformanceComponent } from './admin/performance/performance.component';
 import { SignupComponent } from './signup/signup.component';
 
 export const routes: Routes = [
@@ -88,6 +89,7 @@ export const routes: Routes = [
       { path: 'users', component: UserManagementComponent },
       { path: 'finance', component: AdminFinanceComponent },
       { path: 'audit', component: AdminAuditComponent },
+      { path: 'performance', component: AdminPerformanceComponent },
       { path: 'daily-reports', component: AdminDailyReportsComponent },
       { path: 'role-permissions', component: FeaturePlaceholderComponent, data: { title: 'Rôles & Permissions', description: 'Configuration des rôles et droits d\'accès.' } },
       { path: 'settings', component: FeaturePlaceholderComponent, data: { title: 'Paramètres Admin', description: 'Paramètres généraux, logs et sauvegardes.' } },

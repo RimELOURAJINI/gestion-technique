@@ -55,15 +55,15 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card border-0 shadow-sm rounded-4 welcome-banner-premium text-white h-100 p-0">
+                    <div class="card border-0 shadow-sm rounded-4 welcome-banner-premium h-100 p-0">
                         <div class="card-body p-4">
-                            <h6 class="text-white-50 small text-uppercase fw-bold mb-3">Progression Technique</h6>
+                            <h6 class="text-muted small text-uppercase fw-bold mb-3">Progression Technique</h6>
                             <div class="d-flex align-items-end justify-content-between mb-2">
-                                <h3 class="mb-0 fw-bold text-white">{{project.progress || 0}}%</h3>
-                                <div class="fs-12 text-white-50">Basé sur les tâches</div>
+                                <h3 class="mb-0 fw-bold text-primary">{{project.progress || 0}}%</h3>
+                                <div class="fs-12 text-muted">Basé sur les tâches</div>
                             </div>
-                            <div class="progress bg-white-transparent" style="height: 8px;">
-                                <div class="progress-bar bg-white" [style.width.%]="project.progress || 0"></div>
+                            <div class="progress bg-light" style="height: 8px;">
+                                <div class="progress-bar bg-primary" [style.width.%]="project.progress || 0"></div>
                             </div>
                         </div>
                     </div>
@@ -202,10 +202,10 @@
             </div>
 
             <!-- Quick Actions -->
-            <div class="card border-0 shadow-sm rounded-4 welcome-banner-premium text-white p-2">
+            <div class="card border-0 shadow-sm rounded-4 welcome-banner-premium p-2">
                 <div class="card-body text-center py-4">
-                    <p class="mb-3 text-white-50">Besoin d'aide sur ce projet ?</p>
-                    <button class="btn btn-light rounded-pill w-100 fw-bold py-2 shadow-sm" (click)="openSupport()">
+                    <p class="mb-3 text-muted">Besoin d'aide sur ce projet ?</p>
+                    <button class="btn btn-primary rounded-pill w-100 fw-bold py-2 shadow-sm" (click)="openSupport()">
                         Ouvrir le Ticket Hub
                     </button>
                 </div>

@@ -16,13 +16,13 @@
 
 <!-- Welcome Wrap -->
 <div class="welcome-wrap mb-4">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 bg-dark rounded p-4">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 rounded p-4">
         <div>
-            <h2 class="mb-1 text-white fs-24">Bonjour, {{authService.getUserName() || 'Collaborateur'}}</h2>
-            <p class="text-light fs-14 mb-0">Vous avez {{stats.activeTasks}} tâches en cours à terminer.</p>
+            <h2 class="mb-1 fs-24">Bonjour, {{authService.getUserName() || 'Collaborateur'}}</h2>
+            <p class="text-muted fs-14 mb-0">Vous avez {{stats.activeTasks}} tâches en cours à terminer.</p>
         </div>
         <div class="d-flex align-items-center flex-wrap gap-2">
-            <a routerLink="/employee/projects" class="btn btn-warning btn-sm text-dark fw-bold">Mes Projets</a>
+            <a routerLink="/employee/projects" class="btn btn-primary btn-sm">Mes Projets</a>
             <a routerLink="/employee/tasks" class="btn btn-light btn-sm">Mes Tâches</a>
         </div>
     </div>
@@ -34,18 +34,18 @@
     <div class="col-12">
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
             <div class="card-body p-0">
-                <div class="bg-primary text-white p-3 d-flex align-items-center justify-content-between" [class.bg-success]="activeAttendance?.checkIn">
+                <div class="ergonomic-banner-header d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
-                        <div class="avatar avatar-md bg-white bg-opacity-25 rounded-circle me-3 d-flex align-items-center justify-content-center">
+                        <div class="avatar avatar-md rounded-circle me-3 d-flex align-items-center justify-content-center">
                             <i class="ti ti-clock-check fs-24" *ngIf="!activeAttendance?.checkIn"></i>
                             <i class="ti ti-user-check fs-24" *ngIf="activeAttendance?.checkIn"></i>
                         </div>
                         <div>
-                            <h5 class="mb-0 text-white fw-bold">Pointage du Jour</h5>
-                            <p class="mb-0 text-white text-opacity-75 fs-12">{{ activeAttendance?.checkIn ? 'Votre présence est confirmée' : 'Veuillez marquer votre arrivée' }}</p>
+                            <h5 class="mb-0 fw-bold">Pointage du Jour</h5>
+                            <p class="mb-0 text-muted fs-12">{{ activeAttendance?.checkIn ? 'Votre présence est confirmée' : 'Veuillez marquer votre arrivée' }}</p>
                         </div>
                     </div>
-                    <div *ngIf="activeAttendance?.checkIn" class="badge bg-white bg-opacity-25 text-white border border-white border-opacity-50 px-3 py-2 rounded-pill">
+                    <div *ngIf="activeAttendance?.checkIn" class="badge bg-soft-success text-success border border-success border-opacity-25 px-3 py-2 rounded-pill">
                         <i class="ti ti-circle-check-filled me-1"></i> Présence Enregistrée
                     </div>
                 </div>
@@ -192,10 +192,10 @@
 <!-- AI Insights -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card bg-dark text-white shadow-lg border-0" style="background: linear-gradient(135deg, #1b2850 0%, #0d162a 100%) !important;">
+        <div class="card ai-insights-card text-white shadow-lg border-0">
             <div class="card-header border-0 d-flex justify-content-between align-items-center bg-transparent pt-4 pb-0">
                 <h5 class="mb-0 fs-18 fw-bold text-white d-flex align-items-center">
-                    <span class="avatar avatar-sm bg-primary rounded-circle me-2 d-flex align-items-center justify-content-center shadow-sm">
+                    <span class="avatar avatar-sm bg-blue-600 rounded-circle me-2 d-flex align-items-center justify-content-center shadow-sm">
                         <i class="ti ti-robot text-white fs-16"></i>
                     </span>
                     AI Assistant - Organisation Quotidienne

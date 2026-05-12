@@ -18,10 +18,10 @@
 
 <!-- Welcome Wrap -->
 <div class="welcome-wrap mb-4">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 bg-dark rounded p-4">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 rounded p-4">
         <div>
-            <h2 class="mb-1 text-white fs-24">Tableau de Bord, Manager</h2>
-            <p class="text-light fs-14 mb-0">Vous avez {{stats.activeTasks}} tâches actives à superviser.</p>
+            <h2 class="mb-1 fs-24">Tableau de Bord, Manager</h2>
+            <p class="text-muted fs-14 mb-0">Vous avez {{stats.activeTasks}} tâches actives à superviser.</p>
         </div>
         <div class="d-flex align-items-center flex-wrap gap-2">
             <a [routerLink]="basePath + '/projects'" class="btn btn-primary btn-sm">Mes Projets</a>
@@ -221,20 +221,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Mocking leaderboard for demo -->
-                            <tr>
+                            <tr *ngFor="let item of leaderboardData">
                                 <td class="ps-3 py-3 d-flex align-items-center">
-                                    <div class="avatar avatar-xs bg-primary text-white rounded-circle me-2">J</div>
-                                    <span class="fs-13">Jean Dupont</span>
+                                    <div class="avatar avatar-xs text-white rounded-circle me-2" [ngClass]="item.color">{{item.initials}}</div>
+                                    <span class="fs-13">{{item.name}}</span>
                                 </td>
-                                <td><span class="badge bg-soft-success text-success">98%</span></td>
+                                <td><span class="badge bg-soft-success text-success">{{item.score}}%</span></td>
                             </tr>
-                            <tr>
-                                <td class="ps-3 py-3 d-flex align-items-center">
-                                    <div class="avatar avatar-xs bg-info text-white rounded-circle me-2">M</div>
-                                    <span class="fs-13">Marie Laurent</span>
-                                </td>
-                                <td><span class="badge bg-soft-primary text-primary">85%</span></td>
+                            <tr *ngIf="leaderboardData.length === 0">
+                                <td colspan="2" class="text-center py-4 text-muted fs-12">Aucun commercial trouvé</td>
                             </tr>
                         </tbody>
                     </table>

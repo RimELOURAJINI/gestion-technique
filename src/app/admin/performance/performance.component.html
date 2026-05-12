@@ -1,0 +1,141 @@
+<div class="performance-container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div>
+                    <h4 class="mb-1 fw-bold">Performance Globale</h4>
+                    <p class="text-muted fs-13 mb-0">Analyse de la productivité, présence et efficacité des équipes et individus.</p>
+                </div>
+                <button class="btn btn-primary d-flex align-items-center" (click)="loadPerformanceData()">
+                    <i class="ti ti-refresh me-2"></i>Actualiser
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Charts -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-7">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header border-0 bg-transparent pt-4 px-4">
+                    <h5 class="card-title fw-bold mb-0">Performance par Équipe</h5>
+                </div>
+                <div class="card-body">
+                    <div id="team-chart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header border-0 bg-transparent pt-4 px-4">
+                    <h5 class="card-title fw-bold mb-0">Analyse du Top 5 Individuel</h5>
+                </div>
+                <div class="card-body">
+                    <div id="individual-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboards -->
+    <div class="row g-4">
+        <!-- Team Leaderboard -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header border-0 bg-transparent pt-4 px-4">
+                    <h5 class="card-title fw-bold mb-0">Classement des Équipes</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 py-3 text-muted small text-uppercase fw-bold">Équipe</th>
+                                    <th class="py-3 text-muted small text-uppercase fw-bold text-center">Membres</th>
+                                    <th class="pe-4 py-3 text-muted small text-uppercase fw-bold text-end">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let team of performanceData.teams; let i = index">
+                                    <td class="ps-4 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-3 fw-bold text-muted">{{i + 1}}.</span>
+                                            <div>
+                                                <h6 class="mb-0 fw-bold fs-14">{{team.name}}</h6>
+                                                <small class="text-muted">Mgr: {{team.manager}}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center py-3">
+                                        <span class="badge bg-soft-info text-info rounded-pill px-3">{{team.memberCount}}</span>
+                                    </td>
+                                    <td class="pe-4 py-3 text-end">
+                                        <span class="fw-bold fs-15" [ngClass]="team.score >= 80 ? 'text-success' : 'text-primary'">{{team.score}}%</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Individual Leaderboard -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header border-0 bg-transparent pt-4 px-4">
+                    <h5 class="card-title fw-bold mb-0">Indicateurs Individuels (Top 20)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 py-3 text-muted small text-uppercase fw-bold">Collaborateur</th>
+                                    <th class="py-3 text-muted small text-uppercase fw-bold text-center">Détails (P / T / V / Q)</th>
+                                    <th class="pe-4 py-3 text-muted small text-uppercase fw-bold text-end">Score Global</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let ind of performanceData.individuals">
+                                    <td class="ps-4 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm rounded-circle bg-soft-primary text-primary me-3 fw-bold">
+                                                {{ind.name.charAt(0)}}
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0 fw-bold fs-14">{{ind.name}}</h6>
+                                                <small class="text-muted">{{ind.role}}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center py-3">
+                                        <div class="d-flex justify-content-center gap-1">
+                                            <span class="badge badge-dot bg-success" title="Présence: {{ind.presence}}/25"></span>
+                                            <span class="badge badge-dot bg-primary" title="Tâches: {{ind.tasks}}/35"></span>
+                                            <span class="badge badge-dot bg-warning" title="Victoires: {{ind.victories}}/25"></span>
+                                            <span class="badge badge-dot bg-info" title="Qualité: {{ind.problems}}/15"></span>
+                                        </div>
+                                        <small class="text-muted extra-small">{{ind.presence}} / {{ind.tasks}} / {{ind.victories}} / {{ind.problems}}</small>
+                                    </td>
+                                    <td class="pe-4 py-3 text-end">
+                                        <div class="d-flex align-items-center justify-content-end">
+                                            <div class="progress me-2" style="width: 60px; height: 6px;">
+                                                <div class="progress-bar" [ngClass]="ind.score >= 80 ? 'bg-success' : 'bg-primary'" [style.width.%]="ind.score"></div>
+                                            </div>
+                                            <span class="fw-bold" [ngClass]="ind.score >= 80 ? 'text-success' : 'text-primary'">{{ind.score}}%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="isLoading" class="loader-overlay d-flex align-items-center justify-content-center">
+    <div class="spinner-border text-primary" role="status"></div>
+</div>

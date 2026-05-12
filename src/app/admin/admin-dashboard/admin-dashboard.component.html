@@ -25,24 +25,13 @@
                     <i class="ti ti-arrow-bar-to-right"></i>
                 </button> 
                 
-                <!-- Search (Template Feature) -->
-                <div class="me-auto d-flex align-items-center header-search d-lg-flex d-none">
-                    <div class="input-icon position-relative me-2">
-                       <input type="text" class="form-control" placeholder="Rechercher...">
-                       <span class="input-icon-addon d-inline-flex p-0 header-search-icon"><i class="ti ti-command"></i></span>
-                    </div>
-                </div>
+                <!-- Search removed as requested -->
                 
             </div>
 
             <div class="d-flex align-items-center">
             
-                <!-- Maximize -->
-                <div class="header-item">
-                    <div class="dropdown me-2">
-                        <a href="javascript:void(0);" class="btn topbar-link btnFullscreen"><i class="ti ti-maximize"></i></a>
-                    </div> 
-                </div> 
+                <!-- Fullscreen removed as requested -->
 
                 <!-- Dark Mode -->
                 <div class="header-item d-none d-sm-flex me-2">
@@ -51,37 +40,7 @@
                     </button>
                 </div>
 
-                <!-- Notifications -->
-                <div class="header-item">
-                    <div class="dropdown me-2">
-                        <button class="topbar-link btn dropdown-toggle drop-arrow-none" data-bs-toggle="dropdown" type="button">
-                            <i class="ti ti-bell-check fs-18"></i>
-                            <span class="badge rounded-pill bg-danger" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
-                        </button>
-
-                        <div class="dropdown-menu p-0 dropdown-menu-end dropdown-menu-lg">
-                            <div class="p-2 border-bottom d-flex align-items-center justify-content-between">
-                                <h6 class="m-0 fs-16 fw-semibold">Notifications</h6>
-                                <a *ngIf="notifications.length > 0" href="javascript:void(0);" (click)="markAllAsRead()" class="fs-12 text-primary">Tout marquer lu</a>
-                            </div>
-                            <div class="notification-body" data-simplebar style="max-height: 250px;">
-                                <div *ngIf="notifications.length === 0" class="p-3 text-center text-muted">Aucune nouvelle notification</div>
-                                <div *ngFor="let notif of notifications" class="p-3 border-bottom notification-item" (click)="markAsRead(notif.id)">
-                                    <div class="d-flex align-items-start">
-                                        <div class="avatar avatar-xs bg-soft-primary text-primary rounded-circle me-2 d-flex align-items-center justify-content-center">
-                                            <i class="ti ti-info-circle fs-14"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <p class="mb-0 fs-13 text-dark">{{ notif.message }}</p>
-                                            <small class="text-muted fs-11">{{ notif.createdAt | date:'shortTime' }}</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
+                <!-- Notifications removed as requested -->
 
                 <!-- User Dropdown -->
                 <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center">
@@ -279,9 +238,9 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" routerLink="/admin/history" routerLinkActive="active">
-                            <i class="ti ti-history sidebar-icon"></i>
-                            <span class="sidebar-text">Historique Projets</span>
+                        <a class="sidebar-link" routerLink="/admin/performance" routerLinkActive="active">
+                            <i class="ti ti-chart-bar sidebar-icon"></i>
+                            <span class="sidebar-text">Performance</span>
                         </a>
                     </li>
                 </ul>

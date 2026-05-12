@@ -1,0 +1,62 @@
+.performance-container {
+    padding: 1.5rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05) !important;
+}
+
+.badge-dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border-radius: 50%;
+}
+
+.extra-small {
+    font-size: 10px;
+}
+
+.avatar-sm {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.bg-soft-primary { background-color: rgba(37, 99, 235, 0.1) !important; }
+.bg-soft-success { background-color: rgba(22, 163, 74, 0.1) !important; }
+.bg-soft-info { background-color: rgba(14, 165, 233, 0.1) !important; }
+.bg-soft-warning { background-color: rgba(234, 88, 12, 0.1) !important; }
+
+.loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 9999;
+    backdrop-filter: blur(2px);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.table th {
+    border-top: none;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
