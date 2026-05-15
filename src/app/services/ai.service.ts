@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AiService {
-  private baseUrl = 'http://localhost:8080/AIEducanet/';
+  private baseUrl = 'http://54.37.245.19:4950/AIEducanet/';
 
   constructor(private zone: NgZone) { }
 

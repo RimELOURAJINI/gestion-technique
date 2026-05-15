@@ -25,7 +25,7 @@ export class HistoryComponent implements OnInit {
   selectedProjectId: number | null = null;
   historyData: any = null; // Grouped by task title
   loading = false;
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = 'http://54.37.245.19:4950/api';
 
   constructor(private http: HttpClient) {}
 

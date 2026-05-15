@@ -212,4 +212,20 @@ export class TaskManagementComponent implements OnInit {
             default: return 'bg-secondary';
         }
     }
+
+    getDuration(task: any): string {
+        const s = (task.status || '').toUpperCase();
+        const durations = task.statusDurations || {};
+        const totalMins = durations[s] || 0;
+        
+        if (totalMins <= 0) return '';
+        
+        const hours = Math.floor(totalMins / 60);
+        const mins = totalMins % 60;
+        const days = Math.floor(hours / 24);
+        
+        if (days > 0) return `${days}j ${hours % 24}h`;
+        if (hours > 0) return `${hours}h ${mins}m`;
+        return `${mins}m`;
+    }
 }

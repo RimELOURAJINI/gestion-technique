@@ -7,7 +7,7 @@ import { Project, Task, Reclamation, Ticket, SubTask } from '../models/models';
   providedIn: 'root'
 })
 export class EmployeeService {
-  private baseUrl = 'http://localhost:8080/api';
+  private baseUrl = 'http://54.37.245.19:4950/api';
   private searchQuery = new BehaviorSubject<string>('');
   searchQuery$ = this.searchQuery.asObservable();
 

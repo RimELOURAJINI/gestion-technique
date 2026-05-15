@@ -78,6 +78,12 @@
                                 <h6 class="fs-13 fw-bold mb-1">{{ task.title }}</h6>
                                 <p class="text-muted fs-11 mb-2">{{ task.project?.name || 'Sans projet' }}</p>
                                 
+                                <div class="mb-2" *ngIf="getDuration(task)">
+                                    <span class="badge badge-soft-dark border fs-9 py-1 px-2">
+                                        <i class="ti ti-hourglass me-1"></i>Durée: {{getDuration(task)}}
+                                    </span>
+                                </div>
+                                
                                 <div class="d-flex gap-2 mt-2 pt-2 border-top">
                                     <div class="position-relative flex-grow-1" (click)="openNotes(task, $event)">
                                         <button class="btn btn-xs btn-outline-info w-100 py-1 fs-10">

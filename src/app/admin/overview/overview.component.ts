@@ -145,13 +145,9 @@ export class AdminOverviewComponent implements OnInit, AfterViewInit {
       this.recentReclamations = reclamations.slice(-5).reverse();
     });
 
-    this.hrService.getAllAttendanceByDate(this.today).subscribe(attendance => {
-      this.adminService.getUsersByRole('ROLE_EMPLOYEE').subscribe(employees => {
-        const totalEmployees = employees.length || 1;
-        const presentCount = attendance.length;
-        this.stats.attendanceRate = Math.min(100, Math.round((presentCount / totalEmployees) * 100));
-        this.isLoading = false;
-      });
+    this.adminService.getGlobalAttendanceRate().subscribe(data => {
+      this.stats.attendanceRate = data.attendanceRate;
+      this.isLoading = false;
     });
 
     // Load Personal Intervention Stats for AI

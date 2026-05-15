@@ -8,7 +8,7 @@ import { Project, Task, Team, User, Reclamation } from '../models/models';
   providedIn: 'root'
 })
 export class AdminService {
-  private baseUrl = 'http://localhost:8080/api';
+  private baseUrl = 'http://54.37.245.19:4950/api';
 
   constructor(private http: HttpClient) { }
 
@@ -170,5 +170,9 @@ export class AdminService {
 
   getAllTickets(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/tickets`);
+  }
+
+  getGlobalAttendanceRate(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/stats/admin/attendance-rate`);
   }
 }

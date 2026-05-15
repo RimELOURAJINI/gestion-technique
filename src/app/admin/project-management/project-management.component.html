@@ -34,7 +34,12 @@
                         </div>
                         <div>
                             <h6 class="mb-1 fw-bold fs-15 text-truncate" style="max-width: 180px;">{{project.name}}</h6>
-                            <span class="badge bg-soft-primary">ID: #{{project.id}}</span>
+                            <div class="d-flex gap-1 align-items-center">
+                                <span class="badge" [ngClass]="getStatusClass(project.status)">{{project.status}}</span>
+                                <span class="badge badge-soft-dark border fs-11" *ngIf="getStatusDuration(project)">
+                                    <i class="ti ti-hourglass-low me-1"></i>{{getStatusDuration(project)}}
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <!-- Admin Dropdown Actions -->

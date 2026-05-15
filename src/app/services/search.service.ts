@@ -15,7 +15,7 @@ export interface SearchResult {
 })
 export class SearchService {
 
-  private searchUrl = 'http://localhost:8080/api/search';
+  private searchUrl = 'http://54.37.245.19:4950/api/search';
 
   constructor(private http: HttpClient) {}
 

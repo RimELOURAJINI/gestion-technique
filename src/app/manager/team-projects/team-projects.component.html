@@ -39,6 +39,9 @@
                                 <span class="badge text-white px-2 py-1 fs-11" [ngClass]="getStatusClass(project.status)">
                                     {{project.status}}
                                 </span>
+                                <span class="badge badge-soft-dark border px-2 py-1 fs-11" *ngIf="getStatusDuration(project)">
+                                    <i class="ti ti-hourglass-low me-1"></i>{{getStatusDuration(project)}}
+                                </span>
                             </div>
                         </div>
                     </div>

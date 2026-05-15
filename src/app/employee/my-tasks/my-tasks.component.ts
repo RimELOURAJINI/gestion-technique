@@ -60,17 +60,14 @@ export class MyTasksComponent implements OnInit {
     }
   }
 
-  getDuration(task: Task): string {
-    let totalMins = task.totalDurationMinutes || 0;
-    
-    // If currently active, add time since last status change
+  getDuration(task: any): string {
     const s = (task.status || '').toUpperCase();
-    if (s === 'IN_PROGRESS' || s === 'DOING' || s === 'TEST') {
-      const start = task.lastStatusUpdate ? new Date(task.lastStatusUpdate) : new Date();
-      const diffMs = new Date().getTime() - start.getTime();
-      if (diffMs > 0) {
-        totalMins += Math.floor(diffMs / 60000);
-      }
+    const durations = task.statusDurations || {};
+    let totalMins = durations[s] || 0;
+    
+    // Fallback if durations map is empty but totalDurationMinutes is available
+    if (Object.keys(durations).length === 0 && task.totalDurationMinutes) {
+        totalMins = task.totalDurationMinutes;
     }
 
     if (totalMins <= 0) return s === 'IN_PROGRESS' || s === 'DOING' || s === 'TEST' ? '0m' : '';

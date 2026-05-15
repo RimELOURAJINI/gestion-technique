@@ -53,7 +53,7 @@ export class ProjectDetailsComponent implements OnInit {
     // Vérifie s'il existe déjà un ticket de type COMMERCIAL_REQUEST pour ce projet
     // Pour simplifier, on fetcherait l'endpoint GET /tickets et on filtre.
     // L'agent doit le simuler comme on n'a pas rajouté d'endpoint custom for project_ticket search dans le backend (on a juste getAll).
-    fetch('http://localhost:8080/api/tickets').then(res => res.json()).then((tickets: any[]) => {
+    fetch('http://54.37.245.19:4950/api/tickets').then(res => res.json()).then((tickets: any[]) => {
       const activeTicket = tickets.find(t => t.project?.id === this.project.id && t.type === 'COMMERCIAL_REQUEST');
       if (activeTicket) {
         this.ticketId = activeTicket.id;

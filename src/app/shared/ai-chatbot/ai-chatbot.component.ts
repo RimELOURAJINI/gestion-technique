@@ -46,7 +46,7 @@ export class AiChatbotComponent implements OnInit, OnDestroy {
   @ViewChild('messagesEnd') private messagesEnd!: ElementRef;
   @ViewChild('chatInput') private chatInput!: ElementRef;
 
-  private readonly API_URL = 'http://localhost:8080/AIEducanet/';
+  private readonly API_URL = 'http://54.37.245.19:4950/AIEducanet/';
   private readonly LOG = '[AI-CHATBOT]';
   private sseBuffer = '';
 

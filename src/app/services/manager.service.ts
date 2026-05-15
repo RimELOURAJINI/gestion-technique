@@ -7,7 +7,7 @@ import { Project, Task, Ticket, Reclamation, User } from '../models/models';
   providedIn: 'root'
 })
 export class TeamLeaderService {
-  private baseUrl = 'http://localhost:8080/api';
+  private baseUrl = 'http://54.37.245.19:4950/api';
 
   constructor(private http: HttpClient) { }
 

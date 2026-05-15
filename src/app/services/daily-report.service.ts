@@ -8,7 +8,7 @@ import { DailyReport, DailyReportSummary } from '../models/models';
   providedIn: 'root'
 })
 export class DailyReportService {
-  private apiUrl = 'http://localhost:8080/api/daily-reports';
+  private apiUrl = 'http://54.37.245.19:4950/api/daily-reports';
 
   constructor(private http: HttpClient) {}
 

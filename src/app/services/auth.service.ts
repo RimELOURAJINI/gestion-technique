@@ -29,7 +29,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl = 'http://54.37.245.19:4950/api/auth';
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
 
@@ -86,7 +86,7 @@ export class AuthService {
           } else if (error.status === 500) {
             errorMessage = 'Erreur serveur interne';
           } else if (error.status === 0) {
-            errorMessage = 'Impossible de contacter le serveur. Vérifiez que le backend est démarré sur http://localhost:8080';
+            errorMessage = 'Impossible de contacter le serveur. Vérifiez que le backend est démarré sur http://54.37.245.19:4950';
           }
 
           return throwError(() => ({ message: errorMessage }));

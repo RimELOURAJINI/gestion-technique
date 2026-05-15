@@ -18,6 +18,7 @@ import { TaskDetailService } from '../../services/task-detail.service';
 export class ProjectSupportModalComponent implements OnInit {
   @Input() project: Project | null = null;
   @Input() task: Task | null = null;
+  @Input() deal: any | null = null;
   @Output() onClose = new EventEmitter<void>();
 
   tickets: any[] = [];
@@ -34,6 +35,7 @@ export class ProjectSupportModalComponent implements OnInit {
     subject: '',
     description: '',
     projectId: null as number | null,
+    dealId: null as number | null,
     images: [] as string[]
   };
   myProjects: Project[] = [];
@@ -68,26 +70,26 @@ export class ProjectSupportModalComponent implements OnInit {
 
   loadMyProjects(): void {
     if (!this.currentUserId) return;
-    // Assuming we can get projects for the user role
-    this.ticketService.getAllTickets().subscribe(() => {
-      // Dummy call to get projects if needed, or use a specific project service
-      // For now we use the input project if available
-    });
-    
-    // In a real app, we'd call a project service
-    // If we have an input project, we pre-select it
     if (this.project) {
       this.newTicket.projectId = this.project.id;
+    }
+    if (this.deal) {
+      this.newTicket.dealId = this.deal.id;
     }
   }
 
   loadProjectTickets(): void {
-    if (!this.project && !this.task) return;
+    if (!this.project && !this.task && !this.deal) return;
     this.isLoading = true;
     
-    const obs = this.task 
-      ? this.ticketService.getAllTickets() // Or add getTicketsByTaskId if needed, but for now we filter
-      : this.ticketService.getTicketsByProjectId(this.project!.id);
+    let obs;
+    if (this.task) {
+        obs = this.ticketService.getAllTickets(); // Simplified for task filtering
+    } else if (this.project) {
+        obs = this.ticketService.getTicketsByProjectId(this.project.id);
+    } else {
+        obs = this.ticketService.getTicketsByDealId(this.deal.id);
+    }
 
     obs.subscribe({
       next: (res) => {
@@ -159,6 +161,7 @@ export class ProjectSupportModalComponent implements OnInit {
       subject: '',
       description: '',
       projectId: this.project?.id || null,
+      dealId: this.deal?.id || null,
       images: []
     };
   }
@@ -185,8 +188,8 @@ export class ProjectSupportModalComponent implements OnInit {
 
   submitNewTicket() {
     if (!this.currentUserId || !this.newTicket.title || !this.newTicket.subject) return;
-    if (!this.newTicket.projectId && !this.task) {
-      alert('Veuillez sélectionner un projet.');
+    if (!this.newTicket.projectId && !this.task && !this.newTicket.dealId) {
+      alert('Veuillez sélectionner un projet ou un deal.');
       return;
     }
 
@@ -204,6 +207,9 @@ export class ProjectSupportModalComponent implements OnInit {
 
     if (this.newTicket.projectId) {
       ticketToCreate.project = { id: this.newTicket.projectId };
+    }
+    if (this.newTicket.dealId) {
+        ticketToCreate.deal = { id: this.newTicket.dealId };
     }
     if (this.task) {
       ticketToCreate.task = { id: this.task.id };

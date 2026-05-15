@@ -8,7 +8,7 @@ import { Prime, PrimeAffectation, AiBonusSuggestion } from '../models/models';
   providedIn: 'root'
 })
 export class PrimeService {
-  private apiUrl = 'http://localhost:8080/api/primes';
+  private apiUrl = 'http://54.37.245.19:4950/api/primes';
   
   private pendingCountSubject = new BehaviorSubject<number>(0);
   public pendingCount$ = this.pendingCountSubject.asObservable();

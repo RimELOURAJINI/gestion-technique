@@ -7,8 +7,8 @@ import { Ticket } from '../models/models';
   providedIn: 'root'
 })
 export class TicketService {
-  private baseUrl = 'http://localhost:8080/api/tickets';
-  private clientUrl = 'http://localhost:8080/api/client';
+  private baseUrl = 'http://54.37.245.19:4950/api/tickets';
+  private clientUrl = 'http://54.37.245.19:4950/api/client';
 
   constructor(private http: HttpClient) { }
 
@@ -63,7 +63,7 @@ export class TicketService {
 
   // Client Specific
   getClientProjects(clientId: number): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:8080/api/projects/user/${clientId}`);
+    return this.http.get<any[]>(`http://54.37.245.19:4950/api/projects/user/${clientId}`);
   }
 
   getClientTickets(clientId: number): Observable<Ticket[]> {

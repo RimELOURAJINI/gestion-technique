@@ -13,7 +13,7 @@ export interface NotificationDTO {
   providedIn: 'root'
 })
 export class NotificationService {
-  private apiUrl = 'http://localhost:8080/api/notifications';
+  private apiUrl = 'http://54.37.245.19:4950/api/notifications';
 
   constructor(private http: HttpClient) {}
 

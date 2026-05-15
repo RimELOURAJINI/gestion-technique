@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { DealService } from '../../services/deal.service';
 import { AdminService } from '../../services/admin.service';
 import { AuthService } from '../../services/auth.service';
@@ -8,13 +9,15 @@ import { User } from '../../models/models';
 import { DealNegotiationComponent } from '../../shared/deal-negotiation/deal-negotiation.component';
 import { TicketService } from '../../services/ticket.service';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { ProjectSupportModalComponent } from '../../shared/project-support-modal/project-support-modal.component';
 
 @Component({
   selector: 'app-commercial-deals',
   standalone: true,
-  imports: [CommonModule, FormsModule, DealNegotiationComponent, DragDropModule],
+  imports: [CommonModule, FormsModule, DealNegotiationComponent, DragDropModule, ProjectSupportModalComponent],
   template: `
     <div class="p-4" *ngIf="!selectedDealChat">
+      <!-- ... (previous header code) ... -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h4 class="fw-bold text-dark mb-1">Espace Deals & Propositions</h4>
@@ -122,6 +125,9 @@ import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from 
                 <button class="btn btn-primary btn-sm d-flex align-items-center justify-content-center gap-2" (click)="openChat(deal)">
                    <i class="ti ti-messages fs-16"></i> Entrer dans le Workspace
                 </button>
+                <button class="btn btn-soft-danger btn-sm d-flex align-items-center justify-content-center gap-2" (click)="openTickets(deal)">
+                   <i class="ti ti-ticket fs-16"></i> Tickets Support
+                </button>
               </div>
             </div>
           </div>
@@ -226,82 +232,12 @@ import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from 
       </div>
     </div>
 
-    <!-- Ticket Management View -->
-    <div class="deal-tickets-overlay p-4" *ngIf="selectedDealTickets">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div class="d-flex align-items-center">
-                <button class="btn btn-soft-secondary me-3" (click)="selectedDealTickets = null">
-                    <i class="ti ti-arrow-left"></i>
-                </button>
-                <h4 class="mb-0 fw-bold">Tickets : {{ selectedDealTickets.name }}</h4>
-            </div>
-            <button class="btn btn-primary btn-sm" (click)="showNewTicketForm = true" *ngIf="!showNewTicketForm">
-                <i class="ti ti-plus"></i> Nouveau Ticket
-            </button>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-lg-4" *ngIf="showNewTicketForm">
-                <div class="card border-0 shadow-sm rounded-4">
-                    <div class="card-body p-4">
-                        <h6 class="fw-bold mb-3">Créer un ticket</h6>
-                        <div class="mb-3">
-                            <label class="form-label fs-13">Sujet</label>
-                            <input type="text" class="form-control" [(ngModel)]="newTicket.subject">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fs-13">Description</label>
-                            <textarea class="form-control" rows="4" [(ngModel)]="newTicket.description"></textarea>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-light flex-fill" (click)="showNewTicketForm = false">Annuler</button>
-                            <button class="btn btn-primary flex-fill" (click)="saveTicket()">Enregistrer</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div [class]="showNewTicketForm ? 'col-lg-8' : 'col-lg-12'">
-                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                    <div class="table-responsive">
-                        <table class="table mb-0">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th class="ps-4">Ticket</th>
-                                    <th>Statut</th>
-                                    <th>Créé le</th>
-                                    <th class="text-end pe-4">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let t of dealTickets">
-                                    <td class="ps-4">
-                                        <div class="fw-bold">{{ t.subject }}</div>
-                                        <div class="text-muted small text-truncate" style="max-width: 200px;">{{ t.description }}</div>
-                                    </td>
-                                    <td>
-                                        <span class="badge rounded-pill" [ngClass]="t.status === 'VALIDATED' ? 'bg-success' : 'bg-warning'">
-                                            {{ t.status }}
-                                        </span>
-                                    </td>
-                                    <td>{{ t.createdAt | date:'shortDate' }}</td>
-                                    <td class="text-end pe-4">
-                                        <button class="btn btn-sm btn-soft-primary" (click)="openChat(selectedDealTickets, t.id)">
-                                            <i class="ti ti-messages"></i> Chat
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr *ngIf="dealTickets.length === 0">
-                                    <td colspan="4" class="text-center py-5 text-muted">
-                                        Aucun ticket associé à ce deal.
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Ticket Management Modal (Standardized) -->
+    <app-project-support-modal 
+        *ngIf="showSupportModal" 
+        [deal]="selectedDealForSupport" 
+        (onClose)="showSupportModal = false">
+    </app-project-support-modal>
 
     <!-- Negotiation Interface (Full Screen) -->
     <app-deal-negotiation 
@@ -313,26 +249,14 @@ import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from 
     </app-deal-negotiation>
   `,
   styles: [`
-    .deal-tickets-overlay { position: fixed; top: 0; left: 250px; right: 0; bottom: 0; background: #f8fafc; z-index: 1040; overflow-y: auto; }
     .deal-card { transition: transform 0.2s ease, box-shadow 0.2s ease; border-top: 4px solid transparent; }
     .deal-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important; }
     .btn-white { background: #fff; border: 1px solid #e2e8f0; }
     .kanban-wrapper { min-height: 500px; }
     .kanban-column { min-width: 280px; width: 280px; }
     .bg-soft-primary { background-color: #eef2ff; }
-    .chat-overlay { position: fixed; top: 0; right: 0; width: 450px; height: 100vh; background: #fff; z-index: 1050; display: flex; flex-direction: column; }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     .fs-8 { font-size: 0.65rem; }
-    .cdk-drag-preview {
-      box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
-                  0 8px 10px 1px rgba(0, 0, 0, 0.14),
-                  0 3px 14px 2px rgba(0, 0, 0, 0.12);
-    }
-    .cdk-drag-placeholder { opacity: 0; }
-    .cdk-drag-animating { transition: transform 250ms cubic-bezier(0, 0, 0.2, 1); }
-    .kanban-list.cdk-drop-list-dragging .card:not(.cdk-drag-placeholder) {
-      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-    }
   `]
 })
 export class DealsComponent implements OnInit {
@@ -344,10 +268,9 @@ export class DealsComponent implements OnInit {
   showCreateForm = false;
   currentUserId: number | null = null;
   selectedDealChat: any = null;
-  selectedDealTickets: any = null;
-  dealTickets: any[] = [];
-  showNewTicketForm = false;
-  newTicket = { subject: '', description: '' };
+  
+  showSupportModal = false;
+  selectedDealForSupport: any = null;
 
   kanbanColumns = [
     { label: 'Proposition', statuses: ['PROPOSITION'], color: 'secondary' },
@@ -371,7 +294,8 @@ export class DealsComponent implements OnInit {
     private dealService: DealService,
     private adminService: AdminService,
     private authService: AuthService,
-    private ticketService: TicketService
+    private ticketService: TicketService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -494,43 +418,20 @@ export class DealsComponent implements OnInit {
   }
 
   openTickets(deal: any) {
-    this.selectedDealTickets = deal;
-    this.loadDealTickets(deal.id);
-  }
-
-  loadDealTickets(dealId: number) {
-    this.ticketService.getTicketsByDealId(dealId).subscribe(res => {
-      this.dealTickets = res;
-    });
-  }
-
-  saveTicket() {
-    if (this.newTicket.subject && this.currentUserId && this.selectedDealTickets) {
-      const ticketPayload: any = {
-        subject: this.newTicket.subject,
-        description: this.newTicket.description,
-        type: 'SUPPORT',
-        status: 'en cours',
-        priority: 'MEDIUM',
-        deal: { id: this.selectedDealTickets.id }
-      };
-
-      this.ticketService.createTicket(this.currentUserId, ticketPayload).subscribe(() => {
-        this.showNewTicketForm = false;
-        this.newTicket = { subject: '', description: '' };
-        this.loadDealTickets(this.selectedDealTickets.id);
-        this.loadDeals(); // Refresh count on cards
-      });
-    }
+    this.selectedDealForSupport = deal;
+    this.showSupportModal = true;
   }
 
   openChat(deal: any, ticketId?: number) {
     if (this.currentUserId) {
       if (ticketId) {
-        // Mode chat ticket spécifique
-        this.selectedDealChat = { ...deal, ticketId: ticketId };
+        // Redirection vers le Ticket Hub centralisé
+        const baseRoute = this.authService.isCommercialLeader() ? '/commercial-leader' : '/commercial';
+        this.router.navigate([`${baseRoute}/tickets`], { 
+            queryParams: { ticketId: ticketId } 
+        });
       } else {
-        // Mode chat workspace général
+        // Mode chat workspace général (Négociation)
         this.dealService.ensureChat(deal.id, this.currentUserId).subscribe(res => {
           this.selectedDealChat = res;
         });
@@ -538,3 +439,4 @@ export class DealsComponent implements OnInit {
     }
   }
 }
+

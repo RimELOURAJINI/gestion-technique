@@ -105,7 +105,7 @@ export class EmployeeHomeComponent implements OnInit, AfterViewInit {
       });
 
       // Fetch Productivity Score separately
-      this.http.get<any>(`http://localhost:8080/api/stats/user/${userId}/productivity`).subscribe({
+      this.http.get<any>(`http://54.37.245.19:4950/api/stats/user/${userId}/productivity`).subscribe({
         next: (data) => {
           this.stats.productivityScore = data.score;
         },

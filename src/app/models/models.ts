@@ -44,6 +44,7 @@ export interface Project {
   involvedUsers?: User[];
   activeTasksCount?: number;
   taskCount?: number;
+  statusDurations?: { [key: string]: number };
 }
 
 export interface SubTask {

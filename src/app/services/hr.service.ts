@@ -6,8 +6,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class HrService {
-  private attendanceUrl = 'http://localhost:8080/api/attendance';
-  private leavesUrl = 'http://localhost:8080/api/leaves';
+  private attendanceUrl = 'http://54.37.245.19:4950/api/attendance';
+  private leavesUrl = 'http://54.37.245.19:4950/api/leaves';
 
   constructor(private http: HttpClient) { }
 

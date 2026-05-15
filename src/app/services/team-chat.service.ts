@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class TeamChatService {
-  private apiUrl = 'http://localhost:8080/api/teams/chat';
+  private apiUrl = 'http://54.37.245.19:4950/api/teams/chat';
 
   constructor(private http: HttpClient) {}
 

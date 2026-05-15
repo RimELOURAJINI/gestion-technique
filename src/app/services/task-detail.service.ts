@@ -7,8 +7,8 @@ import { Task, TaskNote, TaskStatusHistory, ProjectNote } from '../models/models
   providedIn: 'root'
 })
 export class TaskDetailService {
-  private baseUrl = 'http://localhost:8080/api/tasks';
-  private projectUrl = 'http://localhost:8080/api/projects';
+  private baseUrl = 'http://54.37.245.19:4950/api/tasks';
+  private projectUrl = 'http://54.37.245.19:4950/api/projects';
 
   constructor(private http: HttpClient) { }
 

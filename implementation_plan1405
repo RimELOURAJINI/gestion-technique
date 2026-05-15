@@ -1,0 +1,81 @@
+# Plan d'implémentation : Sécurisation JWT Robuste
+
+Ce document détaille la stratégie pour passer d'une configuration de développement "ouverte" à une architecture de sécurité professionnelle utilisant les JSON Web Tokens (JWT).
+
+## 1. Compréhension du Phénomène (Le Cycle JWT)
+
+Actuellement, votre backend (`SecurityConfig`) laisse tout passer (`permitAll()`). Le "phénomène" que nous allons mettre en place suit ce cycle :
+
+1.  **Authentification :** L'utilisateur envoie ses identifiants au backend.
+2.  **Émission :** Le backend valide et génère un **Token JWT** signé numériquement.
+3.  **Stockage :** Le Frontend reçoit ce token et le stocke (généralement dans le `localStorage`).
+4.  **Injection Automatique (Interceptor) :** Pour CHAQUE requête suivante, le frontend ajoute automatiquement le header : `Authorization: Bearer <votre_token>`.
+5.  **Validation :** Le Backend intercepte la requête, vérifie la signature du token et extrait les rôles de l'utilisateur.
+6.  **Autorisation :** Si le token est valide et que l'utilisateur a le bon rôle, l'accès est accordé. Sinon, une erreur `401 Unauthorized` est renvoyée.
+
+---
+
+## 2. État des Lieux & Prochaines Étapes
+
+### A. Côté Frontend (Déjà préparé)
+Bonne nouvelle : Votre frontend est déjà configuré pour envoyer le token.
+*   **Interceptor :** Le fichier [auth.interceptor.ts](file:///d:/pfe/frontend-app/src/app/interceptors/auth.interceptor.ts) est déjà en place et injecte le token dans toutes les requêtes.
+*   **Configuration :** Il est correctement enregistré dans [app.config.ts](file:///d:/pfe/frontend-app/src/app/app.config.ts).
+*   **AuthService :** Gère déjà le stockage du token après le login.
+
+### B. Côté Backend (Le gros du travail restant)
+C'est ici qu'il faut agir pour que la sécurité devienne "solide".
+
+#### [Étape 1] Mise à jour du SecurityConfig
+Il faut remplacer les `.permitAll()` par des restrictions réelles.
+
+```java
+// Exemple de modification dans SecurityConfig.java
+.authorizeHttpRequests(auth -> auth
+    .requestMatchers("/api/auth/**").permitAll() // Seul le login est ouvert
+    .requestMatchers("/api/admin/**").hasRole("ADMIN") // Routes réservées à l'admin
+    .requestMatchers("/api/manager/**").hasAnyRole("ADMIN", "TEAM_LEADER")
+    .anyRequest().authenticated() // Tout le reste nécessite un token valide
+)
+```
+
+#### [Étape 2] Implémentation du JwtAuthenticationFilter
+Vous devez avoir une classe qui hérite de `OncePerRequestFilter` dans votre backend pour intercepter le header `Authorization`, valider le token et charger le contexte de sécurité Spring.
+
+---
+
+## 3. Plan d'Action Détaillé
+
+### Phase 1 : Renforcement du Frontend (Gestion de Session)
+
+#### [MODIFY] [auth.interceptor.ts](file:///d:/pfe/frontend-app/src/app/interceptors/auth.interceptor.ts)
+Améliorer l'intercepteur pour gérer plus finement les erreurs de session.
+*   **Gestion du 401 :** Redirection immédiate vers `/login` si le backend rejette le token (expiration).
+*   **Nettoyage :** Effacer le `localStorage` en cas de token invalide.
+
+#### [MODIFY] [auth.guard.ts](file:///d:/pfe/frontend-app/src/app/guards/auth.guard.ts)
+Vérifier non seulement si le token existe, mais si l'utilisateur a le rôle requis pour la route demandée.
+
+### Phase 2 : Verrouillage du Backend
+
+#### [MODIFY] [SecurityConfig.java](file:///d:/pfe/projets/backend/src/main/java/tn/educanet/backend/security/SecurityConfig.java)
+*   Ajouter l'annotation `@EnableMethodSecurity` pour permettre la sécurité par annotations (`@PreAuthorize`) sur les contrôleurs.
+*   Ajouter le `JwtAuthenticationFilter` dans la chaîne de filtres Spring Security.
+*   Configurer un `AuthenticationEntryPoint` pour personnaliser le message d'erreur en cas de non-authentification.
+
+### Phase 3 : Validation de la Sécurité
+
+1.  **Test sans Token :** Tenter d'accéder à `/api/users/all` via un navigateur ou Postman. Le backend DOIT renvoyer un 401 ou 403.
+2.  **Test avec Token :** Se connecter sur le front, puis vérifier dans l'inspecteur réseau (Network) que le header `Authorization: Bearer ...` est bien présent.
+3.  **Test de Rôle :** Se connecter avec un compte "Employé" et tenter d'accéder à une page "Admin". Le Guard frontend doit bloquer l'accès.
+
+---
+
+## 4. Bénéfices Attendus
+
+*   **Sécurité Solide :** Personne ne peut appeler vos APIs en dehors de l'application sans un token valide.
+*   **Gestion de Session Moderne :** Plus besoin de sessions côté serveur (Stateless), ce qui améliore les performances.
+*   **Intégrité des Données :** Les rôles sont cryptographiquement scellés dans le token, empêchant toute usurpation de privilèges.
+
+> [!IMPORTANT]
+> Avant d'appliquer ces changements au backend, assurez-vous d'avoir des comptes de test pour chaque rôle (Admin, Manager, Employee) afin de ne pas vous retrouver bloqué hors de l'application !

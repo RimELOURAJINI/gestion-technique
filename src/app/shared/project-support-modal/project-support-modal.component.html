@@ -7,7 +7,7 @@
                     <i class="ti ti-headset fs-20"></i>
                 </div>
                 <div>
-                    <h6 class="mb-0 fw-bold">Support Hub : {{task ? task.title : project?.name}}</h6>
+                    <h6 class="mb-0 fw-bold">Support Hub : {{task ? task.title : (project ? project.name : (deal ? deal.name : 'Général'))}}</h6>
                     <p class="mb-0 text-white-50 fs-11">Discussions techniques et tickets ouverts</p>
                 </div>
             </div>
@@ -46,6 +46,9 @@
                                 <span class="fs-11 text-muted"><i class="ti ti-clock me-1"></i>{{t.createdAt | date:'dd MMM'}}</span>
                                 <span class="badge bg-soft-info text-info fs-9 border border-info rounded-pill" *ngIf="t.task && !task">
                                     <i class="ti ti-checklist me-1"></i>{{t.task.title}}
+                                </span>
+                                <span class="badge bg-soft-warning text-warning fs-9 border border-warning rounded-pill" *ngIf="t.deal && !deal">
+                                    <i class="ti ti-briefcase me-1"></i>{{t.deal.name}}
                                 </span>
                             </div>
                         </div>
@@ -102,10 +105,11 @@
                     </div>
 
                     <div class="mb-3" *ngIf="!task">
-                        <label class="form-label fs-13 fw-bold">Projet concerné</label>
-                        <select class="form-select rounded-3" [(ngModel)]="newTicket.projectId">
-                            <option [value]="null">Sélectionner un projet...</option>
+                        <label class="form-label fs-13 fw-bold">{{deal ? 'Deal concerné' : 'Projet concerné'}}</label>
+                        <select class="form-select rounded-3" [(ngModel)]="deal ? newTicket.dealId : newTicket.projectId">
+                            <option [value]="null">Sélectionner...</option>
                             <option *ngIf="project" [value]="project.id">{{project.name}} (Actuel)</option>
+                            <option *ngIf="deal" [value]="deal.id">{{deal.name}} (Actuel)</option>
                         </select>
                     </div>
 

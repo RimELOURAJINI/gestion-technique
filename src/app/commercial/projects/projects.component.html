@@ -37,9 +37,14 @@
                     <h5 class="card-title mb-0 text-truncate" style="max-width: 80%;">
                         <span class="text-dark">{{ p.name }}</span>
                     </h5>
-                    <span class="badge rounded-pill text-white fs-11 px-2 py-1" [ngClass]="getStatusClass(p.status)">
-                        {{ getTranslateStatus(p.status) }}
-                    </span>
+                    <div class="d-flex gap-1 align-items-center">
+                        <span class="badge rounded-pill text-white fs-11 px-2 py-1" [ngClass]="getStatusClass(p.status)">
+                            {{ getTranslateStatus(p.status) }}
+                        </span>
+                        <span class="badge badge-soft-dark border fs-11" *ngIf="getStatusDuration(p)">
+                            <i class="ti ti-hourglass-low me-1"></i>{{getStatusDuration(p)}}
+                        </span>
+                    </div>
                 </div>
                 
                 <p class="text-muted fs-13 mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
